@@ -1,0 +1,15 @@
+.modal-content {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--card-border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.modal-header, .modal-footer {
+  border-color: var(--color-border) !important;
+}
+
+.modal-title { color: var(--color-text); font-weight: var(--font-weight-semibold); }
+.modal-body { color: var(--color-text); }
+
+.modal-backdrop.show { opacity: 0.4 !important; }

@@ -1,0 +1,12 @@
+.filter-panel {
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.filter-field { display: flex; flex-direction: column; gap: var(--space-1); min-width: 160px; }
+.filter-label { font-size: var(--font-size-caption); color: var(--color-text-muted); font-weight: var(--font-weight-medium); }
+
+.filter-actions { display: flex; gap: var(--space-2); margin-left: auto; }

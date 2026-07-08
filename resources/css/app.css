@@ -1,0 +1,27 @@
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+@import 'aos/dist/aos.css';
+@import 'datatables.net-bs5/css/dataTables.bootstrap5.min.css';
+
+@import './themes/tokens.css';
+@import './themes/dark.css';
+@import './base/reset.css';
+@import './layout/layout.css';
+@import './layout/sidebar.css';
+@import './layout/navbar.css';
+@import './pages/dashboard.css';
+@import './utilities/utilities.css';
+@import './vendors/overrides.css';
+@import './components/button.css';
+@import './components/badge.css';
+@import './components/card.css';
+@import './components/stat-card.css';
+@import './components/chart-card.css';
+@import './components/filter-panel.css';
+@import './components/modal.css';
+@import './components/data-table.css';
+@import './components/empty-state.css';
+@import './components/skeleton.css';
