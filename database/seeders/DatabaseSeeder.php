@@ -26,3 +26,11 @@ class DatabaseSeeder extends Seeder
         ]);
     }
 }
+
+// bikin akun PHP Artisan Tinker
+
+// User::create([
+//     'name'  => 'Sampel',
+//     'email' => 'sampel@gmail.com',
+//     'password'  => 'password',
+// ]);

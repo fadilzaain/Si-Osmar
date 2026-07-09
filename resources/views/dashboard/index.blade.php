@@ -1,145 +1,164 @@
 <x-app-layout title="Dashboard">
 
-    {{-- ==================== ROW 1: STAT CARDS ==================== --}}
-    <div class="stat-grid" data-aos="fade-up">
-        <x-stat-card
-            icon="fa-solid fa-users"
-            label="Total Pegawai"
-            :value="$metrics['total_pegawai']['value']"
-            :trend="$metrics['total_pegawai']['trend']"
-            :trendType="$metrics['total_pegawai']['trend_type']"
-            :comparison="$metrics['total_pegawai']['comparison']"
-            color="#15803D"
-        />
-        <x-stat-card
-            icon="fa-solid fa-id-card"
-            label="ASN (PNS & PPPK)"
-            :value="$metrics['asn']['value']"
-            :trend="$metrics['asn']['trend']"
-            :trendType="$metrics['asn']['trend_type']"
-            :comparison="$metrics['asn']['comparison']"
-            color="#2563EB"
-        />
-        <x-stat-card
-            icon="fa-solid fa-user-clock"
-            label="Non-ASN"
-            :value="$metrics['non_asn']['value']"
-            :trend="$metrics['non_asn']['trend']"
-            :trendType="$metrics['non_asn']['trend_type']"
-            :comparison="$metrics['non_asn']['comparison']"
-            color="#F59E0B"
-        />
-        <x-stat-card
-            icon="fa-solid fa-star"
-            label="Rata-rata Skor Kompetensi"
-            :value="$metrics['avg_kompetensi']['value']"
-            :trend="$metrics['avg_kompetensi']['trend']"
-            :trendType="$metrics['avg_kompetensi']['trend_type']"
-            :comparison="$metrics['avg_kompetensi']['comparison']"
-            color="#22C55E"
-        />
-    </div>
+<div class="dxg-page" data-aos="fade-up">
 
-    {{-- ==================== ROW 2: STATUS PEGAWAI (Aktif/Cuti/Nonaktif) ==================== --}}
-    <div class="stat-grid stat-grid-3" data-aos="fade-up">
-        <x-stat-card
-            icon="fa-solid fa-user-check"
-            label="Pegawai Aktif"
-            :value="$metrics['status']['aktif']"
-            color="#22C55E"
-        />
-        <x-stat-card
-            icon="fa-solid fa-umbrella-beach"
-            label="Sedang Cuti"
-            :value="$metrics['status']['cuti']"
-            color="#F59E0B"
-        />
-        <x-stat-card
-            icon="fa-solid fa-user-xmark"
-            label="Nonaktif"
-            :value="$metrics['status']['nonaktif']"
-            color="#EF4444"
-        />
-    </div>
+    <div class="dxg-eyebrow">SI-OSMAR</div>
+    @php
+    $jam = now()->hour;
+    $sapaan = match(true) {
+        $jam >= 4 && $jam < 11 => 'Selamat pagi',
+        $jam >= 11 && $jam < 15 => 'Selamat siang',
+        $jam >= 15 && $jam < 18 => 'Selamat sore',
+        default => 'Selamat malam',
+        };
+    @endphp
+    <h1 class="dxg-title">{{ $sapaan }}</h1>
+    <div class="dxg-sub">Ringkasan strategis lintas modul SDM — {{ now()->translatedFormat('d F Y') }}</div>
 
-    {{-- ==================== ROW 3: CHARTS ==================== --}}
-    <div class="chart-grid" data-aos="fade-up">
-        <x-chart-card
-            title="Distribusi Staff"
-            subtitle="Berdasarkan kategori jabatan"
-            chartId="chart-distribution"
-            :height="300"
-        />
-        <x-chart-card
-            title="Tren Jumlah Pegawai"
-            subtitle="6 bulan terakhir"
-            chartId="chart-trend"
-            :height="300"
-        />
-    </div>
+    <div class="dxg-grid">
 
-    {{-- ==================== ROW 4: RECENT ACTIVITIES ==================== --}}
-    <div class="card-base activity-card" data-aos="fade-up">
-        <div class="card-header">
-            <div class="card-title">Aktivitas Terbaru</div>
-        </div>
+        {{-- Ekinerja --}}
+        <a href="{{ route('coming-soon', 'ekinerja') }}" class="dxg-card">
+            <div class="dxg-card-glow"></div>
+            <div class="dxg-card-top">
+                <div class="dxg-card-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <span class="dxg-card-badge">{{ now()->year }}</span>
+            </div>
+            <div class="dxg-card-title">Ekinerja</div>
+            <div class="dxg-card-subtitle">Distribusi capaian kinerja pegawai</div>
+            <div class="dxg-chart-area">
+                @php
+                    $w = 220; $h = 90;
+                    $toPoints = function(array $vals) use ($w, $h) {
+                        $n = count($vals) - 1;
+                        return collect($vals)->map(fn($v, $i) => round($i * $w / $n) . ',' . round($h - ($v / 100 * $h)))->implode(' ');
+                    };
+                @endphp
+                <svg viewBox="0 0 {{ $w }} {{ $h }}" width="100%" height="100%">
+                    <polyline class="dxg-line" points="{{ $toPoints($ekinerja['series_baik']) }}" fill="none" stroke="var(--color-success)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline class="dxg-line dxg-line-delay" points="{{ $toPoints($ekinerja['series_kurang']) }}" fill="none" stroke="#4C8DFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+                </svg>
+            </div>
+            <div class="dxg-card-foot">
+                <div class="dxg-card-stat">{{ $ekinerja['persen_baik'] }}<span>% baik/sangat baik</span></div>
+                <span class="dxg-card-link">Lihat detail →</span>
+            </div>
+        </a>
 
-        <div class="activity-list">
-            @forelse ($activities as $activity)
-                <div class="activity-item">
-                    <div class="activity-icon" style="--activity-color: {{ $activity['color'] }}">
-                        <i class="{{ $activity['icon'] }}"></i>
+        {{-- Pelatihan --}}
+        <a href="{{ route('coming-soon', 'pelatihan') }}" class="dxg-card">
+            <div class="dxg-card-glow"></div>
+            <div class="dxg-card-top">
+                <div class="dxg-card-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                <span class="dxg-card-badge">YTD</span>
+            </div>
+            <div class="dxg-card-title">Pelatihan</div>
+            <div class="dxg-card-subtitle">Jam pelatihan per pegawai</div>
+            @php
+                $circ = 213.6;
+                $seg1 = round($pelatihan['lebih_20jp'] / 100 * $circ, 1);
+                $seg2 = round($pelatihan['kurang_20jp'] / 100 * $circ, 1);
+                $rot2 = round($pelatihan['lebih_20jp'] / 100 * 360) - 90;
+            @endphp
+            <div class="dxg-chart-area dxg-chart-center">
+                <svg viewBox="0 0 90 90" width="90" height="90" class="dxg-donut">
+                    <circle cx="45" cy="45" r="34" fill="none" stroke="var(--color-border)" stroke-width="11"/>
+                    <circle cx="45" cy="45" r="34" fill="none" stroke="var(--color-success)" stroke-width="11" stroke-linecap="round" transform="rotate(-90 45 45)" stroke-dasharray="{{ $seg1 }} {{ $circ }}"/>
+                    <circle cx="45" cy="45" r="34" fill="none" stroke="var(--color-warning)" stroke-width="11" stroke-linecap="round" transform="rotate({{ $rot2 }} 45 45)" stroke-dasharray="{{ $seg2 }} {{ $circ }}"/>
+                    <text x="45" y="50" text-anchor="middle" class="dxg-donut-label">{{ $pelatihan['lebih_20jp'] }}%</text>
+                </svg>
+            </div>
+            <div class="dxg-legend">
+                <span><i style="background:var(--color-success)"></i>≥20 JP</span>
+                <span><i style="background:var(--color-warning)"></i>&lt;20 JP</span>
+                <span><i style="background:var(--color-text-muted)"></i>Belum</span>
+            </div>
+            <div class="dxg-card-foot">
+                <div></div>
+                <span class="dxg-card-link">Lihat detail →</span>
+            </div>
+        </a>
+
+        {{-- SDM --}}
+        <a href="{{ route('coming-soon', 'sdm-ringkasan') }}" class="dxg-card">
+            <div class="dxg-card-glow"></div>
+            <div class="dxg-card-top">
+                <div class="dxg-card-icon"><i class="fa-solid fa-users"></i></div>
+                <span class="dxg-card-badge">{{ number_format($sdm['medis'] + $sdm['non_medis']) }}</span>
+            </div>
+            <div class="dxg-card-title">SDM</div>
+            <div class="dxg-card-subtitle">Distribusi tenaga per kategori</div>
+            <div class="dxg-chart-area">
+                <svg viewBox="0 0 220 90" width="100%" height="100%">
+                    @foreach ($sdm['bars'] as $i => $val)
+                        <rect class="dxg-bar" x="{{ 10 + $i * 42 }}" y="{{ 90 - $val }}" width="26" height="{{ $val }}" rx="4" fill="var(--color-success)" opacity="{{ 1 - $i * 0.08 }}" style="animation-delay:{{ 0.85 + $i * 0.07 }}s"/>
+                    @endforeach
+                </svg>
+            </div>
+            <div class="dxg-card-foot">
+                <div class="dxg-card-stat">{{ $sdm['medis'] }}<span>medis / {{ $sdm['non_medis'] }} non-medis</span></div>
+                <span class="dxg-card-link">Lihat detail →</span>
+            </div>
+        </a>
+
+        {{-- Monitoring STR & SIP (wide) --}}
+        @php
+            $pctBermasalah = $totalPegawai ? round($totalBermasalah / $totalPegawai * 100) : 0;
+            $seg = round((100 - $pctBermasalah) / 100 * $circ, 1);
+        @endphp
+        <a href="{{ route('monitoring-str-sip.index') }}" class="dxg-card dxg-card-wide">
+            <div class="dxg-card-glow"></div>
+            <div class="dxg-card-top">
+                <div class="dxg-card-icon"><i class="fa-solid fa-file-shield"></i></div>
+                <span class="dxg-card-badge">{{ $totalBermasalah }} bermasalah</span>
+            </div>
+            <div class="dxg-card-title">Monitoring STR & SIP</div>
+            <div class="dxg-card-subtitle">Kelengkapan dokumen legal per ruangan</div>
+            <div class="dxg-str-body">
+                <svg viewBox="0 0 90 90" width="90" height="90" class="dxg-donut">
+                    <circle cx="45" cy="45" r="34" fill="none" stroke="var(--color-border)" stroke-width="11"/>
+                    <circle cx="45" cy="45" r="34" fill="none" stroke="var(--color-success)" stroke-width="11" stroke-linecap="round" transform="rotate(-90 45 45)" stroke-dasharray="{{ $seg }} {{ $circ }}"/>
+                    <text x="45" y="50" text-anchor="middle" class="dxg-donut-label">{{ 100 - $pctBermasalah }}%</text>
+                </svg>
+                <div class="dxg-str-info">
+                    <div class="dxg-legend">
+                        <span><i style="background:var(--color-success)"></i>Lengkap</span>
+                        <span><i style="background:var(--color-danger)"></i>Kadaluarsa / belum ada</span>
                     </div>
-                    <div class="activity-body">
-                        <div class="activity-title">{{ $activity['title'] }}</div>
-                        <div class="activity-desc">{{ $activity['desc'] }}</div>
-                    </div>
-                    {{-- $activity['time'] sudah objek Carbon (hasil casting di model), jadi bisa langsung format --}}
-                    <div class="activity-time">{{ $activity['time']->translatedFormat('d M Y') }}</div>
+                    @if ($ruanganKritis)
+                        <div class="dxg-str-note">{{ $ruanganKritis['ruangan'] }} paling kritis — {{ $ruanganKritis['bermasalah'] }} dari {{ $ruanganKritis['total_pegawai'] }} pegawai belum lengkap.</div>
+                    @endif
                 </div>
-            @empty
-                <x-empty-state
-                    icon="fa-solid fa-inbox"
-                    title="Belum ada aktivitas"
-                    description="Aktivitas mutasi dan sertifikasi akan muncul di sini."
-                />
-            @endforelse
-        </div>
+            </div>
+            <div class="dxg-card-foot">
+                <div></div>
+                <span class="dxg-card-link">Lihat detail →</span>
+            </div>
+        </a>
+
+        {{-- Cuti --}}
+        <a href="{{ route('coming-soon', 'cuti') }}" class="dxg-card">
+            <div class="dxg-card-glow"></div>
+            <div class="dxg-card-top">
+                <div class="dxg-card-icon"><i class="fa-solid fa-umbrella-beach"></i></div>
+                <span class="dxg-card-badge">{{ now()->translatedFormat('M Y') }}</span>
+            </div>
+            <div class="dxg-card-title">Cuti</div>
+            <div class="dxg-card-subtitle">Pegawai cuti per periode</div>
+            <div class="dxg-chart-area">
+                <svg viewBox="0 0 220 90" width="100%" height="100%">
+                    @foreach ($cuti['bars'] as $i => $val)
+                        <rect class="dxg-bar" x="{{ 4 + $i * 30 }}" y="{{ 90 - $val }}" width="20" height="{{ $val }}" rx="3" fill="{{ $val > 55 ? 'var(--color-warning)' : 'var(--color-success)' }}" opacity="{{ $val > 55 ? 1 : 0.7 }}" style="animation-delay:{{ 0.85 + $i * 0.05 }}s"/>
+                    @endforeach
+                </svg>
+            </div>
+            <div class="dxg-card-foot">
+                <div class="dxg-card-stat">{{ $cuti['total_bulan_ini'] }}<span>pegawai bulan ini</span></div>
+                <span class="dxg-card-link">Lihat detail →</span>
+            </div>
+        </a>
+
     </div>
-
-    @push('scripts')
-        <script>
-            // Data dikirim dari Controller (PHP) ke JS lewat json_encode.
-            // Ini satu-satunya cara aman "nitip" data PHP ke ApexCharts tanpa fetch API terpisah.
-            const distributionData = @json($distribution);
-            const trendData = @json($trend);
-
-            document.addEventListener('DOMContentLoaded', function () {
-                // ---- Chart 1: Distribusi Staff (Donut) ----
-                new ApexCharts(document.querySelector('#chart-distribution'), {
-                    chart: { type: 'donut', height: 300, fontFamily: 'Inter, sans-serif' },
-                    labels: Object.keys(distributionData),
-                    series: Object.values(distributionData),
-                    colors: ['#15803D', '#2563EB', '#F59E0B', '#06B6D4', '#64748B'],
-                    legend: { position: 'bottom' },
-                    dataLabels: { enabled: true },
-                }).render();
-
-                // ---- Chart 2: Tren Pegawai (Line) ----
-                new ApexCharts(document.querySelector('#chart-trend'), {
-                    chart: { type: 'line', height: 300, fontFamily: 'Inter, sans-serif', toolbar: { show: false } },
-                    series: [
-                        { name: 'Total', data: trendData.total },
-                        { name: 'ASN', data: trendData.asn },
-                        { name: 'Non-ASN', data: trendData.non_asn },
-                    ],
-                    xaxis: { categories: trendData.labels },
-                    colors: ['#15803D', '#2563EB', '#F59E0B'],
-                    stroke: { curve: 'smooth', width: 3 },
-                    legend: { position: 'bottom' },
-                }).render();
-            });
-        </script>
-    @endpush
+</div>
 
 </x-app-layout>

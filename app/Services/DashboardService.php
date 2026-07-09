@@ -141,4 +141,89 @@ class DashboardService
 
         return array_slice($activities, 0, 5);
     }
+
+    public function getAlertsInsight()
+    {
+        $alerts = [];
+
+        // Insight 1: Sertifikat/STR yang akan kadaluarsa dalam 3 bulan ke depan
+        $akanKadaluarsa = Kompetensi::with('pegawai')->akanKadaluarsa(90)->count();
+        if ($akanKadaluarsa > 0) {
+            $alerts[] = [
+                'type' => 'danger',
+                'icon' => 'fa-solid fa-triangle-exclamation',
+                'title' => 'Sertifikasi akan berakhir',
+                'desc' => "{$akanKadaluarsa} pegawai sertifikasinya akan berakhir dalam 3 bulan",
+                'badge' => $akanKadaluarsa,
+            ];
+        }
+
+        // Insight 2: Sertifikat yang SUDAH lewat tanggal kadaluarsa (lebih urgent dari yang di atas)
+        $sudahKadaluarsa = Kompetensi::sudahKadaluarsa()->count();
+        if ($sudahKadaluarsa > 0) {
+            $alerts[] = [
+                'type' => 'danger',
+                'icon' => 'fa-solid fa-circle-exclamation',
+                'title' => 'Sertifikasi kedaluwarsa',
+                'desc' => "{$sudahKadaluarsa} pegawai sertifikasinya sudah kedaluwarsa",
+                'badge' => $sudahKadaluarsa,
+            ];
+        }
+
+        // Insight 3: Mutasi terbaru (7 hari terakhir)
+        $mutasiBaru = Mutasi::where('tanggal_mutasi', '>=', now()->subDays(7))->count();
+        if ($mutasiBaru > 0) {
+            $alerts[] = [
+                'type' => 'info',
+                'icon' => 'fa-solid fa-right-left',
+                'title' => 'Mutasi terbaru',
+                'desc' => "{$mutasiBaru} pegawai dimutasi pada 7 hari terakhir",
+                'badge' => $mutasiBaru,
+            ];
+        }
+
+        // TODO: Insight "kekurangan SDM" dan "rekomendasi rekrutmen" menyusul
+        // setelah modul Analisis Beban Kerja (ABK) dibuat. Belum ditaruh sekarang
+        // karena datanya belum ada sumber perhitungan yang real (lihat diskusi
+        // soal placeholder vs data ngarang).
+
+        return $alerts;
+    }
+
+    public function getEkinerjaSummary(): array
+    {
+        // dummy — nanti ganti query dari data e-kinerja
+        return [
+            'persen_baik' => 78,
+            'series_baik' => [22, 38, 30, 45, 55, 48, 68],
+            'series_kurang' => [30, 22, 28, 18, 20, 24, 12],
+        ];
+    }
+
+    public function getPelatihanSummary(): array
+    {
+        // dummy — persentase harus total 100
+        return [
+            'lebih_20jp' => 62,
+            'kurang_20jp' => 25,
+            'belum' => 13,
+        ];
+    }
+
+    public function getSdmSummaryChart(): array
+    {
+        return [
+            'medis' => 676,
+            'non_medis' => 769,
+            'bars' => [70, 55, 40, 48, 32],
+        ];
+    }
+
+    public function getCutiSummary(): array
+    {
+        return [
+            'total_bulan_ini' => 14,
+            'bars' => [35, 50, 25, 60, 40, 70, 30],
+        ];
+    }
 }

@@ -12,7 +12,9 @@
 @import './layout/layout.css';
 @import './layout/sidebar.css';
 @import './layout/navbar.css';
+@import './pages/monitoring-str-sip.css';
 @import './pages/dashboard.css';
+@import './pages/auth.css';
 @import './utilities/utilities.css';
 @import './vendors/overrides.css';
 @import './components/button.css';

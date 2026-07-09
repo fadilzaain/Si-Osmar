@@ -114,6 +114,18 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        //prepare
+        'sikawan' => [
+            'driver' => 'mysql',
+            'host' => env('SIKAWAN_DB_HOST', ''),
+            'port' => env('SIKAWAN_DB_PORT', '3306'),
+            'database' => env('SIKAWAN_DB_DATABASE', ''),
+            'username' => env('SIKAWAN_DB_USERNAME', ''),
+            'password' => env('SIKAWAN_DB_PASSWORD', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+        ],
+
     ],
 
     /*

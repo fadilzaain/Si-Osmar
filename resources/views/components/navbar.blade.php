@@ -21,9 +21,28 @@
             <i class="fa-solid fa-circle-half-stroke"></i>
         </button>
 
-        <button class="navbar-profile" type="button">
-            <span class="navbar-avatar">{{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}</span>
-            <span class="d-none d-md-inline text-muted">{{ auth()->user()->name ?? 'Admin' }}</span>
-        </button>
+        {{-- TAMBAHAN: dibungkus wrapper relative buat positioning dropdown --}}
+        <div class="navbar-profile-wrapper">
+            <button class="navbar-profile" type="button" data-action="toggle-profile-menu" aria-haspopup="true" aria-expanded="false">
+                <span class="navbar-avatar">{{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}</span>
+                <span class="d-none d-md-inline text-muted">{{ auth()->user()->name ?? 'Admin' }}</span>
+                <i class="fa-solid fa-chevron-down navbar-profile-caret"></i>
+            </button>
+
+            <div class="navbar-profile-menu" data-profile-menu>
+                <div class="navbar-profile-menu-header">
+                    <div class="navbar-profile-menu-name">{{ auth()->user()->name ?? 'Admin' }}</div>
+                    <div class="navbar-profile-menu-email">{{ auth()->user()->email ?? '' }}</div>
+                </div>
+
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="navbar-profile-menu-item navbar-profile-menu-danger">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 </header>
