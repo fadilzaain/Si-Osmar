@@ -1,7 +1,17 @@
 [data-theme="dark"] {
+  /* Color — palet Emerald + Mint, mode dark */
+  --color-secondary: #10B981;
+  --color-accent: #6EE7B7;
+  --color-success: #34D399;
+  --color-warning: #F59E0B;
+  --color-danger: #F87171;
+  --color-info: #22D3EE;
+  --color-mint: #34D399;
+  --color-mint-soft: #12261C;
+
   --color-surface: #0F1E16;
   --color-background: #081410;
-  --color-border: rgba(255, 255, 255, 0.07);
+  --color-border: rgba(255, 255, 255, 0.08);
   --color-text: #EAF2EC;
   --color-text-muted: #8FA69A;
 
@@ -11,7 +21,36 @@
   --card-bg: var(--color-surface);
   --card-border: var(--color-border);
 
-  --sidebar-active-bg: color-mix(in srgb, var(--color-accent) 18%, transparent);
+  /* Sidebar — mode dark: chrome gelap seperti sebelumnya */
+  --sidebar-bg: #0F1A14;
+  --sidebar-glass-bg: rgba(8, 20, 16, 0.85);
+  --sidebar-bg-hover: #17251D;
+  --sidebar-text: #A8B5AD;
+  --sidebar-text-strong: #FFFFFF;
+  --sidebar-text-muted: #6B7B71;
+  --sidebar-active-bg: color-mix(in srgb, var(--color-primary) 18%, transparent);
+  --sidebar-active-text: #FFFFFF;
+  --sidebar-border: #1C2A21;
+  --sidebar-tooltip-bg: rgba(15, 26, 20, 0.95);
+  --sidebar-tooltip-text: #FFFFFF;
+
+  /* Navbar — mode dark */
+  --navbar-glass-bg: rgba(8, 20, 16, 0.85);
+  --navbar-border: rgba(255, 255, 255, 0.06);
+  --navbar-icon-hover-bg: rgba(255, 255, 255, 0.06);
+  --navbar-icon-hover-text: #FFFFFF;
+  --navbar-search-bg: rgba(255, 255, 255, 0.05);
+  --navbar-search-border: rgba(255, 255, 255, 0.08);
+  --navbar-search-text: #EAF2EC;
+  --navbar-search-placeholder: rgba(234, 242, 236, 0.55);
+  --navbar-profile-hover-bg: rgba(255, 255, 255, 0.06);
+  --navbar-menu-bg: rgba(10, 22, 17, 0.98);
+  --navbar-menu-border: rgba(255, 255, 255, 0.08);
+  --navbar-menu-text-strong: #EAF2EC;
+  --navbar-menu-text-muted: #8FA69A;
+  --navbar-menu-item-hover-bg: rgba(255, 255, 255, 0.06);
+  --navbar-menu-divider: rgba(255, 255, 255, 0.07);
+
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.45);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);

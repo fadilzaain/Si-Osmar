@@ -6,6 +6,8 @@ import { initAOS } from './vendors/aos-init';
 import { initDataTables } from './modules/datatable';
 import { initProfileMenu } from './modules/profile-menu.js';
 import { initMonitoringDokumen } from './modules/monitoring-dokumen';
+import { initDashboardCharts } from './modules/dashboard-charts';
+
 
 window.bootstrap = bootstrap;
 
@@ -16,4 +18,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initDataTables();
   initProfileMenu();
   initMonitoringDokumen();
+  initDashboardCharts();
 });

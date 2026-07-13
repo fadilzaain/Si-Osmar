@@ -15,147 +15,154 @@
     <h1 class="dxg-title">{{ $sapaan }}</h1>
     <div class="dxg-sub">Ringkasan strategis lintas modul SDM — {{ now()->translatedFormat('d F Y') }}</div>
 
-    <div class="dxg-grid">
+    {{--
+        ================= HERO: Monitoring STR & SIP =================
+        TODO integrasi DB: ganti $str / $sip dari controller (bukan dummy di bawah).
+        Struktur array wajib sama: ['persen' => int, 'label_kritis' => string, 'detail_kritis' => string]
+    --}}
+    @php
+        $str = $str ?? ['persen' => 66, 'label_kritis' => 'Instalasi Gawat Darurat', 'detail_kritis' => '7 dari 12 pegawai belum lengkap'];
+        $sip = $sip ?? ['persen' => 72, 'label_kritis' => 'Instalasi Rawat Inap', 'detail_kritis' => '5 dari 18 pegawai belum lengkap'];
+        $totalBermasalah = $totalBermasalah ?? 14;
+    @endphp
+    <a href="{{ route('monitoring-str-sip.index') }}" class="dxg-hero">
+        <div class="dxg-hero-glow"></div>
+        <div class="dxg-hero-main">
+            <div class="dxg-hero-head">
+                <div class="dxg-card-icon dxg-card-icon-lg"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="dxg-hero-heading">
+                    <div class="dxg-hero-title">Monitoring STR & SIP</div>
+                    <div class="dxg-card-subtitle">Kelengkapan dokumen legal per ruangan</div>
+                </div>
+                <span class="dxg-badge dxg-badge-alert">{{ $totalBermasalah }} bermasalah</span>
+            </div>
 
-        {{-- Ekinerja --}}
-        <a href="{{ route('coming-soon', 'ekinerja') }}" class="dxg-card">
-            <div class="dxg-card-glow"></div>
-            <div class="dxg-card-top">
-                <div class="dxg-card-icon"><i class="fa-solid fa-chart-line"></i></div>
-                <span class="dxg-card-badge">{{ now()->year }}</span>
-            </div>
-            <div class="dxg-card-title">Ekinerja</div>
-            <div class="dxg-card-subtitle">Distribusi capaian kinerja pegawai</div>
-            <div class="dxg-chart-area">
-                @php
-                    $w = 220; $h = 90;
-                    $toPoints = function(array $vals) use ($w, $h) {
-                        $n = count($vals) - 1;
-                        return collect($vals)->map(fn($v, $i) => round($i * $w / $n) . ',' . round($h - ($v / 100 * $h)))->implode(' ');
-                    };
-                @endphp
-                <svg viewBox="0 0 {{ $w }} {{ $h }}" width="100%" height="100%">
-                    <polyline class="dxg-line" points="{{ $toPoints($ekinerja['series_baik']) }}" fill="none" stroke="var(--color-success)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <polyline class="dxg-line dxg-line-delay" points="{{ $toPoints($ekinerja['series_kurang']) }}" fill="none" stroke="#4C8DFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
-                </svg>
-            </div>
-            <div class="dxg-card-foot">
-                <div class="dxg-card-stat">{{ $ekinerja['persen_baik'] }}<span>% baik/sangat baik</span></div>
-                <span class="dxg-card-link">Lihat detail →</span>
-            </div>
-        </a>
+            <div class="dxg-hero-body">
+                <div class="dxg-hero-donuts">
+                    {{-- Donut STR --}}
+                    <div class="dxg-hero-donut-block">
+                        <div class="dxg-mini-chart" id="chart-str"
+                             data-chart-type="donut-single"
+                             data-chart='@json(["label" => "STR", "persen" => $str["persen"], "color" => "success"])'></div>
+                        <div class="dxg-mini-chart-label">STR</div>
+                    </div>
+                    {{-- Donut SIP --}}
+                    <div class="dxg-hero-donut-block">
+                        <div class="dxg-mini-chart" id="chart-sip"
+                             data-chart-type="donut-single"
+                             data-chart='@json(["label" => "SIP", "persen" => $sip["persen"], "color" => "primary"])'></div>
+                        <div class="dxg-mini-chart-label">SIP</div>
+                    </div>
+                </div>
 
-        {{-- Pelatihan --}}
-        <a href="{{ route('coming-soon', 'pelatihan') }}" class="dxg-card">
-            <div class="dxg-card-glow"></div>
-            <div class="dxg-card-top">
-                <div class="dxg-card-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-                <span class="dxg-card-badge">YTD</span>
-            </div>
-            <div class="dxg-card-title">Pelatihan</div>
-            <div class="dxg-card-subtitle">Jam pelatihan per pegawai</div>
-            @php
-                $circ = 213.6;
-                $seg1 = round($pelatihan['lebih_20jp'] / 100 * $circ, 1);
-                $seg2 = round($pelatihan['kurang_20jp'] / 100 * $circ, 1);
-                $rot2 = round($pelatihan['lebih_20jp'] / 100 * 360) - 90;
-            @endphp
-            <div class="dxg-chart-area dxg-chart-center">
-                <svg viewBox="0 0 90 90" width="90" height="90" class="dxg-donut">
-                    <circle cx="45" cy="45" r="34" fill="none" stroke="var(--color-border)" stroke-width="11"/>
-                    <circle cx="45" cy="45" r="34" fill="none" stroke="var(--color-success)" stroke-width="11" stroke-linecap="round" transform="rotate(-90 45 45)" stroke-dasharray="{{ $seg1 }} {{ $circ }}"/>
-                    <circle cx="45" cy="45" r="34" fill="none" stroke="var(--color-warning)" stroke-width="11" stroke-linecap="round" transform="rotate({{ $rot2 }} 45 45)" stroke-dasharray="{{ $seg2 }} {{ $circ }}"/>
-                    <text x="45" y="50" text-anchor="middle" class="dxg-donut-label">{{ $pelatihan['lebih_20jp'] }}%</text>
-                </svg>
-            </div>
-            <div class="dxg-legend">
-                <span><i style="background:var(--color-success)"></i>≥20 JP</span>
-                <span><i style="background:var(--color-warning)"></i>&lt;20 JP</span>
-                <span><i style="background:var(--color-text-muted)"></i>Belum</span>
-            </div>
-            <div class="dxg-card-foot">
-                <div></div>
-                <span class="dxg-card-link">Lihat detail →</span>
-            </div>
-        </a>
-
-        {{-- SDM --}}
-        <a href="{{ route('coming-soon', 'sdm-ringkasan') }}" class="dxg-card">
-            <div class="dxg-card-glow"></div>
-            <div class="dxg-card-top">
-                <div class="dxg-card-icon"><i class="fa-solid fa-users"></i></div>
-                <span class="dxg-card-badge">{{ number_format($sdm['medis'] + $sdm['non_medis']) }}</span>
-            </div>
-            <div class="dxg-card-title">SDM</div>
-            <div class="dxg-card-subtitle">Distribusi tenaga per kategori</div>
-            <div class="dxg-chart-area">
-                <svg viewBox="0 0 220 90" width="100%" height="100%">
-                    @foreach ($sdm['bars'] as $i => $val)
-                        <rect class="dxg-bar" x="{{ 10 + $i * 42 }}" y="{{ 90 - $val }}" width="26" height="{{ $val }}" rx="4" fill="var(--color-success)" opacity="{{ 1 - $i * 0.08 }}" style="animation-delay:{{ 0.85 + $i * 0.07 }}s"/>
-                    @endforeach
-                </svg>
-            </div>
-            <div class="dxg-card-foot">
-                <div class="dxg-card-stat">{{ $sdm['medis'] }}<span>medis / {{ $sdm['non_medis'] }} non-medis</span></div>
-                <span class="dxg-card-link">Lihat detail →</span>
-            </div>
-        </a>
-
-        {{-- Monitoring STR & SIP (wide) --}}
-        @php
-            $pctBermasalah = $totalPegawai ? round($totalBermasalah / $totalPegawai * 100) : 0;
-            $seg = round((100 - $pctBermasalah) / 100 * $circ, 1);
-        @endphp
-        <a href="{{ route('monitoring-str-sip.index') }}" class="dxg-card dxg-card-wide">
-            <div class="dxg-card-glow"></div>
-            <div class="dxg-card-top">
-                <div class="dxg-card-icon"><i class="fa-solid fa-file-shield"></i></div>
-                <span class="dxg-card-badge">{{ $totalBermasalah }} bermasalah</span>
-            </div>
-            <div class="dxg-card-title">Monitoring STR & SIP</div>
-            <div class="dxg-card-subtitle">Kelengkapan dokumen legal per ruangan</div>
-            <div class="dxg-str-body">
-                <svg viewBox="0 0 90 90" width="90" height="90" class="dxg-donut">
-                    <circle cx="45" cy="45" r="34" fill="none" stroke="var(--color-border)" stroke-width="11"/>
-                    <circle cx="45" cy="45" r="34" fill="none" stroke="var(--color-success)" stroke-width="11" stroke-linecap="round" transform="rotate(-90 45 45)" stroke-dasharray="{{ $seg }} {{ $circ }}"/>
-                    <text x="45" y="50" text-anchor="middle" class="dxg-donut-label">{{ 100 - $pctBermasalah }}%</text>
-                </svg>
-                <div class="dxg-str-info">
+                <div class="dxg-hero-info">
                     <div class="dxg-legend">
                         <span><i style="background:var(--color-success)"></i>Lengkap</span>
                         <span><i style="background:var(--color-danger)"></i>Kadaluarsa / belum ada</span>
                     </div>
-                    @if ($ruanganKritis)
-                        <div class="dxg-str-note">{{ $ruanganKritis['ruangan'] }} paling kritis — {{ $ruanganKritis['bermasalah'] }} dari {{ $ruanganKritis['total_pegawai'] }} pegawai belum lengkap.</div>
-                    @endif
+                    <div class="dxg-str-note">
+                        <strong>{{ $str['label_kritis'] }}</strong> paling kritis STR — {{ $str['detail_kritis'] }}.
+                    </div>
+                    <div class="dxg-str-note">
+                        <strong>{{ $sip['label_kritis'] }}</strong> paling kritis SIP — {{ $sip['detail_kritis'] }}.
+                    </div>
                 </div>
             </div>
-            <div class="dxg-card-foot">
-                <div></div>
-                <span class="dxg-card-link">Lihat detail →</span>
+        </div>
+        <span class="dxg-card-link dxg-hero-link">Lihat detail <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+    </a>
+
+    {{-- ================= SECONDARY: modul dengan kerangka chart ================= --}}
+    <div class="dxg-secondary-label">Modul lainnya</div>
+    <div class="dxg-grid">
+
+        {{--
+            Ekinerja — line chart
+            TODO integrasi DB: $ekinerjaChart dari controller.
+            categories = label sumbu-x, series = array of {name, data[]}
+        --}}
+        @php
+            $ekinerjaChart = $ekinerjaChart ?? [
+                'categories' => ['Sangat Baik','Baik','Cukup','Kurang','Perlu Perbaikan'],
+                'series' => [
+                    ['name' => 'Jumlah Pegawai', 'data' => [18, 22, 26, 24, 31]],
+                    ['name' => 'Target', 'data' => [12, 20, 24, 19, 24]],
+                ],
+            ];
+        @endphp
+        <a href="{{ route('coming-soon', 'ekinerja') }}" class="dxg-tile">
+            <div class="dxg-tile-top">
+                <div class="dxg-card-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <span class="dxg-badge dxg-badge-soon">Segera hadir</span>
             </div>
+            <div class="dxg-tile-title">Ekinerja</div>
+            <div class="dxg-card-subtitle">Distribusi capaian kinerja pegawai</div>
+            <div class="dxg-chart-box" id="chart-ekinerja" data-chart-type="line" data-chart='@json($ekinerjaChart)'></div>
+            <div class="dxg-tile-stat">{{ $ekinerja['persen_baik'] ?? 78 }}<span>% baik/sangat baik</span></div>
         </a>
 
-        {{-- Cuti --}}
-        <a href="{{ route('coming-soon', 'cuti') }}" class="dxg-card">
-            <div class="dxg-card-glow"></div>
-            <div class="dxg-card-top">
+        {{--
+            Pelatihan — donut chart
+            TODO integrasi DB: $pelatihanChart dari controller.
+        --}}
+        @php
+            $pelatihanChart = $pelatihanChart ?? [
+                'labels' => ['≥20 JP', '<20 JP', 'Belum Pelatihan'],
+                'series' => [62, 25, 13],
+            ];
+        @endphp
+        <a href="{{ route('coming-soon', 'pelatihan') }}" class="dxg-tile">
+            <div class="dxg-tile-top">
+                <div class="dxg-card-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                <span class="dxg-badge dxg-badge-soon">Segera hadir</span>
+            </div>
+            <div class="dxg-tile-title">Pelatihan</div>
+            <div class="dxg-card-subtitle">Jam pelatihan per pegawai</div>
+            <div class="dxg-chart-box" id="chart-pelatihan" data-chart-type="donut" data-chart='@json($pelatihanChart)'></div>
+            <div class="dxg-tile-stat">{{ $pelatihan['lebih_20jp'] ?? 62 }}<span>% sudah ≥20 JP</span></div>
+        </a>
+
+        {{--
+            SDM — bar chart
+            TODO integrasi DB: $sdmChart dari controller.
+        --}}
+        @php
+            $sdmChart = $sdmChart ?? [
+                'categories' => ['Dokter', 'Perawat', 'Bidan', 'Non-Medis', 'Penunjang'],
+                'series' => [['name' => 'Pegawai', 'data' => [86, 214, 97, 71, 63]]],
+            ];
+        @endphp
+        <a href="{{ route('coming-soon', 'sdm-ringkasan') }}" class="dxg-tile">
+            <div class="dxg-tile-top">
+                <div class="dxg-card-icon"><i class="fa-solid fa-users"></i></div>
+                <span class="dxg-badge dxg-badge-soon">Segera hadir</span>
+            </div>
+            <div class="dxg-tile-title">SDM</div>
+            <div class="dxg-card-subtitle">Distribusi tenaga per kategori</div>
+            <div class="dxg-chart-box" id="chart-sdm" data-chart-type="bar" data-chart='@json($sdmChart)'></div>
+            <div class="dxg-tile-stat">{{ $sdm['medis'] ?? 676 }}<span>medis / {{ $sdm['non_medis'] ?? 769 }} non-medis</span></div>
+        </a>
+
+        {{--
+            Cuti — bar chart per bulan
+            TODO integrasi DB: $cutiChart dari controller. highlight_index = bulan berjalan (0-11).
+        --}}
+        @php
+            $cutiChart = $cutiChart ?? [
+                'categories' => ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'],
+                'series' => [['name' => 'Pegawai Cuti', 'data' => [8,11,9,14,10,12,14,9,13,10,7,6]]],
+                'highlight_index' => now()->month - 1,
+            ];
+        @endphp
+        <a href="{{ route('coming-soon', 'cuti') }}" class="dxg-tile">
+            <div class="dxg-tile-top">
                 <div class="dxg-card-icon"><i class="fa-solid fa-umbrella-beach"></i></div>
-                <span class="dxg-card-badge">{{ now()->translatedFormat('M Y') }}</span>
+                <span class="dxg-badge dxg-badge-soon">Segera hadir</span>
             </div>
-            <div class="dxg-card-title">Cuti</div>
+            <div class="dxg-tile-title">Cuti</div>
             <div class="dxg-card-subtitle">Pegawai cuti per periode</div>
-            <div class="dxg-chart-area">
-                <svg viewBox="0 0 220 90" width="100%" height="100%">
-                    @foreach ($cuti['bars'] as $i => $val)
-                        <rect class="dxg-bar" x="{{ 4 + $i * 30 }}" y="{{ 90 - $val }}" width="20" height="{{ $val }}" rx="3" fill="{{ $val > 55 ? 'var(--color-warning)' : 'var(--color-success)' }}" opacity="{{ $val > 55 ? 1 : 0.7 }}" style="animation-delay:{{ 0.85 + $i * 0.05 }}s"/>
-                    @endforeach
-                </svg>
-            </div>
-            <div class="dxg-card-foot">
-                <div class="dxg-card-stat">{{ $cuti['total_bulan_ini'] }}<span>pegawai bulan ini</span></div>
-                <span class="dxg-card-link">Lihat detail →</span>
-            </div>
+            <div class="dxg-chart-box" id="chart-cuti" data-chart-type="bar" data-chart='@json($cutiChart)'></div>
+            <div class="dxg-tile-stat">{{ $cuti['total_bulan_ini'] ?? 14 }}<span>pegawai bulan ini</span></div>
         </a>
 
     </div>
