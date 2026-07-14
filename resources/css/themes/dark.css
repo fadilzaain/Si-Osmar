@@ -7,13 +7,15 @@
   --color-danger: #F87171;
   --color-info: #22D3EE;
   --color-mint: #34D399;
-  --color-mint-soft: #12261C;
+  --color-mint-soft: #182C20;
 
-  --color-surface: #0F1E16;
+  --color-surface: #14261B;
+  --color-surface-inset: rgba(255, 255, 255, 0.045);
   --color-background: #081410;
-  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border: rgba(255, 255, 255, 0.11);
+  --color-border-inset: rgba(255, 255, 255, 0.08);
   --color-text: #EAF2EC;
-  --color-text-muted: #8FA69A;
+  --color-text-muted: #93A99D;
 
   --topbar-bg: var(--color-surface);
   --topbar-text: var(--color-text);

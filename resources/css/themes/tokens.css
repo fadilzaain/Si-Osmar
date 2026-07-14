@@ -11,8 +11,10 @@
   --color-mint-soft: #F2FBF6;
 
   --color-surface: #FFFFFF;
+  --color-surface-inset: #F7FCF9;
   --color-background: #FFF8E7;
   --color-border: rgba(6, 95, 70, 0.14);
+  --color-border-inset: rgba(6, 95, 70, 0.10);
   --color-text: #0B2B20;
   --color-text-muted: #5C7268;
 

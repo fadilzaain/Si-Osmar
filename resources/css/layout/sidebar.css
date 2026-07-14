@@ -170,6 +170,11 @@
 .app-shell[data-sidebar="collapsed"] .sidebar-link {
   justify-content: center;
   padding-inline: var(--space-3);
+  overflow: visible;
+}
+
+.app-shell[data-sidebar="collapsed"] .sidebar-nav {
+  overflow-x: visible;
 }
 
 .app-shell[data-sidebar="collapsed"] .sidebar-link:hover::after {
