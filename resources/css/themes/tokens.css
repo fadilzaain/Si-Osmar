@@ -1,22 +1,22 @@
 :root {
-  /* Color — palet Emerald + Mint + Cream (mode light, default) */
-  --color-primary: #065F46;
-  --color-secondary: #059669;
-  --color-accent: #10B981;
-  --color-success: #059669;
-  --color-warning: #D97706;
-  --color-danger: #DC2626;
-  --color-info: #0891B2;
-  --color-mint: #A7F3D0;
-  --color-mint-soft: #F2FBF6;
+  /* Color — palet Paper White + Forest (mode light, default) */
+  --color-primary: #1F4D3A;
+  --color-secondary: #2F6B4F;
+  --color-accent: #C9A227;
+  --color-success: #2F6B4F;
+  --color-warning: #B8860B;
+  --color-danger: #C0392B;
+  --color-info: #3B7A99;
+  --color-mint: #C9A227;
+  --color-mint-soft: #F7F4E9;
 
   --color-surface: #FFFFFF;
-  --color-surface-inset: #F7FCF9;
-  --color-background: #FFF8E7;
-  --color-border: rgba(6, 95, 70, 0.14);
-  --color-border-inset: rgba(6, 95, 70, 0.10);
-  --color-text: #0B2B20;
-  --color-text-muted: #5C7268;
+  --color-surface-inset: #F7F6F2;
+  --color-background: #FCFCFB;
+  --color-border: rgba(31, 77, 58, 0.14);
+  --color-border-inset: rgba(31, 77, 58, 0.10);
+  --color-text: #232620;
+  --color-text-muted: #767D74;
 
   /* Component-level aliases (biar komponen gak perlu tau hex asli) */
   --topbar-bg: var(--color-surface);
@@ -25,35 +25,35 @@
   --card-bg: var(--color-surface);
   --card-border: var(--color-border);
 
-  /* Sidebar — mode light: chrome terang, senada cream/mint */
+  /* Sidebar — mode light: chrome terang, senada paper/forest */
   --sidebar-bg: #FFFFFF;
-  --sidebar-glass-bg: rgba(255, 253, 247, 0.85);
-  --sidebar-bg-hover: #EFFBF4;
-  --sidebar-text: #3F5A4C;
-  --sidebar-text-strong: #0B2B20;
-  --sidebar-text-muted: #7C9186;
+  --sidebar-glass-bg: rgba(255, 255, 255, 0.85);
+  --sidebar-bg-hover: #F5F3EC;
+  --sidebar-text: #4A5049;
+  --sidebar-text-strong: #232620;
+  --sidebar-text-muted: #8B8F86;
   --sidebar-active-bg: color-mix(in srgb, var(--color-primary) 12%, transparent);
-  --sidebar-active-text: #065F46;
-  --sidebar-border: rgba(6, 95, 70, 0.12);
-  --sidebar-tooltip-bg: #0B2B20;
-  --sidebar-tooltip-text: #FFF8E7;
+  --sidebar-active-text: #1F4D3A;
+  --sidebar-border: rgba(31, 77, 58, 0.12);
+  --sidebar-tooltip-bg: #232620;
+  --sidebar-tooltip-text: #FCFCFB;
 
   /* Navbar — mode light */
-  --navbar-glass-bg: rgba(255, 253, 247, 0.85);
-  --navbar-border: rgba(6, 95, 70, 0.10);
-  --navbar-icon-hover-bg: rgba(6, 95, 70, 0.08);
-  --navbar-icon-hover-text: #065F46;
-  --navbar-search-bg: rgba(6, 95, 70, 0.05);
-  --navbar-search-border: rgba(6, 95, 70, 0.12);
-  --navbar-search-text: #0B2B20;
-  --navbar-search-placeholder: rgba(11, 43, 32, 0.45);
-  --navbar-profile-hover-bg: rgba(6, 95, 70, 0.08);
+  --navbar-glass-bg: rgba(255, 255, 255, 0.85);
+  --navbar-border: rgba(31, 77, 58, 0.10);
+  --navbar-icon-hover-bg: rgba(31, 77, 58, 0.08);
+  --navbar-icon-hover-text: #1F4D3A;
+  --navbar-search-bg: rgba(31, 77, 58, 0.05);
+  --navbar-search-border: rgba(31, 77, 58, 0.12);
+  --navbar-search-text: #232620;
+  --navbar-search-placeholder: rgba(35, 38, 32, 0.45);
+  --navbar-profile-hover-bg: rgba(31, 77, 58, 0.08);
   --navbar-menu-bg: #FFFFFF;
-  --navbar-menu-border: rgba(6, 95, 70, 0.12);
-  --navbar-menu-text-strong: #0B2B20;
-  --navbar-menu-text-muted: #5C7268;
-  --navbar-menu-item-hover-bg: #F2FBF6;
-  --navbar-menu-divider: rgba(6, 95, 70, 0.10);
+  --navbar-menu-border: rgba(31, 77, 58, 0.12);
+  --navbar-menu-text-strong: #232620;
+  --navbar-menu-text-muted: #767D74;
+  --navbar-menu-item-hover-bg: #F7F4E9;
+  --navbar-menu-divider: rgba(31, 77, 58, 0.10);
 
   /* Typography */
   --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -89,9 +89,9 @@
   --radius-full: 9999px;
 
   /* Elevation / Shadow */
-  --shadow-sm: 0 1px 2px rgba(11, 43, 32, 0.06);
-  --shadow-md: 0 4px 12px rgba(11, 43, 32, 0.08);
-  --shadow-lg: 0 12px 32px rgba(11, 43, 32, 0.10);
+  --shadow-sm: 0 1px 2px rgba(35, 38, 32, 0.06);
+  --shadow-md: 0 4px 12px rgba(35, 38, 32, 0.08);
+  --shadow-lg: 0 12px 32px rgba(35, 38, 32, 0.10);
   --shadow-focus: 0 0 0 3px color-mix(in srgb, var(--color-accent) 25%, transparent);
 
   /* Animation */

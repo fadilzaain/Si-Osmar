@@ -1,21 +1,22 @@
 [data-theme="dark"] {
-  /* Color — palet Emerald + Mint, mode dark */
-  --color-secondary: #10B981;
-  --color-accent: #6EE7B7;
-  --color-success: #34D399;
+  /* Color — palet Charcoal + Lime + Soft Gray, mode dark */
+  --color-primary: #A3E635;
+  --color-secondary: #84CC16;
+  --color-accent: #BEF264;
+  --color-success: #A3E635;
   --color-warning: #F59E0B;
   --color-danger: #F87171;
-  --color-info: #22D3EE;
-  --color-mint: #34D399;
-  --color-mint-soft: #182C20;
+  --color-info: #38BDF8;
+  --color-mint: #A3E635;
+  --color-mint-soft: #262B1A;
 
-  --color-surface: #14261B;
+  --color-surface: #232427;
   --color-surface-inset: rgba(255, 255, 255, 0.045);
-  --color-background: #081410;
-  --color-border: rgba(255, 255, 255, 0.11);
-  --color-border-inset: rgba(255, 255, 255, 0.08);
-  --color-text: #EAF2EC;
-  --color-text-muted: #93A99D;
+  --color-background: #1B1C1E;
+  --color-border: rgba(255, 255, 255, 0.10);
+  --color-border-inset: rgba(255, 255, 255, 0.07);
+  --color-text: #F3F4F6;
+  --color-text-muted: #93969E;
 
   --topbar-bg: var(--color-surface);
   --topbar-text: var(--color-text);
@@ -23,37 +24,37 @@
   --card-bg: var(--color-surface);
   --card-border: var(--color-border);
 
-  /* Sidebar — mode dark: chrome gelap seperti sebelumnya */
-  --sidebar-bg: #0F1A14;
-  --sidebar-glass-bg: rgba(8, 20, 16, 0.85);
-  --sidebar-bg-hover: #17251D;
-  --sidebar-text: #A8B5AD;
-  --sidebar-text-strong: #FFFFFF;
-  --sidebar-text-muted: #6B7B71;
-  --sidebar-active-bg: color-mix(in srgb, var(--color-primary) 18%, transparent);
-  --sidebar-active-text: #FFFFFF;
-  --sidebar-border: #1C2A21;
-  --sidebar-tooltip-bg: rgba(15, 26, 20, 0.95);
-  --sidebar-tooltip-text: #FFFFFF;
+  /* Sidebar — mode dark: charcoal lebih gelap dari surface, aksen lime saat aktif */
+  --sidebar-bg: #18191B;
+  --sidebar-glass-bg: rgba(27, 28, 30, 0.85);
+  --sidebar-bg-hover: #232427;
+  --sidebar-text: #B4B7BD;
+  --sidebar-text-strong: #F3F4F6;
+  --sidebar-text-muted: #6B6E76;
+  --sidebar-active-bg: color-mix(in srgb, var(--color-primary) 16%, transparent);
+  --sidebar-active-text: #A3E635;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-tooltip-bg: rgba(35, 36, 39, 0.97);
+  --sidebar-tooltip-text: #F3F4F6;
 
   /* Navbar — mode dark */
-  --navbar-glass-bg: rgba(8, 20, 16, 0.85);
+  --navbar-glass-bg: rgba(27, 28, 30, 0.85);
   --navbar-border: rgba(255, 255, 255, 0.06);
   --navbar-icon-hover-bg: rgba(255, 255, 255, 0.06);
-  --navbar-icon-hover-text: #FFFFFF;
+  --navbar-icon-hover-text: #F3F4F6;
   --navbar-search-bg: rgba(255, 255, 255, 0.05);
   --navbar-search-border: rgba(255, 255, 255, 0.08);
-  --navbar-search-text: #EAF2EC;
-  --navbar-search-placeholder: rgba(234, 242, 236, 0.55);
+  --navbar-search-text: #F3F4F6;
+  --navbar-search-placeholder: rgba(243, 244, 246, 0.5);
   --navbar-profile-hover-bg: rgba(255, 255, 255, 0.06);
-  --navbar-menu-bg: rgba(10, 22, 17, 0.98);
+  --navbar-menu-bg: rgba(30, 31, 34, 0.98);
   --navbar-menu-border: rgba(255, 255, 255, 0.08);
-  --navbar-menu-text-strong: #EAF2EC;
-  --navbar-menu-text-muted: #8FA69A;
+  --navbar-menu-text-strong: #F3F4F6;
+  --navbar-menu-text-muted: #93969E;
   --navbar-menu-item-hover-bg: rgba(255, 255, 255, 0.06);
   --navbar-menu-divider: rgba(255, 255, 255, 0.07);
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
 }

@@ -86,28 +86,26 @@
             </div>
         </x-dashboard.tile>
 
-        {{-- ================= 3. SDM — card lebar, isinya recent activity rotasi (live) ================= --}}
-        {{-- TODO integrasi DB: $sdmRotasi ambil N terbaru dari tabel mutasi/rotasi, order by created_at desc --}}
-        @php
-            $sdmRotasi = $sdmRotasi ?? [
-                ['nama' => 'Ns. Ratna Dewi', 'dari' => 'IGD', 'ke' => 'ICU', 'waktu' => '2 jam lalu'],
-                ['nama' => 'dr. Bagas Prasetyo', 'dari' => 'Poli Umum', 'ke' => 'Rawat Inap', 'waktu' => '5 jam lalu'],
-                ['nama' => 'Yulia Anggraini', 'dari' => 'Farmasi', 'ke' => 'IGD', 'waktu' => 'Kemarin'],
-                ['nama' => 'Fajar Nugroho', 'dari' => 'Rawat Inap', 'ke' => 'Poli Anak', 'waktu' => 'Kemarin'],
-            ];
-            $sdmTotal = $sdmTotal ?? 1445;
-        @endphp
+        {{-- ================= 3. SDM — card lebar, isinya recent activity rotasi (live dari tabel mutasis) ================= --}}
         <x-dashboard.tile
             title="SDM"
             subtitle="Bezetting & rotasi pegawai antar unit"
             icon="fa-solid fa-users"
-            href="{{ route('coming-soon', 'sdm-ringkasan') }}"
+            href="{{ route('sdm-bezetting.index') }}"
             badge-text="{{ number_format($sdmTotal) }} orang"
             badge-tone="neutral"
             :wide="true"
             :live="true"
         >
-            <x-dashboard.activity-list :items="$sdmRotasi" />
+            @if (empty($sdmRotasi))
+                <x-empty-state
+                    icon="fa-solid fa-right-left"
+                    title="Belum ada aktivitas rotasi"
+                    description="Aktivitas rotasi/mutasi pegawai akan muncul di sini."
+                />
+            @else
+                <x-dashboard.activity-list :items="$sdmRotasi" />
+            @endif
         </x-dashboard.tile>
 
         {{-- ================= 4. Cuti ================= --}}

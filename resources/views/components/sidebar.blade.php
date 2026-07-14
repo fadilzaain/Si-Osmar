@@ -50,6 +50,10 @@
 
         <div class="sidebar-nav-group">
             <div class="sidebar-nav-label">Distribusi & Beban Kerja</div>
+            <a href="{{ route('sdm-bezetting.index') }}" class="sidebar-link {{ request()->routeIs('sdm-bezetting.*') ? 'active' : '' }}" data-label="Bezetting SDM">
+                <i class="fa-solid fa-people-roof"></i>
+                <span>Bezetting SDM</span>
+            </a>
             <a href="{{ route('coming-soon', 'distribusi-sdm') }}" class="sidebar-link {{ request()->routeIs('coming-soon') && request()->route('module') === 'distribusi-sdm' ? 'active' : '' }}" data-label="Distribusi SDM">
                 <i class="fa-solid fa-map-location-dot"></i>
                 <span>Distribusi SDM</span>

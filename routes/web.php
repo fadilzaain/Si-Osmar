@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MonitoringDokumenController;
+use App\Http\Controllers\SdmBezettingController;
 use App\Http\Controllers\ComingSoonController;
 
 
@@ -45,6 +46,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/monitoring-str-sip/detail/{ruangan}', [MonitoringDokumenController::class, 'detail'])
         ->name('monitoring-str-sip.detail');
+
+    //bezetting sdm — bezetting per unit + aktivitas rotasi pegawai
+    Route::get('/sdm-bezetting', [SdmBezettingController::class, 'index'])
+        ->name('sdm-bezetting.index');
 
     //detail per card
     Route::get('/segera-hadir/{module}', [ComingSoonController::class, 'show'])->name('coming-soon');

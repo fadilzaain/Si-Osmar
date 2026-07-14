@@ -7,6 +7,7 @@ import { initDataTables } from './modules/datatable';
 import { initProfileMenu } from './modules/profile-menu.js';
 import { initMonitoringDokumen } from './modules/monitoring-dokumen';
 import { initDashboardCharts } from './modules/dashboard-charts';
+import { initAccordion } from './modules/accordion';
 
 
 window.bootstrap = bootstrap;
@@ -19,4 +20,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initProfileMenu();
   initMonitoringDokumen();
   initDashboardCharts();
+  initAccordion();
 });

@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    // API eksternal SIKAWAN RSUD Jombang — sumber data Bezetting SDM.
+    'sikawan' => [
+        'base_url' => env('SIKAWAN_BASE_URL', 'https://new-sikawan.rsudjombang.id'),
+        'bezetting_endpoint' => env('SIKAWAN_BEZETTING_ENDPOINT', '/api-monitoring-sdm'),
+        'timeout' => env('SIKAWAN_TIMEOUT', 10),
+        'cache_ttl' => env('SIKAWAN_CACHE_TTL', 900), 
+    ],
+
 ];
