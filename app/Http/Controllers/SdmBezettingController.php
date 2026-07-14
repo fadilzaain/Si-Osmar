@@ -27,6 +27,13 @@ class SdmBezettingController extends Controller
             'ringkasan' => $ringkasan,
             'totalUnit' => count($ringkasan),
             'totalUnitKurang' => $totalUnitKurang,
+
+            // Buat bagian ringkasan eksekutif di atas halaman.
+            'eksekutif' => $this->bezettingService->getRingkasanEksekutif(),
+            'kesimpulan' => $this->bezettingService->getKesimpulan(),
+            'topUnitKritis' => $this->bezettingService->getTopUnitKritis(6),
+            'topJabatanKritis' => $this->bezettingService->getKekuranganPerJabatan(6),
+            'peluangRedistribusiGlobal' => $this->bezettingService->getPeluangRedistribusi(8),
         ]);
     }
 }

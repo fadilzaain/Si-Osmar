@@ -3,21 +3,83 @@
 .bzs-title { font-size: var(--font-size-h3); font-weight: var(--font-weight-bold); margin: var(--space-1) 0 var(--space-2); color: var(--color-text); }
 .bzs-sub { color: var(--color-text-muted); font-size: var(--font-size-body); margin-bottom: var(--space-5); }
 
-/* ===== Summary bar ===== */
-.bzs-summary-bar { display: flex; gap: var(--space-4); margin-bottom: var(--space-5); }
-.bzs-summary-item {
-  flex: 1;
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-4) var(--space-5);
+/* ===== Ringkasan eksekutif — KPI grid ===== */
+.bzs-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); margin-bottom: var(--space-4); }
+
+/* ===== Kesimpulan naratif — signature element halaman ini ===== */
+.bzs-insight {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  gap: var(--space-4);
+  align-items: flex-start;
+  background: var(--color-mint-soft);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  margin-bottom: var(--space-5);
 }
-.bzs-summary-value { font-size: var(--font-size-h3); font-weight: var(--font-weight-bold); color: var(--color-text); }
-.bzs-summary-item--danger .bzs-summary-value { color: var(--color-danger); }
-.bzs-summary-label { font-size: var(--font-size-caption); color: var(--color-text-muted); }
+.bzs-insight-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-accent) 18%, transparent);
+  color: var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.bzs-insight-label { font-size: var(--font-size-caption); font-weight: var(--font-weight-semibold); text-transform: uppercase; letter-spacing: .04em; color: var(--color-text-muted); margin-bottom: 4px; }
+.bzs-insight-text { color: var(--color-text); font-size: var(--font-size-body); line-height: 1.6; margin: 0; }
+
+/* ===== Ranking unit / jabatan paling kritis ===== */
+.bzs-rank-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-bottom: var(--space-4); }
+.bzs-rank-card { padding: 0; }
+.bzs-rank-body { padding: var(--space-4) var(--space-5) var(--space-5); display: flex; flex-direction: column; gap: var(--space-3); }
+
+.bzs-rank-row {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+.bzs-rank-row--static { cursor: default; }
+
+.bzs-rank-info { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-2); margin-bottom: 6px; }
+.bzs-rank-name { font-size: var(--font-size-body); font-weight: var(--font-weight-medium); color: var(--color-text); }
+.bzs-rank-value { font-size: var(--font-size-caption); color: var(--color-text-muted); white-space: nowrap; }
+
+.bzs-rank-bar-track { height: 6px; border-radius: var(--radius-full); background: var(--color-surface-inset); overflow: hidden; }
+.bzs-rank-bar-fill { height: 100%; border-radius: var(--radius-full); transition: width var(--transition-slow); }
+.bzs-rank-bar-fill.tone-danger { background: var(--color-danger); }
+.bzs-rank-bar-fill.tone-warning { background: var(--color-warning); }
+
+.bzs-rank-row:hover .bzs-rank-name { color: var(--color-primary); }
+
+.bzs-rank-empty { font-size: var(--font-size-caption); color: var(--color-text-muted); font-style: italic; padding: var(--space-2) 0; }
+
+.bzs-redis-global { margin-bottom: var(--space-6); }
+.bzs-redis-global .bzs-rank-body { gap: var(--space-2); }
+
+/* ===== Divider ke section drill-down (de-emphasized on purpose) ===== */
+.bzs-detail-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-8) 0 var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.bzs-detail-divider::before,
+.bzs-detail-divider::after { content: ''; flex: 1; height: 1px; background: var(--color-border); }
 
 /* ===== Legend ===== */
 .bzs-legend { display: flex; flex-wrap: wrap; gap: var(--space-4); margin-bottom: var(--space-4); }
@@ -219,8 +281,14 @@
 
 .bzs-redis-text strong { color: var(--color-text); font-weight: var(--font-weight-semibold); }
 
+@media (max-width: 1024px) {
+  .bzs-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .bzs-rank-grid { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 767px) {
   .bzs-toolbar { flex-direction: column; align-items: stretch; }
   .bzs-search { max-width: none; }
   .bzs-bulk-actions { margin-left: 0; }
+  .bzs-kpi-grid { grid-template-columns: 1fr; }
 }

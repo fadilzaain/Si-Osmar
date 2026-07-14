@@ -184,6 +184,115 @@ class BezettingApiService
     }
 
     /**
+     * Angka ringkasan level rumah sakit (lintas semua unit) — ini yang dipakai
+     * buat KPI card paling atas di halaman Bezetting SDM. Direktur cukup baca
+     * 4 angka ini buat nangkep situasi keseluruhan, tanpa perlu buka satu-satu
+     * accordion unit.
+     */
+    public function getRingkasanEksekutif(): array
+    {
+        $ringkasan = $this->getRingkasanPerUnit();
+        $peluang = $this->getPeluangRedistribusi();
+
+        $summaries = array_column($ringkasan, 'summary');
+        $totalPegawai = array_sum(array_column($summaries, 'total_pegawai'));
+        $totalKebutuhan = array_sum(array_column($summaries, 'total_kebutuhan'));
+        $totalKekurangan = array_sum(array_column($summaries, 'total_kekurangan'));
+        $totalUnitKurang = collect($summaries)->where('status', self::STATUS_KURANG)->count();
+        $totalBisaRedistribusi = array_sum(array_column($peluang, 'potensi_pindah'));
+        $sisaButuhRekrutmen = max(0, $totalKekurangan - $totalBisaRedistribusi);
+
+        return [
+            'total_unit' => count($ringkasan),
+            'total_unit_kurang' => $totalUnitKurang,
+            'total_pegawai' => $totalPegawai,
+            'total_kebutuhan' => $totalKebutuhan,
+            'total_kekurangan' => $totalKekurangan,
+            'persen_terpenuhi' => $totalKebutuhan > 0 ? min(100, round($totalPegawai / $totalKebutuhan * 100)) : 100,
+            'total_bisa_redistribusi' => $totalBisaRedistribusi,
+            'persen_bisa_redistribusi' => $totalKekurangan > 0 ? round($totalBisaRedistribusi / $totalKekurangan * 100) : 0,
+            'sisa_butuh_rekrutmen' => $sisaButuhRekrutmen,
+        ];
+    }
+
+    /**
+     * Unit-unit paling kritis (kekurangan terbanyak), buat ranked list di
+     * bagian atas halaman. getRingkasanPerUnit() udah di-sort desc by
+     * total_kekurangan, jadi di sini tinggal filter status KURANG + potong.
+     */
+    public function getTopUnitKritis(int $limit = 6): array
+    {
+        return collect($this->getRingkasanPerUnit())
+            ->where('summary.status', self::STATUS_KURANG)
+            ->take($limit)
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Total kekurangan dikelompokkan per jabatan, dijumlah lintas semua unit.
+     * Ini yang jawab pertanyaan "jabatan apa yang paling butuh direkrut buat
+     * seluruh rumah sakit", bukan cuma per unit.
+     */
+    public function getKekuranganPerJabatan(?int $limit = 6): array
+    {
+        $ringkasan = $this->getRingkasanPerUnit();
+        $agregat = [];
+
+        foreach ($ringkasan as $unit) {
+            foreach ($unit['rows'] as $row) {
+                $kekurangan = max(0, $row['kekurangan'] ?? 0);
+
+                if ($kekurangan <= 0) {
+                    continue;
+                }
+
+                $key = $row['jabatan'];
+                $agregat[$key]['jabatan'] ??= $row['jabatan'];
+                $agregat[$key]['total_kekurangan'] = ($agregat[$key]['total_kekurangan'] ?? 0) + $kekurangan;
+                $agregat[$key]['jumlah_unit_terdampak'] = ($agregat[$key]['jumlah_unit_terdampak'] ?? 0) + 1;
+            }
+        }
+
+        $hasil = array_values($agregat);
+        usort($hasil, fn ($a, $b) => $b['total_kekurangan'] <=> $a['total_kekurangan']);
+
+        return $limit ? array_slice($hasil, 0, $limit) : $hasil;
+    }
+
+    /**
+     * Kesimpulan dalam satu paragraf naratif — dihasilkan otomatis dari angka
+     * yang sama kayak KPI card di atasnya, bukan input manual. Ini yang
+     * langsung dibaca direktur buat ambil keputusan: rekrut atau geser dulu.
+     */
+    public function getKesimpulan(): string
+    {
+        $r = $this->getRingkasanEksekutif();
+
+        if ($r['total_kekurangan'] <= 0) {
+            return 'Seluruh unit sudah terpenuhi kebutuhan SDM-nya saat ini. Tidak ada tindakan mendesak yang diperlukan.';
+        }
+
+        $topJabatan = $this->getKekuranganPerJabatan(1)[0] ?? null;
+
+        $teks = "Dari {$r['total_unit']} unit yang dipantau, {$r['total_unit_kurang']} unit kekurangan tenaga dengan total {$r['total_kekurangan']} orang.";
+
+        if ($r['total_bisa_redistribusi'] > 0) {
+            $teks .= " Sekitar {$r['total_bisa_redistribusi']} orang ({$r['persen_bisa_redistribusi']}%) berpotensi ditutup lewat pemindahan pegawai antar unit tanpa rekrutmen baru.";
+        }
+
+        if ($r['sisa_butuh_rekrutmen'] > 0) {
+            $teks .= " Sisanya, sekitar {$r['sisa_butuh_rekrutmen']} orang, kemungkinan perlu direkrut baru";
+            if ($topJabatan) {
+                $teks .= ", terutama untuk posisi {$topJabatan['jabatan']} yang paling kritis (kurang {$topJabatan['total_kekurangan']} orang di {$topJabatan['jumlah_unit_terdampak']} unit)";
+            }
+            $teks .= '.';
+        }
+
+        return $teks;
+    }
+
+    /**
      * Hitung ringkasan angka + status keseluruhan dari kumpulan baris jabatan
      * dalam satu unit.
      */

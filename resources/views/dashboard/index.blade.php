@@ -86,25 +86,41 @@
             </div>
         </x-dashboard.tile>
 
-        {{-- ================= 3. SDM — card lebar, isinya recent activity rotasi (live dari tabel mutasis) ================= --}}
+        {{-- ================= 3. SDM — card lebar, isinya peluang redistribusi pegawai lintas unit ================= --}}
         <x-dashboard.tile
             title="SDM"
-            subtitle="Bezetting & rotasi pegawai antar unit"
+            subtitle="Peluang redistribusi pegawai antar unit"
             icon="fa-solid fa-users"
             href="{{ route('sdm-bezetting.index') }}"
-            badge-text="{{ number_format($sdmTotal) }} orang"
+            badge-text="{{ $sdmTotalPeluang }} peluang"
             badge-tone="neutral"
             :wide="true"
             :live="true"
         >
-            @if (empty($sdmRotasi))
+            @if (empty($sdmRedistribusi))
                 <x-empty-state
                     icon="fa-solid fa-right-left"
-                    title="Belum ada aktivitas rotasi"
-                    description="Aktivitas rotasi/mutasi pegawai akan muncul di sini."
+                    title="Belum ada peluang redistribusi"
+                    description="Peluang pemindahan pegawai antar unit akan muncul di sini kalau ada jabatan yang kurang di satu unit tapi lebih di unit lain."
                 />
             @else
-                <x-dashboard.activity-list :items="$sdmRotasi" />
+                <div class="bzs-redis-list">
+                    @foreach ($sdmRedistribusi as $p)
+                        @php
+                            $unitKurang = $p['unit_kurang'][0] ?? null;
+                            $unitLebih = $p['unit_lebih'][0] ?? null;
+                        @endphp
+                        <div class="bzs-redis-row">
+                            <i class="fa-solid fa-right-left bzs-redis-icon tone-info" aria-hidden="true"></i>
+                            <div class="bzs-redis-text">
+                                <strong>{{ $p['jabatan'] }}</strong> — bisa pindah {{ $p['potensi_pindah'] }} orang
+                                @if ($unitLebih && $unitKurang)
+                                    dari <strong>{{ $unitLebih['unit'] }}</strong> ke <strong>{{ $unitKurang['unit'] }}</strong>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             @endif
         </x-dashboard.tile>
 

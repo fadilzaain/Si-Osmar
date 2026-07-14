@@ -64,4 +64,17 @@ export function initSdmBezetting() {
             });
         });
     });
+
+    // Klik salah satu baris di "Unit paling kritis" -> lompat & buka
+    // card detail unit itu di bagian drill-down bawah.
+    page.querySelectorAll('[data-scroll-to]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const target = document.getElementById('unit-' + btn.dataset.scrollTo);
+            if (!target) return;
+
+            target.hidden = false;
+            target.classList.add('open');
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+    });
 }
