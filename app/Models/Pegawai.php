@@ -4,6 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+ /**
+ * @deprecated Sejak Juli 2026 — SI-OSMAR full-API (semua data operasional
+ * ditarik langsung dari SIKAWAN, gak ada penyimpanan lokal). Model ini
+ * nyisa dari rencana awal sebelum keputusan itu difinalkan, tabelnya
+ * kosong permanen. Dipertahankan (bukan dihapus) buat jaga-jaga kalau
+ * rencana berubah lagi. JANGAN dipanggil dari controller/service baru —
+ * pakai BezettingApiService buat data pegawai/unit yang sekarang real.
+ */
 class Pegawai extends Model
 {
     protected $fillable = [

@@ -5,24 +5,23 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Services\DashboardService;
 use App\Services\MonitoringDokumenService;
-use App\Services\MutasiService;
-use App\Models\Pegawai;
+use App\Services\BezettingApiService;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
     protected $dashboardService;
     protected $monitoringDokumenService;
-    protected $mutasiService;
+    protected $bezettingApiService;
 
     public function __construct(
         DashboardService $dashboardService,
         MonitoringDokumenService $monitoringDokumenService,
-        MutasiService $mutasiService,
+        BezettingApiService $bezettingApiService,
     ) {
         $this->dashboardService = $dashboardService;
         $this->monitoringDokumenService = $monitoringDokumenService;
-        $this->mutasiService = $mutasiService;
+        $this->bezettingApiService = $bezettingApiService;
     }
 
     public function index(Request $request)
@@ -33,8 +32,8 @@ class DashboardController extends Controller
         $sdm = $this->dashboardService->getSdmSummaryChart();
         $cuti = $this->dashboardService->getCutiSummary();
 
-        $sdmRotasi = $this->mutasiService->getRecentGlobal(4);
-        $sdmTotal = Pegawai::count();
+        $sdmRedistribusi = $this->bezettingApiService->getPeluangRedistribusi(4);
+        $sdmTotalPeluang = count($this->bezettingApiService->getPeluangRedistribusi());
 
         $totalPegawai = array_sum(array_column($ringkasan, 'total_pegawai'));
         $totalBermasalah = array_sum(array_column($ringkasan, 'bermasalah'));
@@ -42,7 +41,7 @@ class DashboardController extends Controller
 
         return view('dashboard.index', compact(
             'ringkasan', 'ekinerja', 'pelatihan', 'sdm', 'cuti',
-            'sdmRotasi', 'sdmTotal',
+            'sdmRedistribusi', 'sdmTotalPeluang',
             'totalPegawai', 'totalBermasalah', 'ruanganKritis'
         ));
     }

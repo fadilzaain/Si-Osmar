@@ -3,25 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Services\BezettingApiService;
-use App\Services\MutasiService;
 
 class SdmBezettingController extends Controller
 {
     public function __construct(
         protected BezettingApiService $bezettingService,
-        protected MutasiService $mutasiService,
     ) {}
 
     public function index()
     {
         $ringkasan = $this->bezettingService->getRingkasanPerUnit();
 
-        // Aktivitas rotasi per unit ditempel langsung ke tiap item ringkasan
-        // di sini (bukan lazy-load terpisah) — jumlah unit & barisnya kecil,
-        // jadi render sekaligus lebih smooth ketimbang round-trip AJAX
-        // tiap kali card dibuka.
         foreach ($ringkasan as &$unit) {
-            $unit['rotasi'] = $this->mutasiService->getRecentByUnit($unit['unit']);
+            $unit['redistribusi'] = $this->bezettingService->getPeluangRedistribusiUntukUnit($unit['unit']);
         }
         unset($unit);
 

@@ -6,6 +6,13 @@ use App\Models\Mutasi;
 use App\Models\Pegawai;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @deprecated Sejak Juli 2026 — lihat catatan di App\Models\Pegawai dan
+ * App\Models\Mutasi. Service ini gak lagi dipanggil dari DashboardController
+ * maupun SdmBezettingController (per Juli 2026). Method create() secara
+ * teknis masih valid kalau dipanggil manual, tapi gak ada UI/form yang
+ * mengarah ke sini lagi.
+ */
 class MutasiService
 {
     public function getAll($filters = [])

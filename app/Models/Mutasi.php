@@ -3,7 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+/**
+ * @deprecated Sejak Juli 2026 — sama seperti Pegawai, nyisa dari rencana
+ * penyimpanan mutasi lokal yang gak jadi dipakai. Fitur rotasi sekarang
+ * digantikan analisis "peluang redistribusi" dari BezettingApiService
+ * (lihat getPeluangRedistribusi() dan getPeluangRedistribusiUntukUnit()).
+ */
 class Mutasi extends Model
 {
     protected $fillable = [

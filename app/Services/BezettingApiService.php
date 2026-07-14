@@ -62,6 +62,128 @@ class BezettingApiService
     }
 
     /**
+     * Peluang redistribusi pegawai antar unit — jabatan yang sama KURANG
+     * di satu unit tapi LEBIH di unit lain, jadi kandidat buat dipindah.
+     * Ini analisis on-the-fly dari data bezetting yang sudah di-fetch
+     * (getRingkasanPerUnit), bukan data baru dari API — jadi gak nambah
+     * beban request ke SIKAWAN.
+     *
+     * @param int|null $limit Batasi jumlah hasil (dipakai buat card ringkas
+     *                        di dashboard). Null = kembalikan semua.
+     */
+    public function getPeluangRedistribusi(?int $limit = null): array
+    {
+        $ringkasan = $this->getRingkasanPerUnit();
+
+        // Kumpulkan semua baris jabatan lintas unit, dikelompokkan per nama jabatan.
+        $perJabatan = [];
+
+        foreach ($ringkasan as $unit) {
+            foreach ($unit['rows'] as $row) {
+                $key = $row['jabatan'];
+
+                $perJabatan[$key]['jabatan'] = $row['jabatan'];
+                $perJabatan[$key]['kualifikasi'] = $row['kualifikasi'] ?? null;
+                $perJabatan[$key]['unit_kurang'] ??= [];
+                $perJabatan[$key]['unit_lebih'] ??= [];
+
+                $kekurangan = $row['kekurangan'] ?? ($row['kebutuhan'] - $row['jumlah']);
+
+                if ($kekurangan > 0) {
+                    $perJabatan[$key]['unit_kurang'][] = [
+                        'unit' => $unit['unit'],
+                        'jumlah' => $kekurangan,
+                    ];
+                } elseif ($kekurangan < 0) {
+                    $perJabatan[$key]['unit_lebih'][] = [
+                        'unit' => $unit['unit'],
+                        'jumlah' => abs($kekurangan),
+                    ];
+                }
+            }
+        }
+
+        $peluang = [];
+
+        foreach ($perJabatan as $data) {
+            // Cuma relevan kalau jabatan yang sama KURANG di satu unit DAN
+            // LEBIH di unit lain — itu baru kandidat redistribusi beneran.
+            if (empty($data['unit_kurang']) || empty($data['unit_lebih'])) {
+                continue;
+            }
+
+            $totalKurang = array_sum(array_column($data['unit_kurang'], 'jumlah'));
+            $totalLebih = array_sum(array_column($data['unit_lebih'], 'jumlah'));
+
+            // Unit paling kritis (jumlah kurang/lebih terbesar) ditaruh duluan.
+            usort($data['unit_kurang'], fn ($a, $b) => $b['jumlah'] <=> $a['jumlah']);
+            usort($data['unit_lebih'], fn ($a, $b) => $b['jumlah'] <=> $a['jumlah']);
+
+            $peluang[] = [
+                'jabatan' => $data['jabatan'],
+                'kualifikasi' => $data['kualifikasi'],
+                'unit_kurang' => $data['unit_kurang'],
+                'unit_lebih' => $data['unit_lebih'],
+                'total_kurang' => $totalKurang,
+                'total_lebih' => $totalLebih,
+                'potensi_pindah' => min($totalKurang, $totalLebih),
+            ];
+        }
+
+        // Peluang dengan potensi pemindahan terbesar (paling actionable) di atas.
+        usort($peluang, fn ($a, $b) => $b['potensi_pindah'] <=> $a['potensi_pindah']);
+
+        return $limit ? array_slice($peluang, 0, $limit) : $peluang;
+    }
+
+    /**
+     * Versi getPeluangRedistribusi() yang di-scope ke satu unit — dipakai
+     * di halaman detail Bezetting SDM (pengganti section "Aktivitas rotasi"
+     * yang dulu baca dari MutasiService/tabel lokal yang sekarang kosong).
+     *
+     * Untuk tiap jabatan yang menyentuh unit ini (baik sebagai unit yang
+     * kurang maupun yang lebih), balikin baris dengan arah + unit pasangan
+     * paling relevan buat ditawarkan sebagai sumber/tujuan pemindahan.
+     */
+    public function getPeluangRedistribusiUntukUnit(string $unit): array
+    {
+        $semuaPeluang = $this->getPeluangRedistribusi();
+
+        $hasil = [];
+
+        foreach ($semuaPeluang as $p) {
+            $kurangDiSini = collect($p['unit_kurang'])->firstWhere('unit', $unit);
+            $lebihDiSini = collect($p['unit_lebih'])->firstWhere('unit', $unit);
+
+            if ($kurangDiSini) {
+                $sumberLain = collect($p['unit_lebih'])->sortByDesc('jumlah')->first();
+
+                $hasil[] = [
+                    'jabatan' => $p['jabatan'],
+                    'arah' => 'butuh',
+                    'jumlah' => $kurangDiSini['jumlah'],
+                    'unit_pasangan' => $sumberLain['unit'] ?? null,
+                    'jumlah_pasangan' => $sumberLain['jumlah'] ?? null,
+                ];
+            }
+
+            if ($lebihDiSini) {
+                $tujuanLain = collect($p['unit_kurang'])->sortByDesc('jumlah')->first();
+
+                $hasil[] = [
+                    'jabatan' => $p['jabatan'],
+                    'arah' => 'surplus',
+                    'jumlah' => $lebihDiSini['jumlah'],
+                    'unit_pasangan' => $tujuanLain['unit'] ?? null,
+                    'jumlah_pasangan' => $tujuanLain['jumlah'] ?? null,
+                ];
+            }
+        }
+
+        return $hasil;
+    }
+
+    /**
      * Hitung ringkasan angka + status keseluruhan dari kumpulan baris jabatan
      * dalam satu unit.
      */

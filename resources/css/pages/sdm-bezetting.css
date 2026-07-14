@@ -20,8 +20,100 @@
 .bzs-summary-label { font-size: var(--font-size-caption); color: var(--color-text-muted); }
 
 /* ===== Legend ===== */
-.bzs-legend { display: flex; flex-wrap: wrap; gap: var(--space-4); margin-bottom: var(--space-5); }
+.bzs-legend { display: flex; flex-wrap: wrap; gap: var(--space-4); margin-bottom: var(--space-4); }
 .bzs-legend-item { display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-caption); color: var(--color-text-muted); }
+
+/* ===== Toolbar: search + filter + bulk actions ===== */
+.bzs-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.bzs-search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--color-surface-inset);
+  border: 1px solid var(--color-border-inset);
+  border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-4);
+  min-width: 220px;
+  flex: 1;
+  max-width: 320px;
+  color: var(--color-text-muted);
+}
+.bzs-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: var(--font-size-body);
+  color: var(--color-text);
+  width: 100%;
+}
+.bzs-search input::placeholder { color: var(--color-text-muted); }
+
+.bzs-filter-pills { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+.bzs-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease, color .2s ease, transform .15s ease;
+}
+.bzs-pill:hover { border-color: var(--color-primary); color: var(--color-text); transform: translateY(-1px); }
+.bzs-pill span {
+  background: var(--color-surface-inset);
+  border-radius: var(--radius-full);
+  padding: 1px 7px;
+  font-size: 10.5px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.bzs-pill.active { color: #fff; border-color: transparent; }
+.bzs-pill.active span { background: rgba(255,255,255,0.25); color: #fff; }
+.bzs-pill.active:not(.bzs-pill--danger):not(.bzs-pill--success):not(.bzs-pill--info) { background: var(--color-primary); }
+.bzs-pill--danger.active { background: var(--color-danger); }
+.bzs-pill--success.active { background: var(--color-success); }
+.bzs-pill--info.active { background: var(--color-info); }
+
+.bzs-bulk-actions { display: flex; gap: var(--space-2); margin-left: auto; }
+.bzs-bulk-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-caption);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+}
+.bzs-bulk-btn:hover { background: var(--color-surface-inset); color: var(--color-text); }
+
+.bzs-empty-filter {
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-body);
+  background: var(--color-surface-inset);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-4);
+}
 
 /* ===== Unit accordion ===== */
 .bzs-unit-list { display: flex; flex-direction: column; gap: var(--space-3); }
@@ -104,4 +196,31 @@
   color: var(--color-text-muted);
   padding: var(--space-3) 0;
   font-style: italic;
+}
+
+/* ===== Peluang redistribusi — detail per unit di halaman Bezetting SDM ===== */
+.bzs-redis-list { display: flex; flex-direction: column; gap: var(--space-2); }
+
+.bzs-redis-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  background: var(--color-surface-inset);
+  border: 1px solid var(--color-border-inset);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  font-size: var(--font-size-caption);
+  color: var(--color-text-muted);
+}
+
+.bzs-redis-icon { margin-top: 2px; flex-shrink: 0; }
+.bzs-redis-icon.tone-danger { color: var(--color-danger); }
+.bzs-redis-icon.tone-info { color: var(--color-info); }
+
+.bzs-redis-text strong { color: var(--color-text); font-weight: var(--font-weight-semibold); }
+
+@media (max-width: 767px) {
+  .bzs-toolbar { flex-direction: column; align-items: stretch; }
+  .bzs-search { max-width: none; }
+  .bzs-bulk-actions { margin-left: 0; }
 }

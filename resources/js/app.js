@@ -8,6 +8,8 @@ import { initProfileMenu } from './modules/profile-menu.js';
 import { initMonitoringDokumen } from './modules/monitoring-dokumen';
 import { initDashboardCharts } from './modules/dashboard-charts';
 import { initAccordion } from './modules/accordion';
+import { initSdmBezetting } from './modules/sdm-bezetting';
+
 
 
 window.bootstrap = bootstrap;
@@ -21,4 +23,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initMonitoringDokumen();
   initDashboardCharts();
   initAccordion();
+  initSdmBezetting();
 });
