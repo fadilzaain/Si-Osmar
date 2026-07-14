@@ -46,6 +46,42 @@ function renderRadial(el, data, p) {
     return new ApexCharts(el, options).render();
 }
 
+function renderDonutMulti(el, data, p) {
+    const colorMap = { success: p.success, primary: p.primary, warning: p.warning, danger: p.danger, info: p.info };
+    const colors = (data.colors || []).map((c) => colorMap[c] || p.success);
+    const size = data.size || 128;
+
+    const options = {
+        chart: { type: 'donut', height: size, animations: { enabled: true, speed: 700, easing: 'easeinout' } },
+        series: data.series,
+        colors,
+        labels: data.labels || [],
+        legend: { show: false },
+        dataLabels: { enabled: false },
+        stroke: { width: 3, colors: [p.surface] },
+        plotOptions: {
+            pie: {
+                donut: {
+                    size: '70%',
+                    labels: {
+                        show: true,
+                        value: { fontSize: '18px', fontWeight: 600, color: p.text, offsetY: -2 },
+                        total: {
+                            show: true,
+                            label: data.totalLabel || 'Baik+',
+                            fontSize: '10px',
+                            color: p.text,
+                            formatter: () => data.totalValue ?? '',
+                        },
+                    },
+                },
+            },
+        },
+        tooltip: { enabled: false },
+    };
+    return new ApexCharts(el, options).render();
+}
+
 const renderers = { 'donut-single': renderRadial };
 
 let activeCharts = [];

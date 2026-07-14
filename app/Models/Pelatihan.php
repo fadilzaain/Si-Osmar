@@ -15,7 +15,6 @@ class Pelatihan extends Model
         'status',
     ];
 
-    // TAMBAHAN: cast tanggal
     protected $casts = [
         'tanggal_mulai' => 'date',
         'tanggal_selesai' => 'date',

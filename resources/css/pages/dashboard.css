@@ -1,7 +1,5 @@
 /* ===== Dashboard Executive — pakai token global tokens.css/dark.css, otomatis ikut toggle ===== */
 .dxg-page {
-  /* --color-* di sini sudah datang dari tokens.css (light) / dark.css (dark) secara global.
-     --color-mint-soft dipakai buat background tile "segera hadir". */
   background:
     radial-gradient(ellipse 700px 420px at 8% -8%, rgba(167,243,208,0.35), transparent 60%),
     radial-gradient(ellipse 600px 400px at 100% 0%, rgba(6,95,70,0.06), transparent 55%),
@@ -20,63 +18,6 @@
 .dxg-title { font-weight: var(--font-weight-bold); font-size: var(--font-size-h2); margin: var(--space-1) 0 var(--space-1); color: var(--color-text); }
 .dxg-sub { color: var(--color-text-muted); font-size: var(--font-size-body); margin-bottom: var(--space-6); }
 
-/* ===== Hero card — Monitoring STR & SIP ===== */
-.dxg-hero {
-  display: block;
-  position: relative;
-  overflow: hidden;
-  background: color-mix(in srgb, var(--color-surface) 72%, transparent);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg, 16px);
-  padding: var(--space-6);
-  text-decoration: none;
-  color: inherit;
-  margin-bottom: var(--space-8);
-  opacity: 0;
-  transform: translateY(14px);
-  box-shadow: var(--shadow-md);
-  animation: dxgCardIn .7s cubic-bezier(.16,1,.3,1) forwards;
-  animation-delay: .08s;
-  transition: border-color .3s ease, transform .3s cubic-bezier(.4,0,.2,1), box-shadow .3s ease, background .25s ease;
-}
-.dxg-hero:hover {
-  border-color: rgba(6,95,70,0.3);
-  transform: translateY(-3px);
-  box-shadow: 0 20px 40px -22px rgba(6,95,70,0.35);
-}
-.dxg-hero:focus-visible {
-  outline: 3px solid var(--color-primary);
-  outline-offset: 3px;
-}
-[data-theme="dark"] .dxg-hero {
-  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset, var(--shadow-md);
-}
-.dxg-live-dot {
-  position: absolute;
-  bottom: var(--space-4);
-  right: var(--space-4);
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--color-success);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-success) 20%, transparent);
-  z-index: 2;
-}
-.dxg-hero-main { position: relative; z-index: 1; }
-.dxg-hero-head { display: flex; align-items: flex-start; gap: var(--space-4); margin-bottom: var(--space-5); }
-.dxg-hero-heading { flex: 1; }
-.dxg-hero-title { font-weight: var(--font-weight-semibold); font-size: var(--font-size-h4, 20px); color: var(--color-text); margin-bottom: 2px; }
-.dxg-hero-body { display: flex; align-items: center; gap: var(--space-6); flex-wrap: wrap; }
-.dxg-hero-info { flex: 1; min-width: 220px; }
-.dxg-hero-link { margin-top: var(--space-5); display: inline-flex; }
-
-.dxg-hero-donuts { display: flex; gap: var(--space-6); flex-shrink: 0; }
-.dxg-hero-donut-block { display: flex; flex-direction: column; align-items: center; gap: var(--space-2); flex-shrink: 0; }
-.dxg-mini-chart { width: 96px; height: 96px; }
-.dxg-mini-chart-label { font-size: var(--font-size-caption); font-weight: var(--font-weight-semibold); color: var(--color-text-muted); letter-spacing: .04em; }
-
 /* ===== Badge ===== */
 .dxg-badge {
   font-size: 11px;
@@ -88,19 +29,11 @@
 }
 .dxg-badge-alert { background: rgba(220,38,38,0.1); color: var(--color-danger); border: 1px solid rgba(220,38,38,0.2); }
 .dxg-badge-soon { background: var(--color-mint-soft); color: var(--color-primary); border: 1px solid var(--color-border); }
+.dxg-badge-neutral { background: var(--color-surface-inset); color: var(--color-text-muted); border: 1px solid var(--color-border-inset); }
 
-/* ===== Section label ===== */
-.dxg-secondary-label {
-  font-size: var(--font-size-caption);
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  font-weight: var(--font-weight-medium);
-  margin-bottom: var(--space-3);
-}
-
-/* ===== Grid tile — modul yang belum dibangun ===== */
-.dxg-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
+/* ===== Grid — 2 kolom eksplisit. Tile ".dxg-tile-wide" ngisi 1 baris penuh sendirian (SDM). ===== */
+.dxg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-4); }
+.dxg-tile-wide { grid-column: 1 / -1; }
 
 .dxg-tile {
   display: flex;
@@ -120,11 +53,11 @@
   animation: dxgCardIn .6s cubic-bezier(.16,1,.3,1) forwards;
   transition: border-color .25s ease, transform .25s ease, box-shadow .25s ease, background .25s ease;
 }
-.dxg-tile .dxg-live-dot { bottom: var(--space-3); right: var(--space-3); }
-.dxg-tile:nth-of-type(1) { animation-delay: .18s; }
-.dxg-tile:nth-of-type(2) { animation-delay: .24s; }
-.dxg-tile:nth-of-type(3) { animation-delay: .30s; }
-.dxg-tile:nth-of-type(4) { animation-delay: .36s; }
+.dxg-tile:nth-of-type(1) { animation-delay: .12s; }
+.dxg-tile:nth-of-type(2) { animation-delay: .18s; }
+.dxg-tile:nth-of-type(3) { animation-delay: .24s; }
+.dxg-tile:nth-of-type(4) { animation-delay: .30s; }
+.dxg-tile:nth-of-type(5) { animation-delay: .36s; }
 
 .dxg-tile:hover { border-color: rgba(6,95,70,0.28); transform: translateY(-4px); box-shadow: var(--shadow-md); }
 .dxg-tile:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 3px; }
@@ -132,13 +65,43 @@
 .dxg-tile-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-3); }
 .dxg-tile-title { font-weight: var(--font-weight-semibold); font-size: var(--font-size-body); color: var(--color-text); margin-bottom: 2px; }
 
+.dxg-tile-body { margin: var(--space-3) 0; flex: 1; }
+
 .dxg-tile-foot { display: flex; align-items: flex-end; justify-content: space-between; margin-top: auto; padding-top: var(--space-3); }
 .dxg-tile-stat { font-size: 20px; font-weight: var(--font-weight-semibold); color: var(--color-text); }
 .dxg-tile-stat span { font-size: var(--font-size-caption); color: var(--color-text-muted); font-weight: var(--font-weight-regular); margin-left: 4px; }
 
-/* ===== Mini stat-block grid (dalam tile) ===== */
+/* ===== Aksen prioritas (Monitoring Dokumen) ===== */
+.dxg-tile-priority {
+  border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-primary) 12%, transparent), var(--shadow-sm);
+}
+.dxg-tile-priority::before {
+  content: '';
+  position: absolute;
+  top: 0; left: var(--space-4); right: var(--space-4);
+  height: 2px;
+  border-radius: 0 0 4px 4px;
+  background: linear-gradient(90deg, var(--color-primary), transparent);
+}
+.dxg-tile-priority:hover { box-shadow: 0 20px 36px -22px rgba(6,95,70,0.35); }
+
+/* ===== Indikator "live" — inline di sebelah teks Lihat detail, gak nabrak apapun lagi ===== */
+.dxg-live-pulse {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--color-success);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-success) 20%, transparent);
+  flex-shrink: 0;
+  animation: dxgPulse 2s ease-in-out infinite;
+}
+@keyframes dxgPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .45; }
+}
+
+/* ===== Mini stat-block grid (Dokumen, Kinerja) ===== */
 .dxg-stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-2); margin: var(--space-3) 0; }
-.dxg-stat-grid-2 { flex: 1; }
 .dxg-stat-block {
   background: var(--color-surface-inset);
   border: 1px solid var(--color-border-inset);
@@ -151,7 +114,16 @@
 .dxg-stat-block-value.tone-warning { color: var(--color-warning); }
 .dxg-stat-block-value.tone-danger { color: var(--color-danger); }
 
-/* ===== Mini list (Pelatihan) ===== */
+/* ===== Catatan dokumen kritis ===== */
+.dxg-doc-note {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  margin-top: var(--space-1);
+}
+.dxg-doc-note strong { color: var(--color-text); }
+
+/* ===== Mini list (Pelatihan, Cuti) ===== */
 .dxg-mini-list { margin: var(--space-3) 0; display: flex; flex-direction: column; gap: 6px; }
 .dxg-mini-list-row {
   display: flex; align-items: center; justify-content: space-between;
@@ -165,13 +137,37 @@
 
 .dxg-badge-pill { padding: 2px 8px; font-size: 10px; }
 .dxg-badge-pill.tone-success { background: rgba(5,150,105,0.12); color: var(--color-success); }
+.dxg-badge-pill.tone-warning { background: rgba(217,119,6,0.12); color: var(--color-warning); }
 .dxg-badge-pill.tone-danger { background: rgba(220,38,38,0.1); color: var(--color-danger); }
+.dxg-badge-pill.tone-neutral { background: var(--color-surface-inset); color: var(--color-text-muted); }
 
-.dxg-badge-neutral { background: var(--color-surface-inset); color: var(--color-text-muted); border: 1px solid var(--color-border-inset); }
-
-/* ===== SDM: donut kecil + stat-block bersisian ===== */
-.dxg-sdm-body { display: flex; align-items: center; gap: var(--space-3); flex: 1; }
-.dxg-mini-chart-sm { width: 72px; height: 72px; flex-shrink: 0; }
+/* ===== Activity list — SDM (card lebar), grid biar space kepakai penuh, bukan numpuk vertikal ===== */
+.dxg-activity-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-2);
+  margin: var(--space-3) 0;
+  flex: 1;
+}
+.dxg-activity-row {
+  display: flex; align-items: center; gap: var(--space-2);
+  background: var(--color-surface-inset);
+  border: 1px solid var(--color-border-inset);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+}
+.dxg-activity-avatar {
+  width: 30px; height: 30px; flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: var(--font-weight-semibold);
+}
+.dxg-activity-info { flex: 1; min-width: 0; }
+.dxg-activity-name { font-size: 12.5px; color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dxg-activity-detail { font-size: 11px; color: var(--color-text-muted); display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dxg-activity-time { font-size: 10px; color: var(--color-text-muted); flex-shrink: 0; }
 
 /* ===== Elemen bersama ===== */
 .dxg-card-icon {
@@ -183,48 +179,130 @@
   font-size: 16px; color: var(--color-primary);
   flex-shrink: 0;
 }
-.dxg-card-icon-lg { width: 46px; height: 46px; font-size: 19px; }
 .dxg-card-subtitle { font-size: var(--font-size-caption); color: var(--color-text-muted); }
 
 .dxg-card-link { font-size: var(--font-size-caption); color: var(--color-primary); font-weight: var(--font-weight-medium); display: flex; align-items: center; gap: 6px; transition: gap .25s ease; }
-.dxg-hero:hover .dxg-card-link { gap: 10px; }
-
-.dxg-donut-label { font-size: 16px; fill: var(--color-text); font-weight: var(--font-weight-semibold); }
-.dxg-legend { display: flex; gap: var(--space-3); font-size: 10.5px; color: var(--color-text-muted); flex-wrap: wrap; margin-bottom: var(--space-2); }
-.dxg-legend span { display: flex; align-items: center; gap: 5px; }
-.dxg-legend i { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
-.dxg-str-note { font-size: var(--font-size-caption); color: var(--color-text-muted); line-height: 1.5; }
-.dxg-str-note strong { color: var(--color-text); }
+.dxg-tile:hover .dxg-card-link { gap: 10px; }
 
 /* ===== Animasi ===== */
 @keyframes dxgCardIn { to { opacity: 1; transform: translateY(0); } }
 
-/* ===== Responsive — 1024 / 768 / 480 ===== */
-@media (max-width: 1023px) {
-  .dxg-grid { grid-template-columns: repeat(2, 1fr); }
-  .dxg-hero-body { gap: var(--space-4); }
+/* ===== PREMIUM GLASS — upgrade tile jadi lebih dalam & hidup ===== */
+.dxg-tile {
+  background: color-mix(in srgb, var(--color-surface) 55%, var(--color-mint-soft) 45%);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--color-border) 70%, transparent);
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.4);
+  overflow: hidden;
+}
+[data-theme="dark"] .dxg-tile {
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.03);
 }
 
-@media (max-width: 767px) {
+/* Sapuan cahaya diagonal saat hover — efek premium */
+.dxg-tile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 40%, color-mix(in srgb, var(--color-mint) 25%, transparent) 50%, transparent 60%);
+  transform: translateX(-120%);
+  transition: transform .7s cubic-bezier(.16,1,.3,1);
+  pointer-events: none;
+}
+.dxg-tile:hover::after { transform: translateX(120%); }
+
+.dxg-tile:hover {
+  transform: translateY(-6px) scale(1.008);
+  box-shadow: 0 24px 48px -22px rgba(6,95,70,0.30), inset 0 1px 0 rgba(255,255,255,0.4);
+}
+
+.dxg-tile-priority:hover {
+  box-shadow: 0 28px 52px -20px rgba(6,95,70,0.38), inset 0 1px 0 rgba(255,255,255,0.4);
+}
+
+/* Icon: micro-interaction saat hover card */
+.dxg-card-icon { transition: transform .4s cubic-bezier(.34,1.56,.64,1), background .3s ease; }
+.dxg-tile:hover .dxg-card-icon {
+  transform: scale(1.1) rotate(-6deg);
+  background: linear-gradient(155deg, rgba(6,95,70,0.22), rgba(167,243,208,0.5));
+}
+
+/* Badge: micro pulse buat badge alert */
+.dxg-badge-alert { animation: dxgBadgePulse 2.4s ease-in-out infinite; }
+@keyframes dxgBadgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0.25); }
+  50% { box-shadow: 0 0 0 5px rgba(220,38,38,0); }
+}
+
+/* ===== Progress bar (Dokumen, Cuti, Pelatihan) ===== */
+.dxg-progress-list { display: flex; flex-direction: column; gap: var(--space-3); margin: var(--space-3) 0; }
+
+.dxg-progress-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+.dxg-progress-label { font-size: 12px; color: var(--color-text); font-weight: var(--font-weight-medium); }
+.dxg-progress-value { font-size: 12px; font-weight: var(--font-weight-semibold); }
+.dxg-progress-value.tone-success { color: var(--color-success); }
+.dxg-progress-value.tone-warning { color: var(--color-warning); }
+.dxg-progress-value.tone-danger { color: var(--color-danger); }
+
+.dxg-progress-track {
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-inset);
+  border: 1px solid var(--color-border-inset);
+  overflow: hidden;
+}
+
+.dxg-progress-fill {
+  height: 100%;
+  width: var(--target);
+  border-radius: var(--radius-full);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: dxgProgressGrow .9s cubic-bezier(.16,1,.3,1) forwards;
+  animation-delay: var(--delay, 0s);
+}
+.dxg-progress-fill.tone-success { background: linear-gradient(90deg, var(--color-success), color-mix(in srgb, var(--color-success) 70%, white)); }
+.dxg-progress-fill.tone-warning { background: linear-gradient(90deg, var(--color-warning), color-mix(in srgb, var(--color-warning) 70%, white)); }
+.dxg-progress-fill.tone-danger { background: linear-gradient(90deg, var(--color-danger), color-mix(in srgb, var(--color-danger) 70%, white)); }
+
+@keyframes dxgProgressGrow { to { transform: scaleX(1); } }
+
+/* ===== Donut + legend (Capaian Kinerja) ===== */
+.dxg-donut-body { display: flex; align-items: center; gap: var(--space-4); flex: 1; margin: var(--space-2) 0; }
+.dxg-donut-body .dxg-mini-chart { width: 128px; height: 128px; flex-shrink: 0; }
+
+.dxg-donut-legend { display: flex; flex-direction: column; gap: 7px; flex: 1; min-width: 0; }
+.dxg-legend-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.dxg-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dxg-legend-dot.tone-success { background: var(--color-success); }
+.dxg-legend-dot.tone-warning { background: var(--color-warning); }
+.dxg-legend-dot.tone-danger { background: var(--color-danger); }
+.dxg-legend-label { flex: 1; min-width: 0; color: var(--color-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dxg-legend-value { font-weight: var(--font-weight-semibold); color: var(--color-text); }
+
+/* ===== Activity row: sedikit hover micro-lift, senada tema premium ===== */
+.dxg-activity-row { transition: background .25s ease, transform .25s ease; }
+.dxg-activity-row:hover { background: color-mix(in srgb, var(--color-mint) 12%, var(--color-surface-inset)); transform: translateX(3px); }
+
+/* ===== Reduced motion override tambahan ===== */
+@media (prefers-reduced-motion: reduce) {
+  .dxg-tile::after { display: none; }
+  .dxg-tile:hover { transform: none !important; }
+  .dxg-progress-fill { animation: none !important; transform: scaleX(1) !important; }
+  .dxg-badge-alert { animation: none !important; }
+}
+/* ===== Responsive ===== */
+@media (max-width: 639px) {
   .dxg-page { padding: var(--space-6) var(--space-4); }
-  .dxg-hero-head { flex-wrap: wrap; }
-  .dxg-hero-body { flex-direction: column; align-items: flex-start; }
-  .dxg-hero-donuts { align-self: center; }
-}
-
-@media (max-width: 479px) {
   .dxg-grid { grid-template-columns: 1fr; }
+  .dxg-tile-wide { grid-column: auto; }
   .dxg-badge { align-self: flex-start; }
 }
 
 /* ===== Aksesibilitas: hormati preferensi reduced motion ===== */
 @media (prefers-reduced-motion: reduce) {
-  .dxg-hero, .dxg-tile {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-  }
-  .dxg-hero:hover, .dxg-tile:hover {
-    transform: none !important;
-  }
+  .dxg-tile { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .dxg-tile:hover { transform: none !important; }
+  .dxg-live-pulse { animation: none !important; }
 }

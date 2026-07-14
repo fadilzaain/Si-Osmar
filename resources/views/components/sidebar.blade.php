@@ -7,9 +7,23 @@
         </span>
     </div>
 
+    <div class="sidebar-utility">
+        <div class="sidebar-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Cari...">
+        </div>
+        <div class="sidebar-utility-icons">
+            <button class="sidebar-icon-btn has-tooltip" type="button" aria-label="Notifikasi" data-tooltip="Notifikasi terbaru">
+                <i class="fa-regular fa-bell"></i>
+            </button>
+            <button class="sidebar-icon-btn has-tooltip" data-theme-toggle type="button" aria-label="Ganti tema" data-tooltip="Ganti tema terang/gelap">
+                <i class="fa-solid fa-circle-half-stroke"></i>
+            </button>
+        </div>
+    </div>
+
     <nav class="sidebar-nav">
 
-        {{-- Grup: Utama --}}
         <div class="sidebar-nav-group">
             <div class="sidebar-nav-label">Utama</div>
             <a href="{{ route('dashboard') }}" class="sidebar-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" data-label="Dashboard">
@@ -18,7 +32,6 @@
             </a>
         </div>
 
-        {{-- Grup: Kompetensi & Karier --}}
         <div class="sidebar-nav-group">
             <div class="sidebar-nav-label">Kompetensi & Karier</div>
             <a href="{{ route('coming-soon', 'profil-sdm') }}" class="sidebar-link {{ request()->routeIs('coming-soon') && request()->route('module') === 'profil-sdm' ? 'active' : '' }}" data-label="Profil SDM">
@@ -35,7 +48,6 @@
             </a>
         </div>
 
-        {{-- Grup: Distribusi & Beban Kerja --}}
         <div class="sidebar-nav-group">
             <div class="sidebar-nav-label">Distribusi & Beban Kerja</div>
             <a href="{{ route('coming-soon', 'distribusi-sdm') }}" class="sidebar-link {{ request()->routeIs('coming-soon') && request()->route('module') === 'distribusi-sdm' ? 'active' : '' }}" data-label="Distribusi SDM">
@@ -48,7 +60,6 @@
             </a>
         </div>
 
-        {{-- Grup: Lainnya --}}
         <div class="sidebar-nav-group">
             <div class="sidebar-nav-label">Lainnya</div>
             <a href="{{ route('coming-soon', 'laporan-evaluasi') }}" class="sidebar-link {{ request()->routeIs('coming-soon') && request()->route('module') === 'laporan-evaluasi' ? 'active' : '' }}" data-label="Laporan & Evaluasi">
@@ -63,15 +74,28 @@
 
     </nav>
 
-    <button class="sidebar-toggle" type="button" data-action="toggle-sidebar" aria-label="Ciutkan sidebar">
+    <button class="sidebar-toggle has-tooltip" type="button" data-sidebar-toggle aria-label="Ciutkan sidebar" data-tooltip="Ciutkan / perluas sidebar">
         <i class="fa-solid fa-angles-left"></i>
     </button>
 
-    <div class="sidebar-profile">
-        <div class="sidebar-profile-avatar">A</div>
-        <div>
-            <div class="sidebar-profile-name">Admin SDM</div>
-            <div class="sidebar-profile-role">Super Admin</div>
+    <div class="sidebar-profile-wrapper">
+        <button class="sidebar-profile" type="button" data-action="toggle-profile-menu" aria-haspopup="true" aria-expanded="false">
+            <div class="sidebar-profile-avatar">{{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}</div>
+            <div>
+                <div class="sidebar-profile-name">{{ auth()->user()->name ?? 'Admin' }}</div>
+                <div class="sidebar-profile-role">{{ auth()->user()->email ?? 'Super Admin' }}</div>
+            </div>
+            <i class="fa-solid fa-chevron-up sidebar-profile-caret"></i>
+        </button>
+
+        <div class="sidebar-profile-menu" data-profile-menu>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="sidebar-profile-menu-item sidebar-profile-menu-danger">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Logout</span>
+                </button>
+            </form>
         </div>
     </div>
 </aside>

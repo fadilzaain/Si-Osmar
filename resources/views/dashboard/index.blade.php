@@ -4,217 +4,159 @@
 
     <div class="dxg-eyebrow">SI-OSMAR</div>
     @php
-    $jam = now()->hour;
-    $sapaan = match(true) {
-        $jam >= 4 && $jam < 11 => 'Selamat pagi',
-        $jam >= 11 && $jam < 15 => 'Selamat siang',
-        $jam >= 15 && $jam < 18 => 'Selamat sore',
-        default => 'Selamat malam',
+        $jam = now()->hour;
+        $sapaan = match(true) {
+            $jam >= 4 && $jam < 11 => 'Selamat pagi',
+            $jam >= 11 && $jam < 15 => 'Selamat siang',
+            $jam >= 15 && $jam < 18 => 'Selamat sore',
+            default => 'Selamat malam',
         };
     @endphp
     <h1 class="dxg-title">{{ $sapaan }}</h1>
     <div class="dxg-sub">Ringkasan strategis lintas modul SDM — {{ now()->translatedFormat('d F Y') }}</div>
 
-    {{-- ================= HERO: Monitoring STR & SIP ================= --}}
-    @php
-        $str = array_merge(['persen' => 66, 'label_kritis' => 'Instalasi Gawat Darurat', 'detail_kritis' => '7 dari 12 pegawai belum lengkap'], $str ?? []);
-        $sip = array_merge(['persen' => 72, 'label_kritis' => 'Instalasi Rawat Inap', 'detail_kritis' => '5 dari 18 pegawai belum lengkap'], $sip ?? []);
-        $totalBermasalah = $totalBermasalah ?? 14;
-    @endphp
-    <a href="{{ route('monitoring-str-sip.index') }}" class="dxg-hero">
-        <span class="dxg-live-dot" aria-hidden="true"></span>
-        <div class="dxg-hero-glow"></div>
-        <div class="dxg-hero-main">
-            <div class="dxg-hero-head">
-                <div class="dxg-card-icon dxg-card-icon-lg"><i class="fa-solid fa-shield-halved"></i></div>
-                <div class="dxg-hero-heading">
-                    <div class="dxg-hero-title">Monitoring STR & SIP</div>
-                    <div class="dxg-card-subtitle">Kelengkapan dokumen legal per ruangan</div>
-                </div>
-                <span class="dxg-badge dxg-badge-alert">{{ $totalBermasalah }} bermasalah</span>
-            </div>
-
-            <div class="dxg-hero-body">
-                <div class="dxg-hero-donuts">
-                    <div class="dxg-hero-donut-block">
-                        <div class="dxg-mini-chart" id="chart-str" data-chart-type="donut-single"
-                             data-chart='@json(["persen" => $str["persen"], "color" => "success"])'></div>
-                        <div class="dxg-mini-chart-label">STR</div>
-                    </div>
-                    <div class="dxg-hero-donut-block">
-                        <div class="dxg-mini-chart" id="chart-sip" data-chart-type="donut-single"
-                             data-chart='@json(["persen" => $sip["persen"], "color" => "primary"])'></div>
-                        <div class="dxg-mini-chart-label">SIP</div>
-                    </div>
-                </div>
-
-                <div class="dxg-hero-info">
-                    <div class="dxg-legend">
-                        <span><i style="background:var(--color-success)"></i>Lengkap</span>
-                        <span><i style="background:var(--color-danger)"></i>Kadaluarsa / belum ada</span>
-                    </div>
-                    <div class="dxg-str-note"><strong>{{ $str['label_kritis'] }}</strong> paling kritis STR — {{ $str['detail_kritis'] }}.</div>
-                    <div class="dxg-str-note"><strong>{{ $sip['label_kritis'] }}</strong> paling kritis SIP — {{ $sip['detail_kritis'] }}.</div>
-                </div>
-            </div>
-        </div>
-        <span class="dxg-card-link dxg-hero-link">Lihat detail <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
-    </a>
-
-    {{-- ================= SECONDARY ================= --}}
-    <div class="dxg-secondary-label">Modul lainnya</div>
     <div class="dxg-grid">
 
-        {{--
-            Ekinerja — mini stat-block per kategori penilaian
-            TODO integrasi DB: $ekinerjaStat dari controller, format sama kayak dummy di bawah.
-        --}}
+        {{-- ================= 1. Monitoring Dokumen (prioritas, live) ================= --}}
+        @php
+            $dokumenStat = $dokumenStat ?? [
+                ['label' => 'STR', 'value' => '66%', 'percent' => 66, 'tone' => 'warning'],
+                ['label' => 'SIP', 'value' => '72%', 'percent' => 72, 'tone' => 'warning'],
+                ['label' => 'RKK', 'value' => '58%', 'percent' => 58, 'tone' => 'danger'],
+                ['label' => 'SPK', 'value' => '81%', 'percent' => 81, 'tone' => 'success'],
+            ];
+            $dokumenBermasalah = $dokumenBermasalah ?? 14;
+            $dokumenNote = $dokumenNote ?? 'RKK paling kritis — 9 pegawai IGD belum lengkap.';
+        @endphp
+        <x-dashboard.tile
+            title="Monitoring Dokumen"
+            subtitle="STR, SIP, RKK & SPK seluruh pegawai"
+            icon="fa-solid fa-file-shield"
+            href="{{ route('monitoring-str-sip.index') }}"
+            badge-text="{{ $dokumenBermasalah }} bermasalah"
+            badge-tone="alert"
+            :priority="true"
+            :live="true"
+        >
+            <x-dashboard.progress-bar :items="$dokumenStat" />
+            <div class="dxg-doc-note">{{ $dokumenNote }}</div>
+        </x-dashboard.tile>
+
+        {{-- ================= 2. Capaian Kinerja ================= --}}
         @php
             $ekinerjaStat = $ekinerjaStat ?? [
-                ['label' => 'Sangat Baik', 'value' => 31, 'tone' => 'success'],
-                ['label' => 'Baik', 'value' => 47, 'tone' => 'success'],
-                ['label' => 'Cukup', 'value' => 26, 'tone' => 'warning'],
-                ['label' => 'Perlu Perbaikan', 'value' => 5, 'tone' => 'danger'],
+                ['label' => 'Sangat Baik', 'value' => 31, 'tone' => 'success', 'color' => 'success'],
+                ['label' => 'Baik', 'value' => 47, 'tone' => 'success', 'color' => 'primary'],
+                ['label' => 'Cukup', 'value' => 26, 'tone' => 'warning', 'color' => 'warning'],
+                ['label' => 'Perlu Perbaikan', 'value' => 5, 'tone' => 'danger', 'color' => 'danger'],
+            ];
+            $ekinerjaPersenBaik = $ekinerjaPersenBaik ?? 78;
+
+            $ekinerjaChartData = [
+                'series' => array_column($ekinerjaStat, 'value'),
+                'labels' => array_column($ekinerjaStat, 'label'),
+                'colors' => array_column($ekinerjaStat, 'color'),
+                'size' => 128,
+                'totalValue' => $ekinerjaPersenBaik . '%',
+                'totalLabel' => 'Baik+',
             ];
         @endphp
-        <a href="{{ route('coming-soon', 'ekinerja') }}" class="dxg-tile">
-            <span class="dxg-live-dot" aria-hidden="true"></span>
-            <div class="dxg-tile-top">
-                <div class="dxg-card-icon"><i class="fa-solid fa-chart-line"></i></div>
-                <span class="dxg-badge dxg-badge-soon">Segera hadir</span>
-            </div>
-            <div class="dxg-tile-title">Ekinerja</div>
-            <div class="dxg-card-subtitle">Distribusi capaian kinerja pegawai</div>
-
-            <div class="dxg-stat-grid">
-                @foreach ($ekinerjaStat as $s)
-                    <div class="dxg-stat-block">
-                        <div class="dxg-stat-block-label">{{ $s['label'] }}</div>
-                        <div class="dxg-stat-block-value tone-{{ $s['tone'] }}">{{ $s['value'] }}</div>
-                    </div>
-                @endforeach
-            </div>
-
-            <div class="dxg-tile-foot">
-                <div class="dxg-tile-stat">{{ $ekinerja['persen_baik'] ?? 78 }}<span>% baik/sangat baik</span></div>
-                <span class="dxg-card-link">Lihat detail →</span>
-            </div>
-        </a>
-
-        {{--
-            Pelatihan — list pegawai (bukan donut, gak nyambung buat data ini)
-            TODO integrasi DB: $pelatihanList dari controller, format sama kayak dummy di bawah.
-        --}}
-        @php
-            $pelatihanList = $pelatihanList ?? [
-                ['nama' => 'Ns. Ratna Dewi', 'jam' => 34, 'status' => 'success'],
-                ['nama' => 'dr. Bagas Prasetyo', 'jam' => 22, 'status' => 'success'],
-                ['nama' => 'Yulia Anggraini', 'jam' => 0, 'status' => 'danger'],
-            ];
-            $pelatihanSisa = $pelatihanSisa ?? 41;
-        @endphp
-        <a href="{{ route('coming-soon', 'pelatihan') }}" class="dxg-tile">
-            <span class="dxg-live-dot" aria-hidden="true"></span>
-            <div class="dxg-tile-top">
-                <div class="dxg-card-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-                <span class="dxg-badge dxg-badge-soon">Segera hadir</span>
-            </div>
-            <div class="dxg-tile-title">Pelatihan</div>
-            <div class="dxg-card-subtitle">Jam pelatihan per pegawai</div>
-
-            <div class="dxg-mini-list">
-                @foreach ($pelatihanList as $row)
-                    <div class="dxg-mini-list-row">
-                        <span class="dxg-mini-list-name">{{ $row['nama'] }}</span>
-                        <span class="dxg-badge dxg-badge-pill tone-{{ $row['status'] }}">
-                            {{ $row['jam'] > 0 ? $row['jam'].' JP' : 'Belum' }}
-                        </span>
-                    </div>
-                @endforeach
-                <div class="dxg-mini-list-more">+{{ $pelatihanSisa }} pegawai lainnya</div>
-            </div>
-
-            <div class="dxg-tile-foot">
-                <div class="dxg-tile-stat">{{ $pelatihan['lebih_20jp'] ?? 62 }}<span>% sudah ≥20 JP</span></div>
-                <span class="dxg-card-link">Lihat detail →</span>
-            </div>
-        </a>
-
-        {{--
-            SDM — angka besar + radial (medis/non-medis), link ke modul yang udah jadi
-            TODO integrasi DB: $sdm dari controller (medis/non_medis/persen_medis).
-        --}}
-        @php
-            $sdmMedis = $sdm['medis'] ?? 676;
-            $sdmNonMedis = $sdm['non_medis'] ?? 769;
-            $sdmTotal = $sdmMedis + $sdmNonMedis;
-            $sdmPersenMedis = $sdm['persen_medis'] ?? ($sdmTotal > 0 ? round($sdmMedis / $sdmTotal * 100) : 0);
-        @endphp
-        <a href="{{ route('coming-soon', 'sdm-ringkasan') }}" class="dxg-tile">
-            <span class="dxg-live-dot" aria-hidden="true"></span>
-            <div class="dxg-tile-top">
-                <div class="dxg-card-icon"><i class="fa-solid fa-users"></i></div>
-                <span class="dxg-badge dxg-badge-neutral">{{ number_format($sdmTotal) }} orang</span>
-            </div>
-            <div class="dxg-tile-title">SDM</div>
-            <div class="dxg-card-subtitle">Distribusi tenaga per kategori</div>
-
-            <div class="dxg-sdm-body">
-                <div class="dxg-mini-chart dxg-mini-chart-sm" id="chart-sdm" data-chart-type="donut-single"
-                     data-chart='@json(["persen" => $sdmPersenMedis, "color" => "primary", "size" => 72])'></div>
-                <div class="dxg-stat-grid dxg-stat-grid-2">
-                    <div class="dxg-stat-block">
-                        <div class="dxg-stat-block-label">Medis</div>
-                        <div class="dxg-stat-block-value">{{ $sdmMedis }}</div>
-                    </div>
-                    <div class="dxg-stat-block">
-                        <div class="dxg-stat-block-label">Non-medis</div>
-                        <div class="dxg-stat-block-value">{{ $sdmNonMedis }}</div>
-                    </div>
+        <x-dashboard.tile
+            title="Capaian Kinerja"
+            subtitle="Distribusi capaian kinerja pegawai"
+            icon="fa-solid fa-chart-line"
+            href="{{ route('coming-soon', 'ekinerja') }}"
+            badge-text="Segera hadir"
+            badge-tone="soon"
+            :footer-value="$ekinerjaPersenBaik . '%'"
+            footer-label="baik/sangat baik"
+        >
+            <div class="dxg-donut-body">
+                <div class="dxg-mini-chart" data-chart-type="donut-multi"
+                    data-chart='@json($ekinerjaChartData)'></div>
+                <div class="dxg-donut-legend">
+                    @foreach ($ekinerjaStat as $s)
+                        <div class="dxg-legend-row">
+                            <span class="dxg-legend-dot tone-{{ $s['tone'] }}"></span>
+                            <span class="dxg-legend-label">{{ $s['label'] }}</span>
+                            <span class="dxg-legend-value">{{ $s['value'] }}</span>
+                        </div>
+                    @endforeach
                 </div>
             </div>
+        </x-dashboard.tile>
 
-            <div class="dxg-tile-foot">
-                <div></div>
-                <span class="dxg-card-link">Lihat detail →</span>
-            </div>
-        </a>
-
-        {{--
-            Cuti — mini stat-block ringkas
-            TODO integrasi DB: $cutiStat dari controller.
-        --}}
+        {{-- ================= 3. SDM — card lebar, isinya recent activity rotasi (live) ================= --}}
+        {{-- TODO integrasi DB: $sdmRotasi ambil N terbaru dari tabel mutasi/rotasi, order by created_at desc --}}
         @php
-            $cutiStat = $cutiStat ?? [
-                ['label' => 'Bulan ini', 'value' => 14, 'tone' => 'success'],
-                ['label' => 'Akan datang', 'value' => 6, 'tone' => 'neutral'],
-                ['label' => 'Rata² durasi', 'value' => '3 hr', 'tone' => 'neutral'],
-                ['label' => 'Ruangan terbanyak', 'value' => 'IGD', 'tone' => 'warning'],
+            $sdmRotasi = $sdmRotasi ?? [
+                ['nama' => 'Ns. Ratna Dewi', 'dari' => 'IGD', 'ke' => 'ICU', 'waktu' => '2 jam lalu'],
+                ['nama' => 'dr. Bagas Prasetyo', 'dari' => 'Poli Umum', 'ke' => 'Rawat Inap', 'waktu' => '5 jam lalu'],
+                ['nama' => 'Yulia Anggraini', 'dari' => 'Farmasi', 'ke' => 'IGD', 'waktu' => 'Kemarin'],
+                ['nama' => 'Fajar Nugroho', 'dari' => 'Rawat Inap', 'ke' => 'Poli Anak', 'waktu' => 'Kemarin'],
             ];
+            $sdmTotal = $sdmTotal ?? 1445;
         @endphp
-        <a href="{{ route('coming-soon', 'cuti') }}" class="dxg-tile">
-            <span class="dxg-live-dot" aria-hidden="true"></span>
-            <div class="dxg-tile-top">
-                <div class="dxg-card-icon"><i class="fa-solid fa-umbrella-beach"></i></div>
-                <span class="dxg-badge dxg-badge-soon">Segera hadir</span>
-            </div>
-            <div class="dxg-tile-title">Cuti</div>
-            <div class="dxg-card-subtitle">Pegawai cuti per periode</div>
+        <x-dashboard.tile
+            title="SDM"
+            subtitle="Bezetting & rotasi pegawai antar unit"
+            icon="fa-solid fa-users"
+            href="{{ route('coming-soon', 'sdm-ringkasan') }}"
+            badge-text="{{ number_format($sdmTotal) }} orang"
+            badge-tone="neutral"
+            :wide="true"
+            :live="true"
+        >
+            <x-dashboard.activity-list :items="$sdmRotasi" />
+        </x-dashboard.tile>
 
-            <div class="dxg-stat-grid">
-                @foreach ($cutiStat as $s)
-                    <div class="dxg-stat-block">
-                        <div class="dxg-stat-block-label">{{ $s['label'] }}</div>
-                        <div class="dxg-stat-block-value tone-{{ $s['tone'] }}">{{ $s['value'] }}</div>
-                    </div>
-                @endforeach
-            </div>
+        {{-- ================= 4. Cuti ================= --}}
+        @php
+            $cutiProgress = $cutiProgress ?? [
+                ['label' => 'Ahmad Fauzi', 'value' => '8/12', 'percent' => 67, 'tone' => 'success'],
+                ['label' => 'Siti Marlina', 'value' => '3/12', 'percent' => 25, 'tone' => 'warning'],
+                ['label' => 'Budi Santoso', 'value' => '0/12', 'percent' => 0, 'tone' => 'danger'],
+            ];
+            $cutiSisaLain = $cutiSisaLain ?? 27;
+            $cutiAktifBulanIni = $cutiAktifBulanIni ?? 14;
+        @endphp
+        <x-dashboard.tile
+            title="Cuti"
+            subtitle="Sisa & riwayat cuti per pegawai"
+            icon="fa-solid fa-umbrella-beach"
+            href="{{ route('coming-soon', 'cuti') }}"
+            badge-text="Segera hadir"
+            badge-tone="soon"
+            :footer-value="$cutiAktifBulanIni"
+            footer-label="cuti bulan ini"
+        >
+        <x-dashboard.progress-bar :items="$cutiProgress" />
+            <div class="dxg-mini-list-more">+{{ $cutiSisaLain }} pegawai lainnya</div>
+        </x-dashboard.tile>
 
-            <div class="dxg-tile-foot">
-                <div></div>
-                <span class="dxg-card-link">Lihat detail →</span>
-            </div>
-        </a>
+        {{-- ================= 5. Pelatihan ================= --}}
+        @php
+            $pelatihanProgress = $pelatihanProgress ?? [
+                ['label' => 'Ns. Ratna Dewi', 'value' => '34 JP', 'percent' => 100, 'tone' => 'success'],
+                ['label' => 'dr. Bagas Prasetyo', 'value' => '22 JP', 'percent' => 100, 'tone' => 'success'],
+                ['label' => 'Yulia Anggraini', 'value' => 'Belum', 'percent' => 0, 'tone' => 'danger'],
+            ];
+            $pelatihanSisa = $pelatihanSisa ?? 41;
+            $pelatihanLebih20jp = $pelatihanLebih20jp ?? 62;
+        @endphp
+        <x-dashboard.tile
+            title="Pelatihan"
+            subtitle="Jam pelatihan & kelengkapan syarat"
+            icon="fa-solid fa-graduation-cap"
+            href="{{ route('coming-soon', 'pelatihan') }}"
+            badge-text="Segera hadir"
+            badge-tone="soon"
+            :footer-value="$pelatihanLebih20jp . '%'"
+            footer-label="sudah ≥20 JP"
+        >
+            <x-dashboard.progress-bar :items="$pelatihanProgress" />
+            <div class="dxg-mini-list-more">+{{ $pelatihanSisa }} pegawai lainnya</div>
+        </x-dashboard.tile>
 
     </div>
 </div>

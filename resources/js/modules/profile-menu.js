@@ -1,6 +1,6 @@
 export function initProfileMenu() {
     const trigger = document.querySelector('[data-action="toggle-profile-menu"]');
-    const wrapper = trigger?.closest('.navbar-profile-wrapper');
+    const wrapper = trigger?.closest('.navbar-profile-wrapper, .sidebar-profile-wrapper');
 
     if (!trigger || !wrapper) return;
 

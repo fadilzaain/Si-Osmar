@@ -21,9 +21,8 @@ class DashboardService
         $cuti = Pegawai::where('status', 'Cuti')->count();
         $nonaktif = Pegawai::where('status', 'Nonaktif')->count();
 
-        // TODO: angka trend di bawah ini masih HARDCODED (belum dihitung dari data real bulan lalu vs sekarang).
-        // Perlu tabel snapshot histori (misal snapshot bulanan jumlah pegawai) sebelum bisa dihitung otomatis.
-        // Jangan sampai kebawa ke demo/produksi tanpa diganti data asli.
+        
+        // ini hardcode jangan sampai kebawa ke demo/produksi tanpa diganti data asli.
         return [
             'total_pegawai' => [
                 'value' => $totalPegawai,
@@ -91,7 +90,7 @@ class DashboardService
 
     public function getStaffTrend()
     {
-        // TODO: masih data dummy statis. Nanti ganti query agregat bulanan dari kolom tanggal_masuk / snapshot histori.
+        // masih data dummy statis. Nanti ganti query agregat bulanan dari kolom tanggal_masuk
         return [
             'labels' => ['Jan 2026', 'Feb 2026', 'Mar 2026', 'Apr 2026', 'Mei 2026', 'Jun 2026'],
             'total'  => [10, 11, 13, 14, 15, 16],
@@ -104,8 +103,6 @@ class DashboardService
     {
         $activities = [];
 
-        // FIX: sebelumnya pakai latest() → order by created_at (kapan row dibuat di DB),
-        // padahal yang mau ditampilkan adalah kapan KEJADIANNYA (tanggal_mutasi).
         // Kalau ada input mundur (mutasi lama diinput belakangan), urutan lama jadi salah nongol di atas.
         $mutasis = Mutasi::with('pegawai')->orderByDesc('tanggal_mutasi')->take(3)->get();
         foreach ($mutasis as $m) {
@@ -119,7 +116,7 @@ class DashboardService
             ];
         }
 
-        // FIX: sama, order by tanggal_terbit (bukan created_at)
+        // order by tanggal_terbit (bukan created_at)
         $kompetensis = Kompetensi::with('pegawai')->orderByDesc('tanggal_terbit')->take(3)->get();
         foreach ($kompetensis as $k) {
             $isExpired = $k->status === 'Kadaluarsa';

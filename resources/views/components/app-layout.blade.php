@@ -24,7 +24,10 @@
         <x-sidebar />
 
         <div class="app-main">
-            <x-navbar :title="$title ?? 'Dashboard'" />
+            {{-- Floating toggle — cuma muncul di mobile, gantiin tombol hamburger yang dulu di navbar --}}
+            <button class="app-mobile-toggle" data-sidebar-toggle type="button" aria-label="Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
 
             <main class="app-content">
                 {{ $slot }}

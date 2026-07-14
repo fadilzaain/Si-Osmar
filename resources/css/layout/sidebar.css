@@ -48,6 +48,57 @@
   color: var(--sidebar-text-muted);
 }
 
+/* ===== Sidebar utility (search + notif + theme toggle, pindahan dari navbar) ===== */
+.sidebar-utility {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--sidebar-border);
+}
+
+.sidebar-search {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--navbar-search-bg);
+  border: 1px solid var(--navbar-search-border);
+  border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-3);
+  color: var(--navbar-search-placeholder);
+  min-width: 0;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+.sidebar-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: var(--font-size-caption);
+  color: var(--navbar-search-text);
+  width: 100%;
+  min-width: 0;
+}
+.sidebar-search input::placeholder { color: var(--navbar-search-placeholder); }
+
+.sidebar-utility-icons { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+
+.sidebar-icon-btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--topbar-muted);
+  flex-shrink: 0;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.sidebar-icon-btn:hover {
+  background: var(--navbar-icon-hover-bg);
+  color: var(--navbar-icon-hover-text);
+}
+
 .sidebar-nav {
   flex: 1;
   overflow-y: auto;
@@ -107,14 +158,26 @@
   transform: rotate(180deg);
 }
 
+/* ===== Profile — sekarang trigger dropdown, wrapper relative buat positioning menu ===== */
+.sidebar-profile-wrapper {
+  position: relative;
+  border-top: 1px solid var(--sidebar-border);
+}
+
 .sidebar-profile {
   display: flex;
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-4);
-  border-top: 1px solid var(--sidebar-border);
   overflow: hidden;
+  width: 100%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s ease;
 }
+.sidebar-profile:hover { background: var(--sidebar-bg-hover); }
 
 .sidebar-profile-avatar {
   position: relative;
@@ -155,13 +218,126 @@
   color: var(--sidebar-text-muted);
   font-size: var(--font-size-caption);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-profile-caret {
+  font-size: 10px;
+  color: var(--sidebar-text-muted);
+  margin-left: auto;
+  flex-shrink: 0;
+  transition: transform var(--transition-fast);
+}
+.sidebar-profile-wrapper[data-open="true"] .sidebar-profile-caret { transform: rotate(180deg); }
+
+.sidebar-profile-menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: var(--space-2);
+  right: var(--space-2);
+  background: var(--navbar-menu-bg);
+  border: 1px solid var(--navbar-menu-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-2);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity var(--transition-fast), transform var(--transition-fast), visibility var(--transition-fast);
+  z-index: 50;
+}
+.sidebar-profile-wrapper[data-open="true"] .sidebar-profile-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.sidebar-profile-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-body);
+  color: var(--navbar-menu-text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+.sidebar-profile-menu-item:hover { background: var(--navbar-menu-item-hover-bg); }
+.sidebar-profile-menu-danger { color: var(--color-danger); }
+
+/* ===== Tooltip generic — dipakai icon-only button (notif, tema, toggle sidebar) ===== */
+.has-tooltip { position: relative; }
+
+.has-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  background: var(--sidebar-tooltip-bg);
+  backdrop-filter: blur(8px);
+  color: var(--sidebar-tooltip-text);
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  white-space: nowrap;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+  z-index: 60;
+}
+
+.has-tooltip:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Tombol sidebar-toggle posisinya beda (align-self flex-end), tooltip perlu nempel ke kanan biar gak kepotong */
+.sidebar-toggle.has-tooltip::after {
+  left: auto;
+  right: 0;
+  transform: translateY(-4px);
+}
+.sidebar-toggle.has-tooltip:hover::after {
+  transform: translateY(0);
+}
+
+/* ===== Floating mobile toggle — gantiin hamburger navbar lama, cuma tampil di mobile ===== */
+.app-mobile-toggle {
+  display: none;
+  position: fixed;
+  top: var(--space-4);
+  left: var(--space-4);
+  z-index: 40;
+  width: 42px; height: 42px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  color: var(--color-text);
+}
+
+@media (max-width: 1023px) {
+  .app-mobile-toggle { display: flex; }
 }
 
 /* Collapsed state: hide text smoothly, show icon-only + tooltip on hover */
 .app-shell[data-sidebar="collapsed"] .sidebar-link span,
 .app-shell[data-sidebar="collapsed"] .sidebar-brand span,
 .app-shell[data-sidebar="collapsed"] .sidebar-profile-name,
-.app-shell[data-sidebar="collapsed"] .sidebar-profile-role {
+.app-shell[data-sidebar="collapsed"] .sidebar-profile-role,
+.app-shell[data-sidebar="collapsed"] .sidebar-profile-caret,
+.app-shell[data-sidebar="collapsed"] .sidebar-utility {
   opacity: 0;
   width: 0;
   display: none;
