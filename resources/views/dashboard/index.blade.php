@@ -142,9 +142,7 @@
         {{-- ================= 4. Cuti ================= --}}
         @php
             $cutiKritis = $cutiEksekutif['jumlah_kritis'];
-            $cutiPersenNormal = $cutiEksekutif['total_pegawai'] > 0
-                ? round($cutiEksekutif['jumlah_normal'] / $cutiEksekutif['total_pegawai'] * 100)
-                : 100;
+            $cutiTotal = max(1, $cutiEksekutif['total_pegawai']); // hindari div/0
         @endphp
         <x-dashboard.tile
             title="Cuti"
@@ -158,20 +156,27 @@
             :live="true"
         >
            <div class="dxg-status-chart">
-                <x-chart-headline
-                    :value="$cutiPersenNormal . '%'"
-                    label="pegawai status cuti normal"
-                    :tone="$cutiKritis > 0 ? 'danger' : 'success'"
-                />
-                <div class="dxg-mini-chart" data-chart-type="bar-status"
-                    data-chart='@json($cutiChart)'></div>
+                <div class="dxg-stacked-bar-track">
+                    <div class="dxg-stacked-bar-seg tone-success" style="width: {{ $cutiEksekutif['jumlah_normal'] / $cutiTotal * 100 }}%"></div>
+                    <div class="dxg-stacked-bar-seg tone-warning" style="width: {{ $cutiEksekutif['jumlah_perhatian'] / $cutiTotal * 100 }}%"></div>
+                    <div class="dxg-stacked-bar-seg tone-danger" style="width: {{ $cutiEksekutif['jumlah_kritis'] / $cutiTotal * 100 }}%"></div>
+                </div>
                 <div class="dxg-donut-legend dxg-donut-legend--inline">
-                    @foreach ($cutiChart['labels'] as $i => $label)
-                        <div class="dxg-legend-row">
-                            <span class="dxg-legend-dot tone-{{ $cutiChart['colors'][$i] }}"></span>
-                            <span class="dxg-legend-label">{{ $label }}</span>
-                        </div>
-                    @endforeach
+                    <div class="dxg-legend-row">
+                        <span class="dxg-legend-dot tone-success"></span>
+                        <span class="dxg-legend-label">Normal</span>
+                        <span class="dxg-legend-value">{{ $cutiEksekutif['jumlah_normal'] }}</span>
+                    </div>
+                    <div class="dxg-legend-row">
+                        <span class="dxg-legend-dot tone-warning"></span>
+                        <span class="dxg-legend-label">Perhatian</span>
+                        <span class="dxg-legend-value">{{ $cutiEksekutif['jumlah_perhatian'] }}</span>
+                    </div>
+                    <div class="dxg-legend-row">
+                        <span class="dxg-legend-dot tone-danger"></span>
+                        <span class="dxg-legend-label">Kritis</span>
+                        <span class="dxg-legend-value">{{ $cutiEksekutif['jumlah_kritis'] }}</span>
+                    </div>
                 </div>
             </div>
         </x-dashboard.tile>

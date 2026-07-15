@@ -38,8 +38,8 @@ class DashboardController extends Controller
 
         // Cuti — sama pola: ringkasan eksekutif + donut chart status kesehatan cuti.
         $cutiEksekutif = $this->cutiApiService->getRingkasanEksekutif();
-        $cutiChart = $this->cutiApiService->getChartDistribusiStatus();
-
+        
+        //
         $ekinerja = $this->dashboardService->getEkinerjaSummary();
         $pelatihan = $this->dashboardService->getPelatihanSummary();
 
@@ -48,7 +48,7 @@ class DashboardController extends Controller
 
         return view('dashboard.index', compact(
             'dokumenEksekutif', 'dokumenChart', 'unitDokumenKritis',
-            'cutiEksekutif', 'cutiChart',
+            'cutiEksekutif',
             'ekinerja', 'pelatihan',
             'sdmRedistribusi', 'sdmTotalPeluang'
         ));

@@ -286,6 +286,11 @@
 .dxg-donut-legend--inline { flex-direction: row; flex-wrap: wrap; gap: var(--space-3) var(--space-4); }
 .dxg-donut-legend--inline .dxg-legend-row { flex: 0 0 auto; }
 .dxg-donut-legend--inline .dxg-legend-label { white-space: nowrap; }
+.dxg-stacked-bar-track { display: flex; height: 10px; border-radius: var(--radius-full); overflow: hidden; gap: 2px; background: var(--color-surface-inset); }
+.dxg-stacked-bar-seg { height: 100%; transition: width var(--transition-slow); min-width: 2px; }
+.dxg-stacked-bar-seg.tone-success { background: var(--color-success); }
+.dxg-stacked-bar-seg.tone-warning { background: var(--color-warning); }
+.dxg-stacked-bar-seg.tone-danger { background: var(--color-danger); }
 
 /* ===== Activity row: sedikit hover micro-lift, senada tema premium ===== */
 .dxg-activity-row { transition: background .25s ease, transform .25s ease; }

@@ -74,7 +74,7 @@
                         label="pegawai status cuti normal"
                         :tone="$eksekutif['jumlah_kritis'] > 0 ? 'danger' : 'success'"
                     />
-                    <div data-chart-type="bar-status" data-chart='@json($chartDistribusiStatus)'></div>
+                    <x-distribution-bar :series="$chartDistribusiStatus['series']" :labels="$chartDistribusiStatus['labels']" :colors="$chartDistribusiStatus['colors']" />
                     <div class="mct-donut-legend mct-donut-legend--inline">
                         <div class="mct-legend-row">
                             <span class="mct-legend-dot tone-success"></span>
@@ -167,9 +167,9 @@
                     };
                 @endphp
                 <div id="unit-{{ $unit['slug'] }}" class="mct-unit card-base"
-                     data-aos="fade-up" data-aos-delay="{{ $loop->index * 40 }}"
-                     data-status="{{ $unit['summary']['status'] }}"
-                     data-search="{{ strtolower($unit['unit']) }}">
+                    style="animation-delay: {{ $loop->index * 40 }}ms"
+                    data-status="{{ $unit['summary']['status'] }}"
+                    data-search="{{ strtolower($unit['unit']) }}">
                     <button type="button" class="mct-unit-head" data-accordion-trigger>
                         <div class="mct-unit-title">
                             <span class="mct-unit-name">{{ $unit['unit'] }}</span>

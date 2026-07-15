@@ -38,7 +38,26 @@
 .mct-chart-card { padding: var(--space-5); }
 .mct-chart-card .card-header { margin-bottom: var(--space-3); }
 
-.mct-status-chart { display: flex; flex-direction: column; gap: var(--space-4); }
+.mct-hero { text-align: center; padding: var(--space-2) 0 var(--space-4); }
+.mct-hero-value { font-size: 40px; font-weight: var(--font-weight-bold); line-height: 1; transition: color var(--transition-base); }
+.mct-hero-value.tone-danger, .mct-hero.tone-danger .mct-hero-value { color: var(--color-danger); }
+.mct-hero-value.tone-success, .mct-hero.tone-success .mct-hero-value { color: var(--color-success); }
+.mct-hero-label { font-size: var(--font-size-caption); color: var(--color-text-muted); margin-top: var(--space-2); }
+
+.mct-stacked-bar-track {
+  display: flex;
+  height: 14px;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  gap: 2px;
+  background: var(--color-surface-inset);
+  margin-bottom: var(--space-4);
+}
+.mct-stacked-bar-seg { height: 100%; transition: width var(--transition-slow); min-width: 2px; }
+.mct-stacked-bar-seg.tone-success { background: var(--color-success); }
+.mct-stacked-bar-seg.tone-warning { background: var(--color-warning); }
+.mct-stacked-bar-seg.tone-danger { background: var(--color-danger); }
+
 .mct-donut-legend { display: flex; flex-direction: column; gap: var(--space-3); flex: 1; min-width: 0; }
 .mct-donut-legend--inline { flex-direction: row; flex-wrap: wrap; gap: var(--space-2) var(--space-5); }
 .mct-legend-row { display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-body); }
@@ -146,8 +165,13 @@
 /* ===== Unit accordion ===== */
 .mct-unit-list { display: flex; flex-direction: column; gap: var(--space-3); }
 
-.mct-unit { padding: 0; overflow: hidden; transition: box-shadow var(--transition-base); }
+.mct-unit { padding: 0; overflow: hidden; transition: box-shadow var(--transition-base); animation: mctFadeUp .45s ease-out both; }
 .mct-unit:hover { box-shadow: var(--shadow-md); }
+
+@keyframes mctFadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 .mct-unit-head {
   width: 100%;
@@ -270,6 +294,5 @@
   .mct-search { max-width: none; }
   .mct-bulk-actions { margin-left: 0; }
   .mct-kpi-grid { grid-template-columns: 1fr; }
-  .mct-donut-body { flex-direction: column; }
   .mct-pegawai-grid { grid-template-columns: 1fr; }
 }
