@@ -138,7 +138,7 @@
             title="Cuti"
             subtitle="Sisa & riwayat cuti per pegawai"
             icon="fa-solid fa-umbrella-beach"
-            href="{{ route('coming-soon', 'cuti') }}"
+            href="{{ route('monitoring-cuti.index', 'cuti') }}"
             badge-text="Segera hadir"
             badge-tone="soon"
             :footer-value="$cutiAktifBulanIni"

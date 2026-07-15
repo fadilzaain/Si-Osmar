@@ -39,8 +39,11 @@ return [
     'sikawan' => [
         'base_url' => env('SIKAWAN_BASE_URL', 'https://new-sikawan.rsudjombang.id'),
         'bezetting_endpoint' => env('SIKAWAN_BEZETTING_ENDPOINT', '/api-monitoring-sdm'),
+        'dokumen_endpoint' => env('SIKAWAN_DOKUMEN_ENDPOINT', '/api-monitoring-berlaku-dokumen'),
+        'cuti_endpoint' => env('SIKAWAN_CUTI_ENDPOINT', '/api-monitoring-sisa-cuti'),
+        'storage_url' => env('SIKAWAN_STORAGE_URL'), // null = fallback ke base_url, lihat MonitoringDokumenService::getFileUrl()
         'timeout' => env('SIKAWAN_TIMEOUT', 10),
-        'cache_ttl' => env('SIKAWAN_CACHE_TTL', 900), 
+        'cache_ttl' => env('SIKAWAN_CACHE_TTL', 900),
     ],
 
 ];

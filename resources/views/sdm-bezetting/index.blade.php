@@ -33,7 +33,7 @@
                 icon="fa-solid fa-user-plus"
                 label="Perlu rekrutmen baru"
                 :value="$eksekutif['sisa_butuh_rekrutmen']"
-                comparison="sisa setelah redistribusi internal"
+                comparison="sisa setelah rotasi internal"
                 color="var(--color-warning)"
             />
             <x-stat-card
@@ -107,11 +107,11 @@
             </div>
         </div>
 
-        {{-- ================= Peluang redistribusi — lintas semua unit ================= --}}
+        {{-- ================= Peluang Rotasi — lintas semua unit ================= --}}
         <div class="bzs-rank-card card-base bzs-redis-global">
             <div class="card-header">
                 <div>
-                    <div class="card-title">Peluang redistribusi pegawai</div>
+                    <div class="card-title">Peluang rotasi pegawai</div>
                     <div class="card-subtitle">Jabatan yang kurang di satu unit, tapi lebih di unit lain </div>
                 </div>
             </div>

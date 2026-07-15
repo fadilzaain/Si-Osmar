@@ -46,6 +46,10 @@
                 <i class="fa-solid fa-file-shield"></i>
                 <span>Monitoring STR & SIP</span>
             </a>
+            <a href="{{ route('monitoring-cuti.index') }}" class="sidebar-link {{ request()->routeIs('monitoring-cuti.*') ? 'active' : '' }}" data-label="Monitoring Cuti">
+                <i class="fa-solid fa-calendar-days"></i>
+                <span>Monitoring Cuti</span>
+            </a>
         </div>
 
         <div class="sidebar-nav-group">

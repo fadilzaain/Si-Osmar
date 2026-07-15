@@ -20,7 +20,7 @@
 }
 
 .stat-card-label { font-size: var(--font-size-caption); color: var(--color-text-muted); }
-.stat-card-value { font-size: var(--font-size-h3); font-weight: var(--font-weight-bold); }
+.stat-card-value { font-size: var(--font-size-h3); font-weight: var(--font-weight-bold); font-variant-numeric: tabular-nums; }
 
 .stat-card-trend { display: flex; align-items: center; gap: var(--space-1); font-size: var(--font-size-caption); }
 .stat-card-trend.up { color: var(--color-success); }
