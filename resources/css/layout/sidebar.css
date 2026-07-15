@@ -126,6 +126,11 @@
 
 .sidebar-link i { width: 20px; text-align: center; flex-shrink: 0; }
 
+.sidebar-link-badge {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
 .sidebar-link span {
   opacity: 1;
   transition: opacity 0.2s ease 0.1s;

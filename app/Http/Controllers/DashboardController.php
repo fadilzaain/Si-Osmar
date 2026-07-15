@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Services\DashboardService;
 use App\Services\MonitoringDokumenService;
+use App\Services\CutiApiService;
 use App\Services\BezettingApiService;
 use Illuminate\Http\Request;
 
@@ -12,37 +13,44 @@ class DashboardController extends Controller
 {
     protected $dashboardService;
     protected $monitoringDokumenService;
+    protected $cutiApiService;
     protected $bezettingApiService;
 
     public function __construct(
         DashboardService $dashboardService,
         MonitoringDokumenService $monitoringDokumenService,
+        CutiApiService $cutiApiService,
         BezettingApiService $bezettingApiService,
     ) {
         $this->dashboardService = $dashboardService;
         $this->monitoringDokumenService = $monitoringDokumenService;
+        $this->cutiApiService = $cutiApiService;
         $this->bezettingApiService = $bezettingApiService;
     }
 
     public function index(Request $request)
     {
-        $ringkasan = $this->monitoringDokumenService->getRingkasanPerRuangan();
+        // Monitoring Dokumen — ringkasan eksekutif + data donut chart, plus
+        // unit paling kritis buat catatan singkat di card.
+        $dokumenEksekutif = $this->monitoringDokumenService->getRingkasanEksekutif();
+        $dokumenChart = $this->monitoringDokumenService->getChartDistribusiStatus();
+        $unitDokumenKritis = collect($this->monitoringDokumenService->getTopUnitKritis(1))->first();
+
+        // Cuti — sama pola: ringkasan eksekutif + donut chart status kesehatan cuti.
+        $cutiEksekutif = $this->cutiApiService->getRingkasanEksekutif();
+        $cutiChart = $this->cutiApiService->getChartDistribusiStatus();
+
         $ekinerja = $this->dashboardService->getEkinerjaSummary();
         $pelatihan = $this->dashboardService->getPelatihanSummary();
-        $sdm = $this->dashboardService->getSdmSummaryChart();
-        $cuti = $this->dashboardService->getCutiSummary();
 
         $sdmRedistribusi = $this->bezettingApiService->getPeluangRedistribusi(4);
         $sdmTotalPeluang = count($this->bezettingApiService->getPeluangRedistribusi());
 
-        $totalPegawai = array_sum(array_column($ringkasan, 'total_pegawai'));
-        $totalBermasalah = array_sum(array_column($ringkasan, 'bermasalah'));
-        $ruanganKritis = collect($ringkasan)->sortByDesc('bermasalah')->first();
-
         return view('dashboard.index', compact(
-            'ringkasan', 'ekinerja', 'pelatihan', 'sdm', 'cuti',
-            'sdmRedistribusi', 'sdmTotalPeluang',
-            'totalPegawai', 'totalBermasalah', 'ruanganKritis'
+            'dokumenEksekutif', 'dokumenChart', 'unitDokumenKritis',
+            'cutiEksekutif', 'cutiChart',
+            'ekinerja', 'pelatihan',
+            'sdmRedistribusi', 'sdmTotalPeluang'
         ));
     }
 }

@@ -1,59 +1,59 @@
 :root {
-  /* Color — palet Paper White + Forest (mode light, default) */
-  --color-primary: #1F4D3A;
-  --color-secondary: #2F6B4F;
-  --color-accent: #C9A227;
-  --color-success: #2F6B4F;
-  --color-warning: #B8860B;
-  --color-danger: #C0392B;
-  --color-info: #3B7A99;
-  --color-mint: #C9A227;
-  --color-mint-soft: #F7F4E9;
+  /* Color — palet Fresh Mint + Emerald (mode light, default) */
+  --color-primary: #059669;
+  --color-secondary: #10B981;
+  --color-accent: #CA8A04;
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-danger: #DC2626;
+  --color-info: #0284C7;
+  --color-mint: #34D399;
+  --color-mint-soft: #ECFDF5;
 
   --color-surface: #FFFFFF;
-  --color-surface-inset: #F7F6F2;
-  --color-background: #FCFCFB;
-  --color-border: rgba(31, 77, 58, 0.14);
-  --color-border-inset: rgba(31, 77, 58, 0.10);
-  --color-text: #232620;
-  --color-text-muted: #767D74;
+  --color-surface-inset: #F3F7F5;
+  --color-background: #F8FAF9;
+  --color-border: rgba(5, 150, 105, 0.14);
+  --color-border-inset: rgba(5, 150, 105, 0.10);
+  --color-text: #1F2937;
+  --color-text-muted: #6B7280;
 
-  /* Component-level aliases (biar komponen gak perlu tau hex asli) */
+  /* Component-level aliases  */
   --topbar-bg: var(--color-surface);
   --topbar-text: var(--color-text);
   --topbar-muted: var(--color-text-muted);
   --card-bg: var(--color-surface);
   --card-border: var(--color-border);
 
-  /* Sidebar — mode light: chrome terang, senada paper/forest */
+  /* Sidebar — mode light: chrome terang, senada mint/emerald */
   --sidebar-bg: #FFFFFF;
   --sidebar-glass-bg: rgba(255, 255, 255, 0.85);
-  --sidebar-bg-hover: #F5F3EC;
-  --sidebar-text: #4A5049;
-  --sidebar-text-strong: #232620;
-  --sidebar-text-muted: #8B8F86;
+  --sidebar-bg-hover: #F0FDF4;
+  --sidebar-text: #4B5563;
+  --sidebar-text-strong: #1F2937;
+  --sidebar-text-muted: #9CA3AF;
   --sidebar-active-bg: color-mix(in srgb, var(--color-primary) 12%, transparent);
-  --sidebar-active-text: #1F4D3A;
-  --sidebar-border: rgba(31, 77, 58, 0.12);
-  --sidebar-tooltip-bg: #232620;
-  --sidebar-tooltip-text: #FCFCFB;
+  --sidebar-active-text: #059669;
+  --sidebar-border: rgba(5, 150, 105, 0.12);
+  --sidebar-tooltip-bg: #1F2937;
+  --sidebar-tooltip-text: #F9FAFB;
 
   /* Navbar — mode light */
   --navbar-glass-bg: rgba(255, 255, 255, 0.85);
-  --navbar-border: rgba(31, 77, 58, 0.10);
-  --navbar-icon-hover-bg: rgba(31, 77, 58, 0.08);
-  --navbar-icon-hover-text: #1F4D3A;
-  --navbar-search-bg: rgba(31, 77, 58, 0.05);
-  --navbar-search-border: rgba(31, 77, 58, 0.12);
-  --navbar-search-text: #232620;
-  --navbar-search-placeholder: rgba(35, 38, 32, 0.45);
-  --navbar-profile-hover-bg: rgba(31, 77, 58, 0.08);
+  --navbar-border: rgba(5, 150, 105, 0.10);
+  --navbar-icon-hover-bg: rgba(5, 150, 105, 0.08);
+  --navbar-icon-hover-text: #059669;
+  --navbar-search-bg: rgba(5, 150, 105, 0.05);
+  --navbar-search-border: rgba(5, 150, 105, 0.12);
+  --navbar-search-text: #1F2937;
+  --navbar-search-placeholder: rgba(31, 41, 55, 0.45);
+  --navbar-profile-hover-bg: rgba(5, 150, 105, 0.08);
   --navbar-menu-bg: #FFFFFF;
-  --navbar-menu-border: rgba(31, 77, 58, 0.12);
-  --navbar-menu-text-strong: #232620;
-  --navbar-menu-text-muted: #767D74;
-  --navbar-menu-item-hover-bg: #F7F4E9;
-  --navbar-menu-divider: rgba(31, 77, 58, 0.10);
+  --navbar-menu-border: rgba(5, 150, 105, 0.12);
+  --navbar-menu-text-strong: #1F2937;
+  --navbar-menu-text-muted: #6B7280;
+  --navbar-menu-item-hover-bg: #ECFDF5;
+  --navbar-menu-divider: rgba(5, 150, 105, 0.10);
 
   /* Typography */
   --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -88,10 +88,10 @@
   --radius-xl: 24px;
   --radius-full: 9999px;
 
-  /* Elevation / Shadow */
-  --shadow-sm: 0 1px 2px rgba(35, 38, 32, 0.06);
-  --shadow-md: 0 4px 12px rgba(35, 38, 32, 0.08);
-  --shadow-lg: 0 12px 32px rgba(35, 38, 32, 0.10);
+ /* Elevation / Shadow */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.10);
   --shadow-focus: 0 0 0 3px color-mix(in srgb, var(--color-accent) 25%, transparent);
 
   /* Animation */

@@ -13,32 +13,44 @@
         };
     @endphp
     <h1 class="dxg-title">{{ $sapaan }}</h1>
-    <div class="dxg-sub">Ringkasan strategis lintas modul SDM — {{ now()->translatedFormat('d F Y') }}</div>
+    <div class="dxg-sub">Ringkasan Dashboard Si-Osmar — {{ now()->translatedFormat('d F Y') }}</div>
 
     <div class="dxg-grid">
 
         {{-- ================= 1. Monitoring Dokumen (prioritas, live) ================= --}}
-        @php
-            $dokumenStat = $dokumenStat ?? [
-                ['label' => 'STR', 'value' => '66%', 'percent' => 66, 'tone' => 'warning'],
-                ['label' => 'SIP', 'value' => '72%', 'percent' => 72, 'tone' => 'warning'],
-                ['label' => 'RKK', 'value' => '58%', 'percent' => 58, 'tone' => 'danger'],
-                ['label' => 'SPK', 'value' => '81%', 'percent' => 81, 'tone' => 'success'],
-            ];
-            $dokumenBermasalah = $dokumenBermasalah ?? 14;
-            $dokumenNote = $dokumenNote ?? 'RKK paling kritis — 9 pegawai IGD belum lengkap.';
-        @endphp
+    @php
+        $dokumenBermasalah = $dokumenEksekutif['total_bermasalah'];
+        $dokumenNote = $dokumenBermasalah <= 0
+            ? 'Seluruh dokumen legal pegawai lengkap dan berlaku di semua unit.'
+            : ($unitDokumenKritis
+                ? "{$unitDokumenKritis['unit']} paling kritis — {$unitDokumenKritis['summary']['bermasalah']} pegawai bermasalah."
+                : "{$dokumenBermasalah} pegawai punya dokumen bermasalah.");
+    @endphp
         <x-dashboard.tile
             title="Monitoring Dokumen"
             subtitle="STR, SIP, RKK & SPK seluruh pegawai"
             icon="fa-solid fa-file-shield"
             href="{{ route('monitoring-str-sip.index') }}"
-            badge-text="{{ $dokumenBermasalah }} bermasalah"
-            badge-tone="alert"
+            badge-text="{{ $dokumenBermasalah > 0 ? $dokumenBermasalah . ' bermasalah' : 'Semua lengkap' }}"
+            badge-tone="{{ $dokumenBermasalah > 0 ? 'alert' : 'neutral' }}"
+            :footer-value="$dokumenEksekutif['total_dokumen_kadaluarsa']"
+            footer-label="dokumen kadaluarsa"
             :priority="true"
             :live="true"
         >
-            <x-dashboard.progress-bar :items="$dokumenStat" />
+            <div class="dxg-donut-body">
+                <div class="dxg-mini-chart" data-chart-type="donut-multi"
+                    data-chart='@json($dokumenChart)'></div>
+                <div class="dxg-donut-legend">
+                    @foreach ($dokumenChart['labels'] as $i => $label)
+                        <div class="dxg-legend-row">
+                            <span class="dxg-legend-dot tone-{{ $dokumenChart['colors'][$i] }}"></span>
+                            <span class="dxg-legend-label">{{ $label }}</span>
+                            <span class="dxg-legend-value">{{ $dokumenChart['series'][$i] }}</span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
             <div class="dxg-doc-note">{{ $dokumenNote }}</div>
         </x-dashboard.tile>
 
@@ -86,7 +98,7 @@
             </div>
         </x-dashboard.tile>
 
-        {{-- ================= 3. SDM — card lebar, isinya peluang redistribusi pegawai lintas unit ================= --}}
+        {{-- ================= 3. SDM — card lebar ================= --}}
         <x-dashboard.tile
             title="SDM"
             subtitle="Peluang redistribusi pegawai antar unit"
@@ -126,26 +138,32 @@
 
         {{-- ================= 4. Cuti ================= --}}
         @php
-            $cutiProgress = $cutiProgress ?? [
-                ['label' => 'Ahmad Fauzi', 'value' => '8/12', 'percent' => 67, 'tone' => 'success'],
-                ['label' => 'Siti Marlina', 'value' => '3/12', 'percent' => 25, 'tone' => 'warning'],
-                ['label' => 'Budi Santoso', 'value' => '0/12', 'percent' => 0, 'tone' => 'danger'],
-            ];
-            $cutiSisaLain = $cutiSisaLain ?? 27;
-            $cutiAktifBulanIni = $cutiAktifBulanIni ?? 14;
+            $cutiKritis = $cutiEksekutif['jumlah_kritis'];
         @endphp
         <x-dashboard.tile
             title="Cuti"
-            subtitle="Sisa & riwayat cuti per pegawai"
+            subtitle="Rekap cuti tahunan seluruh pegawai"
             icon="fa-solid fa-umbrella-beach"
             href="{{ route('monitoring-cuti.index', 'cuti') }}"
-            badge-text="Segera hadir"
-            badge-tone="soon"
-            :footer-value="$cutiAktifBulanIni"
-            footer-label="cuti bulan ini"
+            badge-text="{{ $cutiKritis > 0 ? $cutiKritis . ' kritis' : 'Aman' }}"
+            badge-tone="{{ $cutiKritis > 0 ? 'alert' : 'neutral' }}"
+            :footer-value="$cutiEksekutif['rata_rata_persen_terpakai'] . '%'"
+            footer-label="rata-rata terpakai"
+            :live="true"
         >
-        <x-dashboard.progress-bar :items="$cutiProgress" />
-            <div class="dxg-mini-list-more">+{{ $cutiSisaLain }} pegawai lainnya</div>
+            <div class="dxg-donut-body">
+                <div class="dxg-mini-chart" data-chart-type="donut-multi"
+                    data-chart='@json($cutiChart)'></div>
+                <div class="dxg-donut-legend">
+                    @foreach ($cutiChart['labels'] as $i => $label)
+                        <div class="dxg-legend-row">
+                            <span class="dxg-legend-dot tone-{{ $cutiChart['colors'][$i] }}"></span>
+                            <span class="dxg-legend-label">{{ $label }}</span>
+                            <span class="dxg-legend-value">{{ $cutiChart['series'][$i] }}</span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
         </x-dashboard.tile>
 
         {{-- ================= 5. Pelatihan ================= --}}

@@ -165,6 +165,43 @@ class MonitoringDokumenService
     }
 
     /**
+ * Data siap pakai buat donut chart distribusi status dokumen (Lengkap /
+ * Akan Kadaluarsa / Bermasalah) — dipakai di card "Monitoring Dokumen"
+ * pada dashboard utama. Format sesuai renderer 'donut-multi' di
+ * dashboard-charts.js. "Bermasalah" di sini gabungan danger + neutral,
+ * sama kayak yang dipakai getRingkasanPerRuangan() biar konsisten.
+ */
+public function getChartDistribusiStatus(): array
+{
+    $eksekutif = $this->getRingkasanEksekutif();
+    $breakdownTotal = [
+        self::STATUS_SUCCESS => 0,
+        self::STATUS_WARNING => 0,
+        self::STATUS_DANGER => 0,
+        self::STATUS_NEUTRAL => 0,
+    ];
+
+    foreach ($this->getUnitList() as $unit) {
+        foreach ($unit['summary']['breakdown'] as $status => $jumlah) {
+            $breakdownTotal[$status] += $jumlah;
+        }
+    }
+
+    return [
+        'series' => [
+            $breakdownTotal[self::STATUS_SUCCESS],
+            $breakdownTotal[self::STATUS_WARNING],
+            $breakdownTotal[self::STATUS_DANGER] + $breakdownTotal[self::STATUS_NEUTRAL],
+        ],
+        'labels' => ['Lengkap', 'Akan Kadaluarsa', 'Bermasalah'],
+        'colors' => ['success', 'warning', 'danger'],
+        'size' => 128,
+        'totalValue' => $eksekutif['persen_lengkap'] . '%',
+        'totalLabel' => 'Lengkap',
+    ];
+}
+
+    /**
      * Satu pegawai dari raw API -> bentuk seragam { nama, jabatan, inisial,
      * dokumen: [SIP, SPK, RKK], overall_status }.
      */
