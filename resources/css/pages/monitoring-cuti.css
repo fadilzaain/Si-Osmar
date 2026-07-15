@@ -38,9 +38,9 @@
 .mct-chart-card { padding: var(--space-5); }
 .mct-chart-card .card-header { margin-bottom: var(--space-3); }
 
-.mct-donut-body { display: flex; align-items: center; gap: var(--space-5); }
-.mct-donut-body [data-chart-type] { width: 168px; height: 168px; flex-shrink: 0; }
+.mct-status-chart { display: flex; flex-direction: column; gap: var(--space-4); }
 .mct-donut-legend { display: flex; flex-direction: column; gap: var(--space-3); flex: 1; min-width: 0; }
+.mct-donut-legend--inline { flex-direction: row; flex-wrap: wrap; gap: var(--space-2) var(--space-5); }
 .mct-legend-row { display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-body); }
 .mct-legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
 .mct-legend-dot.tone-success { background: var(--color-success); }
@@ -216,8 +216,18 @@
   flex-shrink: 0;
 }
 .mct-pegawai-info { flex: 1; min-width: 0; }
-.mct-pegawai-name { font-weight: var(--font-weight-semibold); color: var(--color-text); font-size: var(--font-size-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mct-pegawai-name {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  font-size: var(--font-size-body);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 .mct-pegawai-meta { font-size: 11px; color: var(--color-text-muted); }
+.mct-pegawai-status-row { display: flex; }
 
 .mct-pegawai-bar { display: flex; flex-direction: column; gap: 6px; }
 .mct-pegawai-bar-track { height: 6px; border-radius: var(--radius-full); background: var(--color-surface); overflow: hidden; }

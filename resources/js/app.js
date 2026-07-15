@@ -9,8 +9,7 @@ import { initMonitoringDokumen } from './modules/monitoring-dokumen';
 import { initDashboardCharts } from './modules/dashboard-charts';
 import { initAccordion } from './modules/accordion';
 import { initSdmBezetting } from './modules/sdm-bezetting';
-import { initCountUp } from './modules/count-up';
-import { initMonitoringCuti } from './modules/monitoring-cuti';
+import { initCountUp, initDistributionBars } from './modules/count-up';import { initMonitoringCuti } from './modules/monitoring-cuti';
 
 
 window.bootstrap = bootstrap;
@@ -26,5 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initAccordion();
   initSdmBezetting();
   initCountUp();
+  initDistributionBars();
   initMonitoringCuti();
 });

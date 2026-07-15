@@ -63,9 +63,19 @@
                         <div class="card-subtitle">Sebaran seluruh pegawai berdasarkan status</div>
                     </div>
                 </div>
-                <div class="mct-donut-body">
-                    <div data-chart-type="donut-multi" data-chart='@json($chartDistribusiStatus)'></div>
-                    <div class="mct-donut-legend">
+                @php
+                    $persenNormal = $eksekutif['total_pegawai'] > 0
+                        ? round($eksekutif['jumlah_normal'] / $eksekutif['total_pegawai'] * 100)
+                        : 100;
+                @endphp
+                <div class="mct-status-chart">
+                    <x-chart-headline
+                        :value="$persenNormal . '%'"
+                        label="pegawai status cuti normal"
+                        :tone="$eksekutif['jumlah_kritis'] > 0 ? 'danger' : 'success'"
+                    />
+                    <div data-chart-type="bar-status" data-chart='@json($chartDistribusiStatus)'></div>
+                    <div class="mct-donut-legend mct-donut-legend--inline">
                         <div class="mct-legend-row">
                             <span class="mct-legend-dot tone-success"></span>
                             <span class="mct-legend-label">Normal</span>
@@ -204,6 +214,8 @@
                                                 <div class="mct-pegawai-name">{{ $p['nama'] }}</div>
                                                 <div class="mct-pegawai-meta">Cuti Tahunan {{ $p['tahun'] }}</div>
                                             </div>
+                                        </div>
+                                        <div class="mct-pegawai-status-row">
                                             <x-badge :variant="$pBadge">{{ $p['status'] }}</x-badge>
                                         </div>
 

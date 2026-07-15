@@ -281,6 +281,12 @@
 .dxg-legend-label { flex: 1; min-width: 0; color: var(--color-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .dxg-legend-value { font-weight: var(--font-weight-semibold); color: var(--color-text); }
 
+/* ===== Distribution bar (Dokumen & Cuti) — headline angka + dist-bar + legend horizontal ===== */
+.dxg-status-chart { display: flex; flex-direction: column; gap: var(--space-3); flex: 1; margin: var(--space-2) 0; }
+.dxg-donut-legend--inline { flex-direction: row; flex-wrap: wrap; gap: var(--space-3) var(--space-4); }
+.dxg-donut-legend--inline .dxg-legend-row { flex: 0 0 auto; }
+.dxg-donut-legend--inline .dxg-legend-label { white-space: nowrap; }
+
 /* ===== Activity row: sedikit hover micro-lift, senada tema premium ===== */
 .dxg-activity-row { transition: background .25s ease, transform .25s ease; }
 .dxg-activity-row:hover { background: color-mix(in srgb, var(--color-mint) 12%, var(--color-surface-inset)); transform: translateX(3px); }

@@ -38,15 +38,18 @@
             :priority="true"
             :live="true"
         >
-            <div class="dxg-donut-body">
-                <div class="dxg-mini-chart" data-chart-type="donut-multi"
-                    data-chart='@json($dokumenChart)'></div>
-                <div class="dxg-donut-legend">
+            <div class="dxg-status-chart">
+                <x-chart-headline
+                    :value="$dokumenEksekutif['persen_lengkap'] . '%'"
+                    label="dokumen lengkap & berlaku"
+                    :tone="$dokumenBermasalah > 0 ? 'warning' : 'success'"
+                />
+                    <x-distribution-bar :series="$dokumenChart['series']" :labels="$dokumenChart['labels']" :colors="$dokumenChart['colors']" />
+                <div class="dxg-donut-legend dxg-donut-legend--inline">
                     @foreach ($dokumenChart['labels'] as $i => $label)
                         <div class="dxg-legend-row">
                             <span class="dxg-legend-dot tone-{{ $dokumenChart['colors'][$i] }}"></span>
                             <span class="dxg-legend-label">{{ $label }}</span>
-                            <span class="dxg-legend-value">{{ $dokumenChart['series'][$i] }}</span>
                         </div>
                     @endforeach
                 </div>
@@ -139,6 +142,9 @@
         {{-- ================= 4. Cuti ================= --}}
         @php
             $cutiKritis = $cutiEksekutif['jumlah_kritis'];
+            $cutiPersenNormal = $cutiEksekutif['total_pegawai'] > 0
+                ? round($cutiEksekutif['jumlah_normal'] / $cutiEksekutif['total_pegawai'] * 100)
+                : 100;
         @endphp
         <x-dashboard.tile
             title="Cuti"
@@ -151,15 +157,19 @@
             footer-label="rata-rata terpakai"
             :live="true"
         >
-            <div class="dxg-donut-body">
-                <div class="dxg-mini-chart" data-chart-type="donut-multi"
+           <div class="dxg-status-chart">
+                <x-chart-headline
+                    :value="$cutiPersenNormal . '%'"
+                    label="pegawai status cuti normal"
+                    :tone="$cutiKritis > 0 ? 'danger' : 'success'"
+                />
+                <div class="dxg-mini-chart" data-chart-type="bar-status"
                     data-chart='@json($cutiChart)'></div>
-                <div class="dxg-donut-legend">
+                <div class="dxg-donut-legend dxg-donut-legend--inline">
                     @foreach ($cutiChart['labels'] as $i => $label)
                         <div class="dxg-legend-row">
                             <span class="dxg-legend-dot tone-{{ $cutiChart['colors'][$i] }}"></span>
                             <span class="dxg-legend-label">{{ $label }}</span>
-                            <span class="dxg-legend-value">{{ $cutiChart['series'][$i] }}</span>
                         </div>
                     @endforeach
                 </div>
