@@ -60,15 +60,15 @@
         </div>
 
         <div class="sidebar-nav-group">
-            <div class="sidebar-nav-label">Lainnya</div>
+            <div class="sidebar-nav-label"></div>
             <!-- <a href="{{ route('coming-soon', 'laporan-evaluasi') }}" class="sidebar-link {{ request()->routeIs('coming-soon') && request()->route('module') === 'laporan-evaluasi' ? 'active' : '' }}" data-label="Laporan & Evaluasi">
                 <i class="fa-solid fa-file-lines"></i>
                 <span>Laporan & Evaluasi</span>
             </a> -->
-            <a href="#" class="sidebar-link" data-label="Pengaturan">
+            <!-- <a href="#" class="sidebar-link" data-label="Pengaturan">
                 <i class="fa-solid fa-gear"></i>
                 <span>Pengaturan</span>
-            </a>
+            </a> -->
         </div>
 
     </nav>
