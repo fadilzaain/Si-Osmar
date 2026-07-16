@@ -4,10 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 /**
- * @deprecated Sejak Juli 2026 — sama seperti Pegawai, nyisa dari rencana
+ * @deprecated Sejak Juli 2026 nyisa dari rencana
  * penyimpanan mutasi lokal yang gak jadi dipakai. Fitur rotasi sekarang
  * digantikan analisis "peluang redistribusi" dari BezettingApiService
- * (lihat getPeluangRedistribusi() dan getPeluangRedistribusiUntukUnit()).
  */
 class Mutasi extends Model
 {
@@ -20,7 +19,7 @@ class Mutasi extends Model
         'keterangan',
     ];
 
-    // TAMBAHAN: cast tanggal_mutasi jadi Carbon
+    // cast tanggal_mutasi jadi Carbon
     protected $casts = [
         'tanggal_mutasi' => 'date',
     ];

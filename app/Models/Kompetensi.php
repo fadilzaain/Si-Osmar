@@ -28,14 +28,12 @@ class Kompetensi extends Model
 
     
     // Pakai accessor ini kalo butuh cek expired secara real-time,
-    // jangan make kolom status ajaa
     public function getIsExpiredAttribute(): bool
     {
         return $this->tanggal_kadaluarsa->isPast();
     }
 
     // scope buat cari sertifikat yang mau kadaluarsa dalam N hari ke depan
-    // (berguna buat fitur alert/notifikasi di Milestone selanjutnya)
     public function scopeAkanKadaluarsa($query, int $hari = 30)
     {
         return $query->whereBetween('tanggal_kadaluarsa', [now(), now()->addDays($hari)]);

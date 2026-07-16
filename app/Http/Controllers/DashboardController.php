@@ -36,7 +36,7 @@ class DashboardController extends Controller
         $dokumenChart = $this->monitoringDokumenService->getChartDistribusiStatus();
         $unitDokumenKritis = collect($this->monitoringDokumenService->getTopUnitKritis(1))->first();
 
-        // Cuti — sama pola: ringkasan eksekutif + donut chart status kesehatan cuti.
+        // Cuti : ringkasan eksekutif + donut chart status kesehatan cuti.
         $cutiEksekutif = $this->cutiApiService->getRingkasanEksekutif();
         
         //

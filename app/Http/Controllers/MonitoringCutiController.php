@@ -21,7 +21,7 @@ class MonitoringCutiController extends Controller
             'kesimpulan' => $this->cutiService->getKesimpulan(),
             'topPegawaiKritis' => $this->cutiService->getTopPegawaiKritis(8),
 
-            // Data siap pakai buat 2 chart di atas halaman.
+            // Data siap pakai
             'chartDistribusiStatus' => $this->cutiService->getChartDistribusiStatus(),
             'chartTopPegawai' => $this->cutiService->getChartTopPegawai(8),
         ]);

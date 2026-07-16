@@ -28,7 +28,7 @@
     @endphp
         <x-dashboard.tile
             title="Monitoring Dokumen"
-            subtitle="STR, SIP, RKK & SPK seluruh pegawai"
+            subtitle="SIP, RKK & SPK seluruh pegawai"
             icon="fa-solid fa-file-shield"
             href="{{ route('monitoring-str-sip.index') }}"
             badge-text="{{ $dokumenBermasalah > 0 ? $dokumenBermasalah . ' bermasalah' : 'Semua lengkap' }}"

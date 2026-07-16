@@ -28,7 +28,7 @@ class SdmBezettingController extends Controller
             'totalUnit' => count($ringkasan),
             'totalUnitKurang' => $totalUnitKurang,
 
-            // Buat bagian ringkasan eksekutif di atas halaman.
+            // Buat bagian ringkasan eksekutif 
             'eksekutif' => $this->bezettingService->getRingkasanEksekutif(),
             'kesimpulan' => $this->bezettingService->getKesimpulan(),
             'topUnitKritis' => $this->bezettingService->getTopUnitKritis(6),
