@@ -17,6 +17,7 @@
     },
     "dependencies": {
         "@fontsource/inter": "^5.2.8",
+        "@fontsource/plus-jakarta-sans": "^5.2.8",
         "@fortawesome/fontawesome-free": "^7.3.0",
         "@popperjs/core": "^2.11.8",
         "animate.css": "^4.1.1",
