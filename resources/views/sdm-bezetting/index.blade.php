@@ -70,6 +70,7 @@
                         <div class="bzs-rank-empty">Semua unit terpenuhi kebutuhannya.</div>
                     @endif
                 </div>
+            </div>
 
             <div class="bzs-rank-card card-base">
                 <div class="card-header">
