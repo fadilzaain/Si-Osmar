@@ -99,6 +99,13 @@ function renderBarHorizontal(el, data, p) {
     const maxVal = data.max ?? (suffix === '%' ? 100 : undefined);
     const format = (val) => val + suffix;
 
+    // hideAxis: tiap bar di sini udah punya dataLabel sendiri di ujungnya,
+    // jadi skala angka + gridline di bawah itu berlebihan — dan gampang
+    // numpuk kalau suffix-nya panjang (mis. " orang") di card yang sempit.
+    // Kalau di-set, chart-nya juga dikasih gradient + sudut lebih rounded
+    // biar tampil lebih premium/modern. Dipakai di chart "Unit paling kritis".
+    const hideAxis = data.hideAxis === true;
+
     // Opsional: kalau ada `ids` (satu per bar, urutan sama kayak `labels`),
     // klik bar dispatch custom event ke elemen chart-nya sendiri. Modul
     // halaman yang butuh (mis. sdm-bezetting.js) tinggal listen event ini —
@@ -108,9 +115,9 @@ function renderBarHorizontal(el, data, p) {
 
     const xaxis = {
         categories: data.labels || [],
-        labels: { style: { colors: p.text, fontSize: '11px' }, formatter: format },
-        axisBorder: { color: p.border },
-        axisTicks: { color: p.border },
+        labels: { show: !hideAxis, style: { colors: p.text, fontSize: '11px' }, formatter: format },
+        axisBorder: { show: !hideAxis, color: p.border },
+        axisTicks: { show: !hideAxis, color: p.border },
     };
     if (maxVal !== undefined) xaxis.max = maxVal;
 
@@ -131,16 +138,42 @@ function renderBarHorizontal(el, data, p) {
         },
         series: [{ name: data.seriesName || 'Nilai', data: data.series || [] }],
         colors: [color],
+        fill: hideAxis
+            ? {
+                  type: 'gradient',
+                  gradient: {
+                      type: 'horizontal',
+                      shade: 'light',
+                      shadeIntensity: 0.35,
+                      gradientToColors: [color],
+                      opacityFrom: 0.75,
+                      opacityTo: 1,
+                      stops: [0, 100],
+                  },
+              }
+            : { type: 'solid' },
         plotOptions: {
-            bar: { horizontal: true, borderRadius: 4, barHeight: '55%', distributed: false },
+            bar: {
+                horizontal: true,
+                borderRadius: hideAxis ? 8 : 4,
+                borderRadiusApplication: 'end',
+                barHeight: hideAxis ? '60%' : '55%',
+                distributed: false,
+            },
         },
         xaxis,
-        yaxis: { labels: { style: { colors: p.text, fontSize: '12px' } } },
-        grid: { borderColor: p.border, xaxis: { lines: { show: true } }, yaxis: { lines: { show: false } } },
+        yaxis: { labels: { style: { colors: p.text, fontSize: '12px', fontWeight: 500 } } },
+        grid: {
+            show: !hideAxis,
+            borderColor: p.border,
+            xaxis: { lines: { show: !hideAxis } },
+            yaxis: { lines: { show: false } },
+            padding: hideAxis ? { top: -12, bottom: -8, left: 0, right: 16 } : { top: 0, right: 0, bottom: 0, left: 0 },
+        },
         dataLabels: {
             enabled: true,
             formatter: format,
-            style: { fontSize: '11px', fontWeight: 600, colors: [p.text] },
+            style: { fontSize: '11px', fontWeight: 700, colors: [p.text] },
             offsetX: 24,
             dropShadow: { enabled: false },
         },

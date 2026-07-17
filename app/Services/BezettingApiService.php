@@ -247,7 +247,8 @@ class BezettingApiService
             'seriesName' => 'Kekurangan',
             'suffix' => ' orang',
             'color' => 'danger',
-            'height' => max(220, $top->count() * 46),
+            'hideAxis' => true,
+            'height' => max(200, $top->count() * 42),
         ];
     }
 
