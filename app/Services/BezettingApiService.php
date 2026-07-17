@@ -230,6 +230,28 @@ class BezettingApiService
     }
 
     /**
+     * Bentuk data buat renderer chart 'bar-horizontal' (dashboard-charts.js),
+     * dari sumber yang sama dengan getTopUnitKritis(). Urutan dibalik karena
+     * ApexCharts horizontal bar render dari bawah ke atas — unit paling
+     * kritis harus tetap muncul di baris paling atas.
+     * 'ids' dipakai buat klik-navigasi ke detail unit di bagian drill-down.
+     */
+    public function getChartUnitKritis(int $limit = 6): array
+    {
+        $top = collect($this->getTopUnitKritis($limit))->reverse()->values();
+
+        return [
+            'labels' => $top->map(fn ($u) => $u['unit'])->all(),
+            'series' => $top->map(fn ($u) => $u['summary']['total_kekurangan'])->all(),
+            'ids' => $top->map(fn ($u) => $u['slug'])->all(),
+            'seriesName' => 'Kekurangan',
+            'suffix' => ' orang',
+            'color' => 'danger',
+            'height' => max(220, $top->count() * 46),
+        ];
+    }
+
+    /**
      * Total kekurangan dikelompokkan per jabatan, dijumlah lintas semua unit.
      * Ini yang jawab pertanyaan "jabatan apa yang paling butuh direkrut buat
      * seluruh rumah sakit", bukan cuma per unit.

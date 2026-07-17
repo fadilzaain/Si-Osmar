@@ -92,30 +92,59 @@ function renderBarHorizontal(el, data, p) {
     const color = colorMap[data.color] || p.danger;
     const height = data.height || 260;
 
+    // Default persen (dipakai duluan buat "% Terpakai" cuti). Kalau data
+    // bukan persen (mis. jumlah orang), controller kirim `suffix` & `max`
+    // sendiri lewat payload chart-nya.
+    const suffix = data.suffix ?? '%';
+    const maxVal = data.max ?? (suffix === '%' ? 100 : undefined);
+    const format = (val) => val + suffix;
+
+    // Opsional: kalau ada `ids` (satu per bar, urutan sama kayak `labels`),
+    // klik bar dispatch custom event ke elemen chart-nya sendiri. Modul
+    // halaman yang butuh (mis. sdm-bezetting.js) tinggal listen event ini —
+    // dashboard-charts.js gak perlu tau apa yang terjadi setelah diklik.
+    const clickable = Array.isArray(data.ids);
+    if (clickable) el.classList.add('is-clickable');
+
+    const xaxis = {
+        categories: data.labels || [],
+        labels: { style: { colors: p.text, fontSize: '11px' }, formatter: format },
+        axisBorder: { color: p.border },
+        axisTicks: { color: p.border },
+    };
+    if (maxVal !== undefined) xaxis.max = maxVal;
+
     const options = {
-        chart: { type: 'bar', height, toolbar: { show: false }, animations: { enabled: true, speed: 500, easing: 'easeinout' } },
+        chart: {
+            type: 'bar',
+            height,
+            toolbar: { show: false },
+            animations: { enabled: true, speed: 500, easing: 'easeinout' },
+            events: clickable
+                ? {
+                      dataPointSelection: (event, ctx, opts) => {
+                          const id = data.ids[opts.dataPointIndex];
+                          if (id) el.dispatchEvent(new CustomEvent('chart:point-click', { detail: { id } }));
+                      },
+                  }
+                : undefined,
+        },
         series: [{ name: data.seriesName || 'Nilai', data: data.series || [] }],
         colors: [color],
         plotOptions: {
             bar: { horizontal: true, borderRadius: 4, barHeight: '55%', distributed: false },
         },
-        xaxis: {
-            categories: data.labels || [],
-            max: 100,
-            labels: { style: { colors: p.text, fontSize: '11px' }, formatter: (val) => val + '%' },
-            axisBorder: { color: p.border },
-            axisTicks: { color: p.border },
-        },
+        xaxis,
         yaxis: { labels: { style: { colors: p.text, fontSize: '12px' } } },
         grid: { borderColor: p.border, xaxis: { lines: { show: true } }, yaxis: { lines: { show: false } } },
         dataLabels: {
             enabled: true,
-            formatter: (val) => val + '%',
+            formatter: format,
             style: { fontSize: '11px', fontWeight: 600, colors: [p.text] },
             offsetX: 24,
             dropShadow: { enabled: false },
         },
-        tooltip: { theme: 'dark', y: { formatter: (val) => val + '%' } },
+        tooltip: { theme: 'dark', y: { formatter: format } },
     };
     return new ApexCharts(el, options).render();
 }

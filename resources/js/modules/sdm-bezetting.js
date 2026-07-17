@@ -65,16 +65,23 @@ export function initSdmBezetting() {
         });
     });
 
-    // Klik salah satu baris di "Unit paling kritis" -> lompat & buka
-    // card detail unit itu di bagian drill-down bawah.
-    page.querySelectorAll('[data-scroll-to]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-            const target = document.getElementById('unit-' + btn.dataset.scrollTo);
-            if (!target) return;
+    // Lompat & buka card detail unit di bagian drill-down bawah. Dipicu dari
+    // dua tempat: tombol [data-scroll-to] biasa, dan klik bar di chart
+    // "Unit paling kritis" (lewat custom event dari dashboard-charts.js).
+    function openAndScrollToUnit(slug) {
+        const target = document.getElementById('unit-' + slug);
+        if (!target) return;
 
-            target.hidden = false;
-            target.classList.add('open');
-            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        });
+        target.hidden = false;
+        target.classList.add('open');
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    page.querySelectorAll('[data-scroll-to]').forEach((btn) => {
+        btn.addEventListener('click', () => openAndScrollToUnit(btn.dataset.scrollTo));
+    });
+
+    page.querySelector('[data-unit-kritis-chart]')?.addEventListener('chart:point-click', (e) => {
+        openAndScrollToUnit(e.detail.id);
     });
 }

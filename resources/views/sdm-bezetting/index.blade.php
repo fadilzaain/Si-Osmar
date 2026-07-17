@@ -64,22 +64,12 @@
                     </div>
                 </div>
                 <div class="bzs-rank-body">
-                    @forelse ($topUnitKritis as $u)
-                        @php $maxUnit = $topUnitKritis[0]['summary']['total_kekurangan'] ?: 1; @endphp
-                        <button type="button" class="bzs-rank-row" data-scroll-to="{{ $u['slug'] }}">
-                            <div class="bzs-rank-info">
-                                <span class="bzs-rank-name">{{ $u['unit'] }}</span>
-                                <span class="bzs-rank-value">Kurang {{ $u['summary']['total_kekurangan'] }}</span>
-                            </div>
-                            <div class="bzs-rank-bar-track">
-                                <div class="bzs-rank-bar-fill tone-danger" style="width: {{ round($u['summary']['total_kekurangan'] / $maxUnit * 100) }}%"></div>
-                            </div>
-                        </button>
-                    @empty
+                    @if (count($chartUnitKritis['labels']))
+                        <div data-chart-type="bar-horizontal" data-chart='@json($chartUnitKritis)' data-unit-kritis-chart></div>
+                    @else
                         <div class="bzs-rank-empty">Semua unit terpenuhi kebutuhannya.</div>
-                    @endforelse
+                    @endif
                 </div>
-            </div>
 
             <div class="bzs-rank-card card-base">
                 <div class="card-header">
