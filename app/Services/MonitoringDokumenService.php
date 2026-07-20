@@ -362,7 +362,7 @@ class MonitoringDokumenService
             try {
                 $response = Http::timeout(config('services.sikawan.timeout', 10))
                     ->acceptJson()
-                    ->withOptions(['verify' => ! app()->isLocal()])
+                    ->withOptions(['verify' => app()->isLocal() ? false : config('services.sikawan.verify_ssl', true)])
                     ->get($baseUrl . $endpoint);
 
                 if (! $response->successful()) {

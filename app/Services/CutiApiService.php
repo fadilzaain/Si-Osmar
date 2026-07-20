@@ -307,8 +307,8 @@ class CutiApiService
                     ->acceptJson()
                     // SSL verification dimatikan cuma di environment local — banyak
                     // setup Windows (Laragon/XAMPP) belum punya CA bundle terpasang.
-                    // JANGAN sampai baris ini nyala di production/staging.
-                    ->withOptions(['verify' => ! app()->isLocal()])
+                    // Di production, ikutin SIKAWAN_VERIFY_SSL di .env (default true).
+                    ->withOptions(['verify' => app()->isLocal() ? false : config('services.sikawan.verify_ssl', true)])
                     ->get($baseUrl . $endpoint);
 
                 if (! $response->successful()) {
