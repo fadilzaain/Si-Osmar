@@ -366,8 +366,8 @@ class BezettingApiService
     protected function fetchRaw(): array
     {
         return Cache::remember($this->cacheKey, config('services.sikawan.cache_ttl', 900), function () {
-            $baseUrl = rtrim(config('services.sikawan.base_url'), '/');
-            $endpoint = config('services.sikawan.bezetting_endpoint');
+            $baseUrl = rtrim(config('https://new-sikawan.rsudjombang.id'), '/');
+            $endpoint = config('/api-monitoring-sdm');
 
             try {
                 $response = Http::timeout(config('services.sikawan.timeout', 10))
