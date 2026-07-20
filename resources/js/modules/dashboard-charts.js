@@ -134,7 +134,7 @@ function renderBarHorizontal(el, data, p) {
                           if (id) el.dispatchEvent(new CustomEvent('chart:point-click', { detail: { id } }));
                       },
                   }
-                : undefined,
+                : {},
         },
         series: [{ name: data.seriesName || 'Nilai', data: data.series || [] }],
         colors: [color],
@@ -191,17 +191,41 @@ const renderers = {
 let activeCharts = [];
 let observerAttached = false;
 
+// Sebelumnya destroy chart lama dan render chart baru dilakukan "berbarengan"
+// (destroy() dipanggil tapi gak ditunggu selesai sebelum instance baru dibuat
+// di elemen yang sama). Kalau renderAll() kepanggil dua kali beruntun dalam
+// jarak dekat (mis. tema toggle cepat, atau halaman lama masih hidup gara-gara
+// HMR cuma reload CSS bukan reload penuh), ApexCharts bisa nabrak state
+// internalnya sendiri di elemen yang sama → muncul error
+// "Cannot read properties of undefined (reading 'beforeMount')" dan chart-nya
+// gagal mount (kosong, gak ada fallback). Fix-nya: tunggu semua instance lama
+// beneran selesai di-destroy dulu, baru render yang baru.
 function renderAll() {
-    activeCharts.forEach((c) => c.then((inst) => inst.destroy()).catch(() => {}));
+    const toDestroy = activeCharts;
     activeCharts = [];
 
-    const p = palette();
-    document.querySelectorAll('[data-chart-type]').forEach((el) => {
-        const renderer = renderers[el.dataset.chartType];
-        if (!renderer) return;
-        const data = JSON.parse(el.dataset.chart);
-        el.innerHTML = '';
-        activeCharts.push(renderer(el, data, p));
+    Promise.allSettled(toDestroy.map((c) => c.then((inst) => inst.destroy()))).then(() => {
+        const p = palette();
+        document.querySelectorAll('[data-chart-type]').forEach((el) => {
+            const renderer = renderers[el.dataset.chartType];
+            if (!renderer) return;
+
+            let data;
+            try {
+                data = JSON.parse(el.dataset.chart);
+            } catch (err) {
+                console.error('Data chart gak valid buat', el.dataset.chartType, err);
+                return;
+            }
+
+            el.innerHTML = '';
+            const chartPromise = renderer(el, data, p);
+            chartPromise.catch((err) => {
+                console.error('Gagal render chart', el.dataset.chartType, err);
+                el.innerHTML = '<div class="chart-render-error">Grafik gagal dimuat. Coba reload halaman.</div>';
+            });
+            activeCharts.push(chartPromise);
+        });
     });
 }
 

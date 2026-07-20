@@ -38,6 +38,9 @@
 .mct-chart-card { padding: var(--space-5); }
 .mct-chart-card .card-header { margin-bottom: var(--space-3); }
 
+/* Bungkus chart-headline + dist-bar + legend (kartu "Distribusi Status Cuti") */
+.mct-status-chart { display: flex; flex-direction: column; gap: var(--space-3); flex: 1; margin: var(--space-2) 0; }
+
 .mct-hero { text-align: center; padding: var(--space-2) 0 var(--space-4); }
 .mct-hero-value { font-size: 40px; font-weight: var(--font-weight-bold); line-height: 1; transition: color var(--transition-base); }
 .mct-hero-value.tone-danger, .mct-hero.tone-danger .mct-hero-value { color: var(--color-danger); }

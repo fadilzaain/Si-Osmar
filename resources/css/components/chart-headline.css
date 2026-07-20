@@ -34,3 +34,10 @@
 .dist-bar-segment.tone-primary { background: var(--color-primary); }
 .dist-bar-segment.tone-info { background: var(--color-info); }
 
+.chart-render-error {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-muted);
+  font-style: italic;
+  text-align: center;
+  padding: var(--space-6) var(--space-4);
+}
