@@ -38,8 +38,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/components-preview', function () {
         return view('components-preview');
     })->name('components.preview');
-});
-
 
     //monitoring dokumen controller
     Route::get('/monitoring-str-sip', [MonitoringDokumenController::class, 'index'])
@@ -48,10 +46,16 @@ Route::middleware('auth')->group(function () {
     //bezetting sdm 
     Route::get('/sdm-bezetting', [SdmBezettingController::class, 'index'])
         ->name('sdm-bezetting.index');
-    
+
+    // Sementara: buat ngecek error API SI KAWAN tanpa perlu akses SSH server.
+    // Hapus kalau udah gak dibutuhin.
+    Route::get('/sdm-bezetting/diagnostic', [SdmBezettingController::class, 'diagnostic'])
+        ->name('sdm-bezetting.diagnostic');
+
     //Monitoring cuti
     Route::get('/monitoring-cuti', [MonitoringCutiController::class, 'index'])
         ->name('monitoring-cuti.index');
 
     //detail per card
     Route::get('/segera-hadir/{module}', [ComingSoonController::class, 'show'])->name('coming-soon');
+});
