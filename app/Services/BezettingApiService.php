@@ -363,22 +363,29 @@ class BezettingApiService
      * balikin array kosong + catat ke log, biar gampang di-debug tanpa bikin
      * halaman ikut error.
      */
+    protected string $lastErrorCacheKey = 'sdm.bezetting.last_error';
+
     protected function fetchRaw(): array
     {
         return Cache::remember($this->cacheKey, config('services.sikawan.cache_ttl', 900), function () {
-            $baseUrl = rtrim(config('https://new-sikawan.rsudjombang.id'), '/');
-            $endpoint = config('/api-monitoring-sdm');
+            $baseUrl = rtrim(config('services.sikawan.base_url'), '/');
+            $endpoint = config('services.sikawan.bezetting_endpoint');
 
             try {
                 $response = Http::timeout(config('services.sikawan.timeout', 10))
                     ->acceptJson()
                     // SSL verification dimatikan cuma di environment local — banyak
                     // setup Windows (Laragon/XAMPP) belum punya CA bundle terpasang.
-                    // JANGAN sampai baris ini nyala di production/staging.
-                    ->withOptions(['verify' => ! app()->isLocal()])
+                    // Di production, ikutin SIKAWAN_VERIFY_SSL di .env (default true).
+                    // Kalau ternyata SSL server SI KAWAN bermasalah (CA bundle server
+                    // hosting belum lengkap — ini yang kejadian sekarang), sementara
+                    // bisa di-set false lewat .env TANPA perlu ubah kode lagi.
+                    ->withOptions(['verify' => app()->isLocal() ? false : config('services.sikawan.verify_ssl', true)])
                     ->get($baseUrl . $endpoint);
 
                 if (! $response->successful()) {
+                    $this->simpanErrorTerakhir('HTTP status tidak sukses: ' . $response->status());
+
                     Log::warning('BezettingApiService: response tidak sukses', [
                         'status' => $response->status(),
                     ]);
@@ -386,10 +393,16 @@ class BezettingApiService
                     return [];
                 }
 
+                // Fetch berhasil — bersihin catatan error lama biar gak nyasar
+                // dianggap error yang masih terjadi.
+                Cache::forget($this->lastErrorCacheKey);
+
                 $body = $response->json();
 
                 return $body['data'] ?? [];
             } catch (\Throwable $e) {
+                $this->simpanErrorTerakhir($e->getMessage());
+
                 Log::error('BezettingApiService: gagal fetch API bezetting', [
                     'message' => $e->getMessage(),
                 ]);
@@ -397,5 +410,30 @@ class BezettingApiService
                 return [];
             }
         });
+    }
+
+    /**
+     * Catat detail kegagalan fetch terakhir ke cache (bukan cuma ke file log),
+     * biar bisa dilihat dari halaman diagnostic tanpa perlu akses SSH ke server.
+     * Cache ini sengaja dipisah dari cache data ($cacheKey) dan disimpan lebih
+     * lama (24 jam) biar gak keburu hilang sebelum sempat dicek.
+     */
+    protected function simpanErrorTerakhir(string $pesan): void
+    {
+        Cache::put($this->lastErrorCacheKey, [
+            'pesan' => $pesan,
+            'waktu' => now()->toDateTimeString(),
+            'base_url' => config('services.sikawan.base_url'),
+            'endpoint' => config('services.sikawan.bezetting_endpoint'),
+        ], now()->addDay());
+    }
+
+    /**
+     * Ambil catatan error terakhir (kalau ada) — dipakai di halaman diagnostic.
+     * Null berarti fetch terakhir sukses / belum pernah gagal.
+     */
+    public function getLastError(): ?array
+    {
+        return Cache::get($this->lastErrorCacheKey);
     }
 }

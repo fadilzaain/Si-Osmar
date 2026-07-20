@@ -36,6 +36,7 @@ return [
     ],
 
     // API eksternal SIKAWAN RSUD Jombang — sumber data Bezetting SDM.
+     // API eksternal SIKAWAN RSUD Jombang — sumber data Bezetting SDM.
     'sikawan' => [
         'base_url' => env('SIKAWAN_BASE_URL', 'https://new-sikawan.rsudjombang.id'),
         'bezetting_endpoint' => env('SIKAWAN_BEZETTING_ENDPOINT', '/api-monitoring-sdm'),
@@ -44,6 +45,12 @@ return [
         'storage_url' => env('SIKAWAN_STORAGE_URL'), // null = fallback ke base_url, lihat MonitoringDokumenService::getFileUrl()
         'timeout' => env('SIKAWAN_TIMEOUT', 10),
         'cache_ttl' => env('SIKAWAN_CACHE_TTL', 900),
+        // Verifikasi SSL certificate API SI KAWAN. Default true (aman).
+        // Set SIKAWAN_VERIFY_SSL=false di .env HANYA kalau ketauan dari
+        // halaman diagnostic errornya soal SSL certificate (cURL error 60),
+        // dan itu pun sebaiknya sementara sambil nunggu CA bundle server
+        // hosting dibenerin.
+        'verify_ssl' => env('SIKAWAN_VERIFY_SSL', true),
     ],
 
 ];

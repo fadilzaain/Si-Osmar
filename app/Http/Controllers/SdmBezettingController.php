@@ -36,4 +36,19 @@ class SdmBezettingController extends Controller
             'peluangRedistribusiGlobal' => $this->bezettingService->getPeluangRedistribusi(8),
         ]);
     }
+
+    /**
+     * Halaman diagnostic sementara — nunjukin detail error terakhir pas
+     * gagal fetch API SI KAWAN (kalau ada), tanpa perlu buka log file di
+     * server. Diproteksi middleware 'auth' (lihat routes/web.php), jadi
+     * cuma bisa diakses setelah login. Hapus route + method ini kalau
+     * masalah API-nya udah kelar dan gak dibutuhin lagi.
+     */
+    public function diagnostic()
+    {
+        return response()->json([
+            'last_error' => $this->bezettingService->getLastError(),
+            'keterangan' => 'last_error null artinya fetch terakhir SUKSES (atau belum pernah dicoba sejak cache dibersihkan).',
+        ]);
+    }
 }
