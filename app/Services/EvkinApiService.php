@@ -126,41 +126,48 @@ class EvkinApiService
     }
 
     /**
-     * Data siap pakai buat donut chart distribusi predikat seluruh pegawai
-     * yang sudah dinilai.
+     * Data siap pakai buat bar chart distribusi predikat seluruh pegawai
+     * yang sudah dinilai (sebelumnya donut — diganti bar biar jumlah per
+     * predikat lebih gampang dibandingkan langsung, bukan cuma proporsi).
+     * Satu warna per bar sesuai tone predikat masing-masing (mode distributed
+     * di renderBarHorizontal).
      */
     public function getChartDistribusiPredikat(): array
     {
         $eksekutif = $this->getRingkasanEksekutif();
 
         return [
-            'series' => array_values($eksekutif['per_predikat']),
             'labels' => self::URUTAN_PREDIKAT,
+            'series' => array_values($eksekutif['per_predikat']),
             'colors' => array_values(self::TONE_PREDIKAT),
-            'size' => 168,
-            'totalValue' => $eksekutif['total_dinilai'],
-            'totalLabel' => 'Dinilai',
+            'seriesName' => 'Jumlah Pegawai',
+            'suffix' => ' orang',
+            'height' => 260,
         ];
     }
 
     /**
-     * Data siap pakai buat horizontal bar chart "unit paling butuh perhatian"
-     * — diurutkan dari persentase capaian baik paling rendah (getRingkasanPerUnit
-     * sudah diurutkan begitu, tinggal ambil & balik urutan buat tampilan bar).
+     * Data siap pakai buat horizontal bar chart "unit paling butuh perhatian".
+     * Basisnya persentase pegawai yang BELUM DINILAI sama sekali (bukan
+     * persentase capaian baik) — belum dinilai itu lebih actionable buat
+     * direktur: itu berarti ada pegawai yang belum ngumpulin/dievaluasi,
+     * bukan sekadar predikatnya kurang bagus. Diurutkan dari yang paling
+     * banyak belum dinilai.
      */
     public function getChartUnitPerluPerhatian(int $limit = 8): array
     {
         $unit = collect($this->getRingkasanPerUnit())
-            ->filter(fn ($u) => $u['summary']['total_dinilai'] > 0)
+            ->filter(fn ($u) => $u['summary']['total_pegawai'] > 0)
+            ->sortByDesc(fn ($u) => $u['summary']['persen_belum_dinilai'])
             ->take($limit)
             ->reverse()
             ->values();
 
         return [
             'labels' => $unit->map(fn ($u) => Str::limit($u['unit'], 22))->all(),
-            'series' => $unit->map(fn ($u) => $u['summary']['persen_baik'])->all(),
-            'seriesName' => '% Capaian Baik',
-            'color' => 'primary',
+            'series' => $unit->map(fn ($u) => $u['summary']['persen_belum_dinilai'])->all(),
+            'seriesName' => '% Belum Dinilai',
+            'color' => 'danger',
             'height' => max(220, $unit->count() * 34),
         ];
     }
@@ -174,10 +181,10 @@ class EvkinApiService
         return collect($rows)
             ->map(function ($r) {
                 $triwulan = [
-                    'tw_1' => $r['tw_1'] ?? null,
-                    'tw_2' => $r['tw_2'] ?? null,
-                    'tw_3' => $r['tw_3'] ?? null,
-                    'tw_4' => $r['tw_4'] ?? null,
+                    'tw_1' => $this->normalisasiPredikat($r['tw_1'] ?? null),
+                    'tw_2' => $this->normalisasiPredikat($r['tw_2'] ?? null),
+                    'tw_3' => $this->normalisasiPredikat($r['tw_3'] ?? null),
+                    'tw_4' => $this->normalisasiPredikat($r['tw_4'] ?? null),
                 ];
 
                 [$predikatTerkini, $twTerkini] = $this->cariPredikatTerkini($triwulan);
@@ -195,6 +202,32 @@ class EvkinApiService
             ->sortBy('nama')
             ->values()
             ->all();
+    }
+
+    /**
+     * Samain teks predikat mentah dari API SIKAWAN ke salah satu string resmi
+     * di URUTAN_PREDIKAT (kalau cocok, abaikan beda spasi/kapitalisasi) —
+     * dipanggil sekali di titik masuk data (kelompokkanPegawai), biar semua
+     * perbandingan string persis di bawahnya (hitungan per predikat, tone
+     * badge) gak diam-diam gagal cuma gara-gara API ngirim "sangat baik"
+     * atau ada spasi nyempil, padahal maksudnya predikat yang sama.
+     * Predikat di luar daftar resmi (typo/format lain) dibalikin apa adanya
+     * biar tetap kelihatan di sel, cuma gak masuk hitungan statistik resmi.
+     */
+    protected function normalisasiPredikat(?string $predikat): ?string
+    {
+        $bersih = trim((string) $predikat);
+        if ($bersih === '') {
+            return null;
+        }
+
+        foreach (self::URUTAN_PREDIKAT as $resmi) {
+            if (strcasecmp($bersih, $resmi) === 0) {
+                return $resmi;
+            }
+        }
+
+        return $bersih;
     }
 
     /**
@@ -226,15 +259,23 @@ class EvkinApiService
             $jumlahPerPredikat[$predikat] = $collection->where('predikat_terkini', $predikat)->count();
         }
 
+        $totalPegawai = $collection->count();
         $totalDinilai = array_sum($jumlahPerPredikat);
         $jumlahBaik = $jumlahPerPredikat['Sangat Baik'] + $jumlahPerPredikat['Baik'];
+        $belumDinilai = $collection->whereNull('predikat_terkini')->count();
 
         return [
-            'total_pegawai' => $collection->count(),
+            'total_pegawai' => $totalPegawai,
             'total_dinilai' => $totalDinilai,
-            'belum_dinilai' => $collection->whereNull('predikat_terkini')->count(),
+            'belum_dinilai' => $belumDinilai,
             'per_predikat' => $jumlahPerPredikat,
             'persen_baik' => $totalDinilai > 0 ? (int) round($jumlahBaik / $totalDinilai * 100) : 0,
+            // Persentase pegawai yang SAMA SEKALI belum ada penilaian triwulan
+            // berjalan (bukan soal predikatnya jelek, tapi belum dinilai/belum
+            // ngumpulin sama sekali) — dipakai buat chart "Unit Perlu Perhatian"
+            // karena ini indikator yang lebih actionable buat direktur daripada
+            // % capaian baik (lihat getChartUnitPerluPerhatian).
+            'persen_belum_dinilai' => $totalPegawai > 0 ? (int) round($belumDinilai / $totalPegawai * 100) : 0,
         ];
     }
 

@@ -19,10 +19,16 @@ function palette() {
     };
 }
 
+// Peta nama tone ("success", "warning", dst — dikirim controller lewat
+// payload chart) ke warna CSS variable aktif. Dipakai bareng oleh semua
+// renderer di bawah biar gak ada 3 salinan objek yang sama tiap ganti tema.
+function toneColors(p) {
+    return { success: p.success, primary: p.primary, warning: p.warning, danger: p.danger, info: p.info };
+}
+
 // Satu-satunya tipe chart yang dipakai di dashboard: radial mini (sparkline, ukuran terkunci, gak pernah overflow)
 function renderRadial(el, data, p) {
-    const colorMap = { success: p.success, primary: p.primary, warning: p.warning, danger: p.danger };
-    const color = colorMap[data.color] || p.success;
+    const color = toneColors(p)[data.color] || p.success;
     const size = data.size || 96;
     const options = {
         chart: { type: 'radialBar', height: size, sparkline: { enabled: true }, animations: { enabled: true, speed: 600 } },
@@ -49,8 +55,7 @@ function renderRadial(el, data, p) {
 }
 
 function renderDonutMulti(el, data, p) {
-    const colorMap = { success: p.success, primary: p.primary, warning: p.warning, danger: p.danger, info: p.info };
-    const colors = (data.colors || []).map((c) => colorMap[c] || p.success);
+    const colors = (data.colors || []).map((c) => toneColors(p)[c] || p.success);
     const size = data.size || 128;
 
     const options = {
@@ -88,8 +93,13 @@ function renderDonutMulti(el, data, p) {
 // tertinggi). Satu series, warna tunggal, dataLabel nunjukin nilainya
 // langsung di ujung bar biar gak perlu legend terpisah.
 function renderBarHorizontal(el, data, p) {
-    const colorMap = { success: p.success, primary: p.primary, warning: p.warning, danger: p.danger, info: p.info };
-    const color = colorMap[data.color] || p.danger;
+    // Multi-warna per bar (mis. tiap predikat punya warna beda) dipicu kalau
+    // controller kirim `colors` (array, satu tone per bar) alih-alih `color`
+    // tunggal. Dipakai buat chart "Distribusi Predikat" yang tadinya donut.
+    const isDistributed = Array.isArray(data.colors) && data.colors.length > 0;
+    const colors = isDistributed
+        ? data.colors.map((c) => toneColors(p)[c] || p.primary)
+        : [toneColors(p)[data.color] || p.danger];
     const height = data.height || 260;
 
     // Default persen (dipakai duluan buat "% Terpakai" cuti). Kalau data
@@ -137,7 +147,8 @@ function renderBarHorizontal(el, data, p) {
                 : {},
         },
         series: [{ name: data.seriesName || 'Nilai', data: data.series || [] }],
-        colors: [color],
+        colors,
+        legend: { show: false },
         fill: hideAxis
             ? {
                   type: 'gradient',
@@ -145,7 +156,7 @@ function renderBarHorizontal(el, data, p) {
                       type: 'horizontal',
                       shade: 'light',
                       shadeIntensity: 0.35,
-                      gradientToColors: [color],
+                      gradientToColors: [colors[0]],
                       opacityFrom: 0.75,
                       opacityTo: 1,
                       stops: [0, 100],
@@ -158,7 +169,7 @@ function renderBarHorizontal(el, data, p) {
                 borderRadius: hideAxis ? 8 : 4,
                 borderRadiusApplication: 'end',
                 barHeight: hideAxis ? '60%' : '55%',
-                distributed: false,
+                distributed: isDistributed,
             },
         },
         xaxis,
@@ -229,7 +240,7 @@ function renderAll() {
     });
 }
 
-// Panggil ini dari app.js, sama kayak modul lain (initTheme, initSidebar, dst).
+// Panggil dari app.js
 export function initDashboardCharts() {
     if (!document.querySelector('[data-chart-type]')) return;
 

@@ -69,7 +69,7 @@
         </div>
 
         {{-- ================= Grafik ================= --}}
-        <div class="mek-chart-grid">
+         <div class="mek-chart-grid">
             <div class="card-base mek-chart-card">
                 <div class="card-header">
                     <div>
@@ -77,32 +77,25 @@
                         <div class="card-subtitle">Sebaran pegawai yang sudah dinilai, berdasarkan predikat terkini</div>
                     </div>
                 </div>
-
-                <div class="mek-donut-wrap">
-                    <div data-chart-type="donut-multi" data-chart='@json($chartDistribusiPredikat)'></div>
-                    <div class="mek-donut-legend">
-                        @foreach ($eksekutif['per_predikat'] as $predikat => $jumlah)
-                            <div class="mek-legend-row">
-                                <span class="mek-legend-dot tone-{{ $tonePredikat[$predikat] }}"></span>
-                                <span class="mek-legend-label">{{ $predikat }}</span>
-                                <span class="mek-legend-value">{{ $jumlah }}</span>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
+ 
+                @if ($eksekutif['total_dinilai'] > 0)
+                    <div data-chart-type="bar-horizontal" data-chart='@json($chartDistribusiPredikat)'></div>
+                @else
+                    <div class="mek-rank-empty">Belum ada pegawai dengan penilaian tercatat.</div>
+                @endif
             </div>
-
+ 
             <div class="card-base mek-chart-card">
                 <div class="card-header">
                     <div>
                         <div class="card-title">Unit Perlu Perhatian</div>
-                        <div class="card-subtitle">Diurutkan dari persentase capaian baik paling rendah</div>
+                        <div class="card-subtitle">Diurutkan dari persentase pegawai yang belum dinilai paling tinggi</div>
                     </div>
                 </div>
-                @if ($eksekutif['total_dinilai'] > 0)
+                @if ($eksekutif['total_pegawai'] > 0)
                     <div data-chart-type="bar-horizontal" data-chart='@json($chartUnitPerluPerhatian)'></div>
                 @else
-                    <div class="mek-rank-empty">Belum ada pegawai dengan penilaian tercatat.</div>
+                    <div class="mek-rank-empty">Belum ada data pegawai yang bisa ditampilkan.</div>
                 @endif
             </div>
         </div>

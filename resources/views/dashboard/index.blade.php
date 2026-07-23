@@ -66,7 +66,7 @@
                 ['label' => 'Perlu Perbaikan', 'value' => 5, 'tone' => 'danger', 'color' => 'danger'],
             ];
             $ekinerjaPersenBaik = $ekinerjaPersenBaik ?? 78;
-
+ 
             $ekinerjaChartData = [
                 'series' => array_column($ekinerjaStat, 'value'),
                 'labels' => array_column($ekinerjaStat, 'label'),
@@ -80,9 +80,8 @@
             title="Capaian Kinerja"
             subtitle="Distribusi capaian kinerja pegawai"
             icon="fa-solid fa-chart-line"
-            href="{{ route('coming-soon', 'ekinerja') }}"
-            badge-text="Segera hadir"
-            badge-tone="soon"
+            href="{{ route('monitoring-evkin.index') }}"
+            badge-tone="neutral"
             :footer-value="$ekinerjaPersenBaik . '%'"
             footer-label="baik/sangat baik"
         >
@@ -100,6 +99,7 @@
                 </div>
             </div>
         </x-dashboard.tile>
+ 
 
         {{-- ================= 3. SDM — card lebar ================= --}}
         <x-dashboard.tile

@@ -28,4 +28,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initCountUp();
   initDistributionBars();
   initMonitoringCuti();
+  initMonitoringEvkin();
 });
