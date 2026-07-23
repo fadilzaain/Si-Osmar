@@ -7,7 +7,7 @@ use App\Http\Controllers\MonitoringDokumenController;
 use App\Http\Controllers\SdmBezettingController;
 use App\Http\Controllers\ComingSoonController;
 use App\Http\Controllers\MonitoringCutiController;
-
+use App\Http\Controllers\MonitoringEvkinController;
 
 
 // Halaman login hanya boleh diakses kalau BELUM login.
@@ -55,6 +55,10 @@ Route::middleware('auth')->group(function () {
     //Monitoring cuti
     Route::get('/monitoring-cuti', [MonitoringCutiController::class, 'index'])
         ->name('monitoring-cuti.index');
+
+    //Monitoring Capaian Kinerja 
+    Route::get('/monitoring-evkin', [MonitoringEvkinController::class, 'index'])
+        ->name('monitoring-evkin.index');
 
     //detail per card
     Route::get('/segera-hadir/{module}', [ComingSoonController::class, 'show'])->name('coming-soon');

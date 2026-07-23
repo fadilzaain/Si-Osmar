@@ -39,10 +39,9 @@
                 <i class="fa-solid fa-file-shield"></i>
                 <span>Monitoring Dokumen</span>
             </a>
-            <a href="{{ route('coming-soon', 'ekinerja') }}" class="sidebar-link {{ request()->routeIs('coming-soon') && request()->route('module') === 'ekinerja' ? 'active' : '' }}" data-label="Capaian Kinerja">
+            <a href="{{ route('monitoring-evkin.index') }}" class="sidebar-link {{ request()->routeIs('monitoring-evkin.*') ? 'active' : '' }}" data-label="Capaian Kinerja">
                 <i class="fa-solid fa-chart-line"></i>
                 <span>Capaian Kinerja</span>
-                <span class="dxg-badge-pill tone-neutral sidebar-link-badge">Segera</span>
             </a>
             <a href="{{ route('sdm-bezetting.index') }}" class="sidebar-link {{ request()->routeIs('sdm-bezetting.*') ? 'active' : '' }}" data-label="SDM">
                 <i class="fa-solid fa-users"></i>

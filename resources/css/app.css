@@ -17,6 +17,7 @@
 @import './pages/dashboard.css';
 @import './pages/sdm-bezetting.css';
 @import './pages/monitoring-cuti.css';
+@import './pages/monitoring-evkin.css';
 @import './pages/auth.css';
 @import './utilities/utilities.css';
 @import './vendors/overrides.css';

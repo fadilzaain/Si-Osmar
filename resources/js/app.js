@@ -10,6 +10,7 @@ import { initDashboardCharts } from './modules/dashboard-charts';
 import { initAccordion } from './modules/accordion';
 import { initSdmBezetting } from './modules/sdm-bezetting';
 import { initCountUp, initDistributionBars } from './modules/count-up';import { initMonitoringCuti } from './modules/monitoring-cuti';
+import { initMonitoringEvkin } from './modules/monitoring-evkin';
 
 
 window.bootstrap = bootstrap;
