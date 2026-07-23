@@ -64,36 +64,29 @@
                     </div>
                 </div>
                 @php
-                    $persenNormal = $eksekutif['total_pegawai'] > 0
-                        ? round($eksekutif['jumlah_normal'] / $eksekutif['total_pegawai'] * 100)
-                        : 100;
+                    $adaKritis = $eksekutif['jumlah_kritis'] > 0;
+                    $total = max(1, $eksekutif['total_pegawai']); // hindari div/0 kalau kebetulan 0
                 @endphp
-                <div class="mct-status-chart">
-                    <x-chart-headline
-                        :value="$persenNormal . '%'"
-                        label="pegawai status cuti normal"
-                        :tone="$eksekutif['jumlah_kritis'] > 0 ? 'danger' : 'success'"
-                    />
-                    <x-distribution-bar :series="$chartDistribusiStatus['series']" :labels="$chartDistribusiStatus['labels']" :colors="$chartDistribusiStatus['colors']" />
-                    <div class="mct-donut-legend mct-donut-legend--inline">
-                        <div class="mct-legend-row">
-                            <span class="mct-legend-dot tone-success"></span>
-                            <span class="mct-legend-label">Normal</span>
-                            <span class="mct-legend-value">{{ $eksekutif['jumlah_normal'] }}</span>
-                        </div>
-                        <div class="mct-legend-row">
-                            <span class="mct-legend-dot tone-warning"></span>
-                            <span class="mct-legend-label">Perlu Perhatian</span>
-                            <span class="mct-legend-value">{{ $eksekutif['jumlah_perhatian'] }}</span>
-                        </div>
-                        <div class="mct-legend-row">
-                            <span class="mct-legend-dot tone-danger"></span>
-                            <span class="mct-legend-label">Kritis</span>
-                            <span class="mct-legend-value">{{ $eksekutif['jumlah_kritis'] }}</span>
-                        </div>
+
+                <div class="mct-hero {{ $adaKritis ? 'tone-danger' : 'tone-success' }}">
+                    <div class="mct-hero-value">{{ $eksekutif['jumlah_kritis'] }}</div>
+                        <div class="mct-hero-label">
+                        @if ($adaKritis)
+                            pegawai kritis — jatah cuti tahunan habis
+                        @else
+                            pegawai kritis — semua terkendali
+                        @endif
                     </div>
                 </div>
-            </div>
+
+                <div class="mct-stacked-bar">
+                    <div class="mct-stacked-bar-track">
+                        <div class="mct-stacked-bar-seg tone-success" style="width: {{ $eksekutif['jumlah_normal'] / $total * 100 }}%"></div>
+                            <div class="mct-stacked-bar-seg tone-warning" style="width: {{ $eksekutif['jumlah_perhatian'] / $total * 100 }}%"></div>
+                        <div class="mct-stacked-bar-seg tone-danger" style="width: {{ $eksekutif['jumlah_kritis'] / $total * 100 }}%"></div>
+                </div>
+                    <div class="mct-donut-legend mct-donut-legend--inline">
+                
 
             <div class="card-base mct-chart-card">
                 <div class="card-header">

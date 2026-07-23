@@ -11,9 +11,8 @@ use Illuminate\Support\Str;
  * CutiApiService
  *
  * Narik data sisa cuti pegawai (per unit, per jenis cuti) dari API eksternal
- * SIKAWAN (endpoint dikonfigurasi di config/services.php, key
- * 'sikawan.cuti_endpoint'). Response mentahnya flat per baris (satu baris =
- * satu pegawai + satu jenis cuti), jadi service ini yang tanggung jawab
+ * SIKAWAN. Response mentahnya flat per baris (satu baris =
+ * satu pegawai + satu jenis cuti), service ini tanggung jawab
  * ngelompokkin ulang jadi per-unit -> per-pegawai -> rincian jenis cuti,
  * sekaligus ngitung status kesehatan cuti tiap pegawai.
  *
@@ -30,8 +29,6 @@ class CutiApiService
     /**
      * Jenis cuti yang dipakai sebagai acuan status kesehatan pegawai.
      * Cuma jenis ini yang punya jatah/kuota tahunan yang jelas — jenis lain
-     * (Cuti Sakit, Cuti Melahirkan, dst.) biasanya jatah_cuti-nya 0 di data
-     * sumber, jadi gak relevan buat dihitung persentase pemakaiannya.
      */
     protected const JENIS_CUTI_UTAMA = 'Cuti Tahunan';
 
@@ -41,9 +38,9 @@ class CutiApiService
     protected string $cacheKey = 'cuti.sisa-cuti.raw';
 
     /**
-     * Ringkasan per unit, siap render ke accordion di halaman index.
-     * Tiap unit sudah dibungkus daftar pegawai (dengan rincian per jenis
-     * cuti) + summary status, biar Blade tinggal render tanpa ngitung apa-apa.
+     * Ringkasan per unit
+     * Tiap unit sudah dibungkus daftar pegawai (rincian per jenis
+     * cuti) + summary status, biar Blade tinggal render tanpa ngitung
      */
     public function getRingkasanPerUnit(): array
     {
@@ -62,8 +59,7 @@ class CutiApiService
             ];
         })->values()->all();
 
-        // Unit dengan pegawai paling banyak berstatus KRITIS ditaruh paling
-        // atas — paling actionable buat direktur yang buka halaman ini.
+        // Unit dengan pegawai paling banyak berstatus KRITIS ditaruh paling atas
         usort($ringkasan, fn ($a, $b) => $b['summary']['jumlah_kritis'] <=> $a['summary']['jumlah_kritis']
             ?: $b['summary']['jumlah_perhatian'] <=> $a['summary']['jumlah_perhatian']);
 
@@ -101,8 +97,7 @@ class CutiApiService
     }
 
     /**
-     * Satu kalimat kesimpulan naratif — inti insight dari halaman ini,
-     * biar direktur gak perlu baca semua tabel buat nangkep intinya.
+     * Satu kalimat kesimpulan naratif inti insight dari halaman
      */
     public function getKesimpulan(): string
     {
@@ -147,8 +142,7 @@ class CutiApiService
     }
 
     /**
-     * Data siap pakai buat donut chart distribusi status (Normal / Perhatian
-     * / Kritis) — format sesuai renderer 'donut-multi' di dashboard-charts.js.
+     * Data siap pakai buat donut chart distribusi status (Normal / Perhatian / Kritis).
      */
     public function getChartDistribusiStatus(): array
     {
@@ -165,8 +159,7 @@ class CutiApiService
     }
 
     /**
-     * Data siap pakai buat horizontal bar chart "Top pemakaian cuti
-     * tahunan" — format sesuai renderer 'bar-horizontal' di dashboard-charts.js.
+     * Data siap pakai buat horizontal bar chart "Top pemakaian cuti tahunan" 
      */
     public function getChartTopPegawai(int $limit = 8): array
     {
@@ -305,8 +298,7 @@ class CutiApiService
             try {
                 $response = Http::timeout(config('services.sikawan.timeout', 10))
                     ->acceptJson()
-                    // SSL verification dimatikan cuma di environment local — banyak
-                    // setup Windows (Laragon/XAMPP) belum punya CA bundle terpasang.
+                    // SSL verification dimatikan cuma di environment local.
                     // Di production, ikutin SIKAWAN_VERIFY_SSL di .env (default true).
                     ->withOptions(['verify' => app()->isLocal() ? false : config('services.sikawan.verify_ssl', true)])
                     ->get($baseUrl . $endpoint);
@@ -322,7 +314,7 @@ class CutiApiService
                 $body = $response->json();
 
                 // API-nya ngirim data per unit sebagai object { unit, pegawai: [...] },
-                // bukan flat per baris — kita ratakan dulu di sini jadi satu baris
+                // bukan flat per baris,kita ratakan dulu di sini jadi satu baris
                 // per (pegawai, jenis_cuti) supaya gampang dikelompokkan ulang di atas.
                 $flat = [];
                 foreach (($body['data'] ?? []) as $unitBlock) {

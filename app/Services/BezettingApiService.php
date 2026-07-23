@@ -374,11 +374,9 @@ class BezettingApiService
             try {
                 $response = Http::timeout(config('services.sikawan.timeout', 10))
                     ->acceptJson()
-                    // SSL verification dimatikan cuma di environment local — banyak
-                    // setup Windows (Laragon/XAMPP) belum punya CA bundle terpasang.
+                    // SSL verification dimatikan cuma di environment local
                     // Di production, ikutin SIKAWAN_VERIFY_SSL di .env (default true).
-                    // Kalau ternyata SSL server SI KAWAN bermasalah (CA bundle server
-                    // hosting belum lengkap — ini yang kejadian sekarang), sementara
+                    // Kalau ternyata SSL server SI KAWAN bermasalah sementara
                     // bisa di-set false lewat .env TANPA perlu ubah kode lagi.
                     ->withOptions(['verify' => app()->isLocal() ? false : config('services.sikawan.verify_ssl', true)])
                     ->get($baseUrl . $endpoint);
@@ -413,8 +411,6 @@ class BezettingApiService
     }
 
     /**
-     * Catat detail kegagalan fetch terakhir ke cache (bukan cuma ke file log),
-     * biar bisa dilihat dari halaman diagnostic tanpa perlu akses SSH ke server.
      * Cache ini sengaja dipisah dari cache data ($cacheKey) dan disimpan lebih
      * lama (24 jam) biar gak keburu hilang sebelum sempat dicek.
      */
