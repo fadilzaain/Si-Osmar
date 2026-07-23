@@ -3,7 +3,7 @@
 <div class="mek-wrap" data-monitoring-evkin>
     <div class="mek-eyebrow">SI-OSMAR / SDM</div>
     <h1 class="mek-title">Capaian Kinerja Pegawai</h1>
-    <div class="mek-sub">Pemantauan predikat evaluasi kinerja (e-Kinerja) pegawai per unit — RSUD Jombang</div>
+    <div class="mek-sub">Pemantauan Evaluasi Kinerja Pegawai — RSUD Jombang</div>
 
     @if (empty($ringkasan))
         <x-empty-state
@@ -13,7 +13,7 @@
         />
     @else
 
-        {{-- ================= KPI ringkas — "predikat X ada berapa" ================= --}}
+        {{-- ================= KPI ringkas ================= --}}
         <div class="mek-kpi-grid">
             <x-stat-card
                 icon="fa-solid fa-users"
