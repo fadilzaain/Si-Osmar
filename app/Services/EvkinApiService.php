@@ -12,16 +12,11 @@ use Illuminate\Support\Str;
  *
  * Narik data capaian kinerja (predikat evaluasi kinerja per triwulan) pegawai
  * dari API eksternal SIKAWAN (endpoint 'sikawan.evkin_endpoint'). Response
- * mentahnya per unit -> daftar pegawai, tiap pegawai punya predikat tw_1..tw_4
+ * mentahnya per unit - daftar pegawai, tiap pegawai punya predikat
  * (bisa null kalau triwulan itu belum dinilai). Service ini nentuin predikat
  * "terkini" tiap pegawai (triwulan terakhir yang udah keisi, bukan cuma tw_4
- * mentah-mentah), lalu ngerangkum jadi statistik per unit & eksekutif buat
+ * mentah-mentah), kmdn ngerangkum jadi statistik per unit & eksekutif buat
  * dashboard direktur.
- *
- * Sama kayak service SIKAWAN lain (CutiApiService, BezettingApiService):
- * di-cache biar gak nembak API tiap request, dan ada fallback array kosong
- * kalau API-nya lagi bermasalah — halaman tetap render, cuma nunjukin
- * empty-state, bukan error 500.
  */
 class EvkinApiService
 {
@@ -46,7 +41,7 @@ class EvkinApiService
     /**
      * Ringkasan per unit — dipakai buat render list accordion di halaman index.
      * Tiap unit udah dibungkus daftar pegawai (rincian per triwulan + predikat
-     * terkini) + summary jumlah per predikat, biar Blade tinggal render tanpa
+     * terkini) + summary jumlah per predikat, shnga blade tinggal render tanpa
      * ngitung apa-apa lagi.
      */
     public function getRingkasanPerUnit(): array
@@ -126,9 +121,7 @@ class EvkinApiService
     }
 
     /**
-     * Data siap pakai buat bar chart distribusi predikat seluruh pegawai
-     * yang sudah dinilai (sebelumnya donut — diganti bar biar jumlah per
-     * predikat lebih gampang dibandingkan langsung, bukan cuma proporsi).
+     * Data siap pakai buat bar chart distribusi predikat seluruh pegawai yang sudah dinilai 
      * Satu warna per bar sesuai tone predikat masing-masing (mode distributed
      * di renderBarHorizontal).
      */
@@ -148,11 +141,7 @@ class EvkinApiService
 
     /**
      * Data siap pakai buat horizontal bar chart "unit paling butuh perhatian".
-     * Basisnya persentase pegawai yang BELUM DINILAI sama sekali (bukan
-     * persentase capaian baik) — belum dinilai itu lebih actionable buat
-     * direktur: itu berarti ada pegawai yang belum ngumpulin/dievaluasi,
-     * bukan sekadar predikatnya kurang bagus. Diurutkan dari yang paling
-     * banyak belum dinilai.
+     * Basisnya persentase pegawai yang BELUM DINILAI sama sekali 
      */
     public function getChartUnitPerluPerhatian(int $limit = 8): array
     {
@@ -169,6 +158,24 @@ class EvkinApiService
             'seriesName' => '% Belum Dinilai',
             'color' => 'danger',
             'height' => max(220, $unit->count() * 34),
+        ];
+    }
+
+    /**
+     * Data siap pakai buat mini donut chart di card "Capaian Kinerja" pada
+     * dashboard utama. Dibangun dari getRingkasanEksekutif() yang sama persis dipake halaman depan
+     */
+    public function getChartCapaianKinerja(): array
+    {
+        $eksekutif = $this->getRingkasanEksekutif();
+
+        return [
+            'series' => array_values($eksekutif['per_predikat']),
+            'labels' => self::URUTAN_PREDIKAT,
+            'colors' => array_values(self::TONE_PREDIKAT),
+            'size' => 128,
+            'totalValue' => $eksekutif['persen_baik'] . '%',
+            'totalLabel' => 'Baik+',
         ];
     }
 
@@ -205,8 +212,7 @@ class EvkinApiService
     }
 
     /**
-     * Samain teks predikat mentah dari API SIKAWAN ke salah satu string resmi
-     * di URUTAN_PREDIKAT (kalau cocok, abaikan beda spasi/kapitalisasi) —
+     * Samain teks predikat mentah dari API SIKAWAN ke salah satu string resmi di URUTAN_PREDIKAT
      * dipanggil sekali di titik masuk data (kelompokkanPegawai), biar semua
      * perbandingan string persis di bawahnya (hitungan per predikat, tone
      * badge) gak diam-diam gagal cuma gara-gara API ngirim "sangat baik"
@@ -271,10 +277,7 @@ class EvkinApiService
             'per_predikat' => $jumlahPerPredikat,
             'persen_baik' => $totalDinilai > 0 ? (int) round($jumlahBaik / $totalDinilai * 100) : 0,
             // Persentase pegawai yang SAMA SEKALI belum ada penilaian triwulan
-            // berjalan (bukan soal predikatnya jelek, tapi belum dinilai/belum
-            // ngumpulin sama sekali) — dipakai buat chart "Unit Perlu Perhatian"
-            // karena ini indikator yang lebih actionable buat direktur daripada
-            // % capaian baik (lihat getChartUnitPerluPerhatian).
+            // berjalan dipakai buat chart "Unit Perlu Perhatian"
             'persen_belum_dinilai' => $totalPegawai > 0 ? (int) round($belumDinilai / $totalPegawai * 100) : 0,
         ];
     }

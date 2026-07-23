@@ -177,12 +177,11 @@
         <div class="bzs-unit-list" data-accordion>
             @foreach ($ringkasan as $unit)
                 @php
-                    $badgeVariant = match ($unit['summary']['status']) {
-                        'KURANG' => 'danger',
-                        'LEBIH' => 'info',
-                        default => 'success',
+                    $unitBadgeCount = match ($unit['summary']['status']) {
+                        'KURANG' => $unit['summary']['total_kekurangan'],
+                        'LEBIH' => $unit['summary']['total_lebih'],
+                        default => null,
                     };
-                    // Skor urgensi buat sorting default: unit KURANG paling parah muncul paling atas.
                     $severity = match ($unit['summary']['status']) {
                         'KURANG' => 1000 + ($unit['summary']['total_kekurangan'] ?? 0),
                         'SESUAI' => 100,
@@ -191,23 +190,15 @@
                     };
                 @endphp
                 <div id="unit-{{ $unit['slug'] }}" class="bzs-unit card-base"
-                     data-aos="fade-up" data-aos-delay="{{ $loop->index * 40 }}"
-                     data-status="{{ $unit['summary']['status'] }}"
-                     data-severity="{{ $severity }}"
-                     data-search="{{ strtolower($unit['unit']) }}">
+                    data-aos="fade-up" data-aos-delay="{{ $loop->index * 40 }}"
+                    data-status="{{ $unit['summary']['status'] }}"
+                    data-severity="{{ $severity }}"
+                    data-search="{{ strtolower($unit['unit']) }}">
                     <button type="button" class="bzs-unit-head" data-accordion-trigger>
                         <div class="bzs-unit-title">
                             <span class="bzs-unit-name">{{ $unit['unit'] }}</span>
                             <span class="bzs-unit-count">{{ $unit['summary']['total_pegawai'] }} / {{ $unit['summary']['total_kebutuhan'] }} orang</span>
-                            <x-badge :variant="$badgeVariant">
-                                @if ($unit['summary']['status'] === 'KURANG')
-                                    Kurang {{ $unit['summary']['total_kekurangan'] }}
-                                @elseif ($unit['summary']['status'] === 'LEBIH')
-                                    Lebih {{ $unit['summary']['total_lebih'] }}
-                                @else
-                                    Sesuai
-                                @endif
-                            </x-badge>
+                            <x-sdm-bezetting.status-badge :status="$unit['summary']['status']" :count="$unitBadgeCount" />
                         </div>
                         <i class="fa-solid fa-chevron-down bzs-chev" aria-hidden="true"></i>
                     </button>
@@ -250,11 +241,10 @@
                                                     <td class="bzs-col-num bzs-col-strong">{{ $row['jumlah'] }}</td>
                                                     <td class="bzs-col-num">{{ $row['kebutuhan'] }}</td>
                                                     <td>
-                                                        <x-badge :variant="match ($row['keterangan']) {
-                                                            'KURANG' => 'danger',
-                                                            'LEBIH' => 'info',
-                                                            default => 'success',
-                                                        }">{{ $row['keterangan'] }}</x-badge>
+                                                        <x-sdm-bezetting.status-badge
+                                                            :status="$row['keterangan']"
+                                                            :count="abs($row['kekurangan'])"
+                                                        />
                                                     </td>
                                                 </tr>
                                             @endforeach

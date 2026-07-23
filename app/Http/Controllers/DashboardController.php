@@ -7,6 +7,7 @@ use App\Services\DashboardService;
 use App\Services\MonitoringDokumenService;
 use App\Services\CutiApiService;
 use App\Services\BezettingApiService;
+use App\Services\EvkinApiService;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -15,17 +16,20 @@ class DashboardController extends Controller
     protected $monitoringDokumenService;
     protected $cutiApiService;
     protected $bezettingApiService;
+    protected $evkinApiService;
 
     public function __construct(
         DashboardService $dashboardService,
         MonitoringDokumenService $monitoringDokumenService,
         CutiApiService $cutiApiService,
         BezettingApiService $bezettingApiService,
+        EvkinApiService $evkinApiService,
     ) {
         $this->dashboardService = $dashboardService;
         $this->monitoringDokumenService = $monitoringDokumenService;
         $this->cutiApiService = $cutiApiService;
         $this->bezettingApiService = $bezettingApiService;
+        $this->evkinApiService = $evkinApiService;
     }
 
     public function index(Request $request)
@@ -38,9 +42,13 @@ class DashboardController extends Controller
 
         // Cuti : ringkasan eksekutif + donut chart status kesehatan cuti.
         $cutiEksekutif = $this->cutiApiService->getRingkasanEksekutif();
-        
-        //
-        $ekinerja = $this->dashboardService->getEkinerjaSummary();
+
+        // Capaian Kinerja : ringkasan eksekutif + donut chart, sumbernya
+        // sama persis dengan halaman detail (monitoring-evkin), biar
+        // angkanya selalu sinkron dan gak dobel logika di Blade.
+        $ekinerjaEksekutif = $this->evkinApiService->getRingkasanEksekutif();
+        $ekinerjaChartData = $this->evkinApiService->getChartCapaianKinerja();
+
         $pelatihan = $this->dashboardService->getPelatihanSummary();
 
         $sdmRedistribusi = $this->bezettingApiService->getPeluangRedistribusi(4);
@@ -49,7 +57,7 @@ class DashboardController extends Controller
         return view('dashboard.index', compact(
             'dokumenEksekutif', 'dokumenChart', 'unitDokumenKritis',
             'cutiEksekutif',
-            'ekinerja', 'pelatihan',
+            'ekinerjaEksekutif', 'ekinerjaChartData', 'pelatihan',
             'sdmRedistribusi', 'sdmTotalPeluang'
         ));
     }

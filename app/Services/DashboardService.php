@@ -180,21 +180,8 @@ class DashboardService
         }
 
         // TODO: Insight "kekurangan SDM" dan "rekomendasi rekrutmen" menyusul
-        // setelah modul Analisis Beban Kerja (ABK) dibuat. Belum ditaruh sekarang
-        // karena datanya belum ada sumber perhitungan yang real (lihat diskusi
-        // soal placeholder vs data ngarang).
 
         return $alerts;
-    }
-
-    public function getEkinerjaSummary(): array
-    {
-        // dummy — nanti ganti query dari data e-kinerja
-        return [
-            'persen_baik' => 78,
-            'series_baik' => [22, 38, 30, 45, 55, 48, 68],
-            'series_kurang' => [30, 22, 28, 18, 20, 24, 12],
-        ];
     }
 
     public function getPelatihanSummary(): array

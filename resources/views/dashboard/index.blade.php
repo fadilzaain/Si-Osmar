@@ -59,47 +59,34 @@
 
         {{-- ================= 2. Capaian Kinerja ================= --}}
         @php
-            $ekinerjaStat = $ekinerjaStat ?? [
-                ['label' => 'Sangat Baik', 'value' => 31, 'tone' => 'success', 'color' => 'success'],
-                ['label' => 'Baik', 'value' => 47, 'tone' => 'success', 'color' => 'primary'],
-                ['label' => 'Cukup', 'value' => 26, 'tone' => 'warning', 'color' => 'warning'],
-                ['label' => 'Perlu Perbaikan', 'value' => 5, 'tone' => 'danger', 'color' => 'danger'],
-            ];
-            $ekinerjaPersenBaik = $ekinerjaPersenBaik ?? 78;
- 
-            $ekinerjaChartData = [
-                'series' => array_column($ekinerjaStat, 'value'),
-                'labels' => array_column($ekinerjaStat, 'label'),
-                'colors' => array_column($ekinerjaStat, 'color'),
-                'size' => 128,
-                'totalValue' => $ekinerjaPersenBaik . '%',
-                'totalLabel' => 'Baik+',
-            ];
+            $ekinerjaBelumDinilai = $ekinerjaEksekutif['belum_dinilai'];
         @endphp
         <x-dashboard.tile
             title="Capaian Kinerja"
             subtitle="Distribusi capaian kinerja pegawai"
             icon="fa-solid fa-chart-line"
             href="{{ route('monitoring-evkin.index') }}"
-            badge-tone="neutral"
-            :footer-value="$ekinerjaPersenBaik . '%'"
+            badge-text="{{ $ekinerjaBelumDinilai > 0 ? $ekinerjaBelumDinilai . ' belum dinilai' : 'Semua dinilai' }}"
+            badge-tone="{{ $ekinerjaBelumDinilai > 0 ? 'alert' : 'neutral' }}"
+            :footer-value="$ekinerjaEksekutif['persen_baik'] . '%'"
             footer-label="baik/sangat baik"
+            :live="true"
         >
             <div class="dxg-donut-body">
                 <div class="dxg-mini-chart" data-chart-type="donut-multi"
                     data-chart='@json($ekinerjaChartData)'></div>
                 <div class="dxg-donut-legend">
-                    @foreach ($ekinerjaStat as $s)
+                    @foreach ($ekinerjaChartData['labels'] as $i => $label)
                         <div class="dxg-legend-row">
-                            <span class="dxg-legend-dot tone-{{ $s['tone'] }}"></span>
-                            <span class="dxg-legend-label">{{ $s['label'] }}</span>
-                            <span class="dxg-legend-value">{{ $s['value'] }}</span>
+                            <span class="dxg-legend-dot tone-{{ $ekinerjaChartData['colors'][$i] }}"></span>
+                            <span class="dxg-legend-label">{{ $label }}</span>
+                            <span class="dxg-legend-value">{{ $ekinerjaChartData['series'][$i] }}</span>
                         </div>
                     @endforeach
                 </div>
             </div>
         </x-dashboard.tile>
- 
+
 
         {{-- ================= 3. SDM — card lebar ================= --}}
         <x-dashboard.tile
