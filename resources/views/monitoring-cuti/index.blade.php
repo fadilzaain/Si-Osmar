@@ -79,17 +79,33 @@
                     </div>
                 </div>
 
-                <div class="mct-stacked-bar">
+            <div class="mct-stacked-bar">
                     <div class="mct-stacked-bar-track">
                         <div class="mct-stacked-bar-seg tone-success" style="width: {{ $eksekutif['jumlah_normal'] / $total * 100 }}%"></div>
-                            <div class="mct-stacked-bar-seg tone-warning" style="width: {{ $eksekutif['jumlah_perhatian'] / $total * 100 }}%"></div>
+                        <div class="mct-stacked-bar-seg tone-warning" style="width: {{ $eksekutif['jumlah_perhatian'] / $total * 100 }}%"></div>
                         <div class="mct-stacked-bar-seg tone-danger" style="width: {{ $eksekutif['jumlah_kritis'] / $total * 100 }}%"></div>
-                </div>
+                    </div>
                     <div class="mct-donut-legend mct-donut-legend--inline">
-                
+                        <div class="mct-legend-row">
+                            <span class="mct-legend-dot tone-success"></span>
+                            <span class="mct-legend-label">Normal</span>
+                            <span class="mct-legend-value">{{ $eksekutif['jumlah_normal'] }}</span>
+                        </div>
+                        <div class="mct-legend-row">
+                            <span class="mct-legend-dot tone-warning"></span>
+                            <span class="mct-legend-label">Perhatian</span>
+                            <span class="mct-legend-value">{{ $eksekutif['jumlah_perhatian'] }}</span>
+                        </div>
+                        <div class="mct-legend-row">
+                            <span class="mct-legend-dot tone-danger"></span>
+                            <span class="mct-legend-label">Kritis</span>
+                            <span class="mct-legend-value">{{ $eksekutif['jumlah_kritis'] }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <div class="card-base mct-chart-card">
-                <div class="card-header">
+            <div class="card-base mct-chart-card">                <div class="card-header">
                     <div>
                         <div class="card-title">Top Pemakaian Cuti Tahunan</div>
                         <div class="card-subtitle">Pegawai dengan persentase pemakaian tertinggi</div>
