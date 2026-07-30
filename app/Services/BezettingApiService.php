@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 /**
  * BezettingApiService
  *
- * Narik data bezetting (jumlah pegawai riil vs kebutuhan, per jabatan, per unit)
+ * Narik data bezetting (jumlah pegawai ril vs kebutuhan, per jabatan, per unit)
  * dari API eksternal SIKAWAN (endpoint dikonfigurasi di config/services.php,
  * key 'sikawan.bezetting_endpoint'). Di-cache biar gak nembak API tiap request,
  * dan ada fallback structure kosong kalau API-nya lagi bermasalah — jadi
@@ -43,8 +43,7 @@ class BezettingApiService
             ];
         }
 
-        // Unit yang paling banyak kekurangan ditaruh di atas — lebih actionable
-        // buat kepala SDM yang buka halaman ini.
+        // Unit yang paling banyak kekurangan diatas
         usort($ringkasan, fn ($a, $b) => $b['summary']['total_kekurangan'] <=> $a['summary']['total_kekurangan']);
 
         return $ringkasan;
@@ -65,7 +64,7 @@ class BezettingApiService
      * Peluang redistribusi pegawai antar unit — jabatan yang sama KURANG
      * di satu unit tapi LEBIH di unit lain, jadi kandidat buat dipindah.
      * Ini analisis on-the-fly dari data bezetting yang sudah di-fetch
-     * (getRingkasanPerUnit), bukan data baru dari API — jadi gak nambah
+     * (getRingkasanPerUnit), bukan data baru dari API biar gak nambah
      * beban request ke SIKAWAN.
      *
      * @param int|null $limit Batasi jumlah hasil (dipakai buat card ringkas
@@ -106,8 +105,7 @@ class BezettingApiService
         $peluang = [];
 
         foreach ($perJabatan as $data) {
-            // Cuma relevan kalau jabatan yang sama KURANG di satu unit DAN
-            // LEBIH di unit lain — itu baru kandidat redistribusi beneran.
+            // Cuma relevan kalau jabatan yang sama KURANG di satu unit DAN LEBIH di unit lain.
             if (empty($data['unit_kurang']) || empty($data['unit_lebih'])) {
                 continue;
             }
@@ -137,13 +135,10 @@ class BezettingApiService
     }
 
     /**
-     * Versi getPeluangRedistribusi() yang di-scope ke satu unit — dipakai
-     * di halaman detail Bezetting SDM (pengganti section "Aktivitas rotasi"
-     * yang dulu baca dari MutasiService/tabel lokal yang sekarang kosong).
-     *
+     * getPeluangRedistribusi() yang di-scope ke satu unit dipakai di halaman detail Bezetting SDM.
      * Untuk tiap jabatan yang menyentuh unit ini (baik sebagai unit yang
      * kurang maupun yang lebih), balikin baris dengan arah + unit pasangan
-     * paling relevan buat ditawarkan sebagai sumber/tujuan pemindahan.
+     * paling relevan buat ditawarkan sebagai sumber atau tujuan pemindahan.
      */
     public function getPeluangRedistribusiUntukUnit(string $unit): array
     {
@@ -184,10 +179,8 @@ class BezettingApiService
     }
 
     /**
-     * Angka ringkasan level rumah sakit (lintas semua unit) — ini yang dipakai
-     * buat KPI card paling atas di halaman Bezetting SDM. Direktur cukup baca
-     * 4 angka ini buat nangkep situasi keseluruhan, tanpa perlu buka satu-satu
-     * accordion unit.
+     * Angka ringkasan level rumah sakit (semua unit) — ini yang dipakai
+     * buat KPI card paling atas di halaman Bezetting SDM. 
      */
     public function getRingkasanEksekutif(): array
     {
@@ -216,9 +209,7 @@ class BezettingApiService
     }
 
     /**
-     * Unit-unit paling kritis (kekurangan terbanyak), buat ranked list di
-     * bagian atas halaman. getRingkasanPerUnit() udah di-sort desc by
-     * total_kekurangan, jadi di sini tinggal filter status KURANG + potong.
+     * Unit-unit paling kritis (kekurangan terbanyak)
      */
     public function getTopUnitKritis(int $limit = 6): array
     {
@@ -230,15 +221,12 @@ class BezettingApiService
     }
 
     /**
-     * Bentuk data buat renderer chart 'bar-horizontal' (dashboard-charts.js),
-     * dari sumber yang sama dengan getTopUnitKritis(). Urutan dibalik karena
-     * ApexCharts horizontal bar render dari bawah ke atas — unit paling
-     * kritis harus tetap muncul di baris paling atas.
-     * 'ids' dipakai buat klik-navigasi ke detail unit di bagian drill-down.
+     * Bentuk data buat renderer chart 'bar-horizontal',
+     * dari sumber yang sama dengan getTopUnitKritis().
      */
     public function getChartUnitKritis(int $limit = 6): array
     {
-        $top = collect($this->getTopUnitKritis($limit))->reverse()->values();
+        $top = collect($this->getTopUnitKritis($limit))->values();
 
         return [
             'labels' => $top->map(fn ($u) => $u['unit'])->all(),
@@ -254,8 +242,6 @@ class BezettingApiService
 
     /**
      * Total kekurangan dikelompokkan per jabatan, dijumlah lintas semua unit.
-     * Ini yang jawab pertanyaan "jabatan apa yang paling butuh direkrut buat
-     * seluruh rumah sakit", bukan cuma per unit.
      */
     public function getKekuranganPerJabatan(?int $limit = 6): array
     {
@@ -284,9 +270,8 @@ class BezettingApiService
     }
 
     /**
-     * Kesimpulan dalam satu paragraf naratif — dihasilkan otomatis dari angka
-     * yang sama kayak KPI card di atasnya, bukan input manual. Ini yang
-     * langsung dibaca direktur buat ambil keputusan: rekrut atau geser dulu.
+     * Kesimpulan dalam satu paragraf naratif dihasilkan dari angka
+     * yang sama kayak KPI card di atasnya, bukan input manual.
      */
     public function getKesimpulan(): string
     {
@@ -316,8 +301,7 @@ class BezettingApiService
     }
 
     /**
-     * Hitung ringkasan angka + status keseluruhan dari kumpulan baris jabatan
-     * dalam satu unit.
+     * Hitung ringkasan angka + status keseluruhan dari kumpulan baris jabatan dalam satu unit.
      */
     protected function summarize(array $rows): array
     {
@@ -367,7 +351,7 @@ class BezettingApiService
 
     protected function fetchRaw(): array
     {
-        return Cache::remember($this->cacheKey, config('services.sikawan.cache_ttl', 900), function () {
+            return Cache::remember($this->cacheKey, config('services.sikawan.bezetting_cache_ttl', 60), function () {
             $baseUrl = rtrim(config('services.sikawan.base_url'), '/');
             $endpoint = config('services.sikawan.bezetting_endpoint');
 

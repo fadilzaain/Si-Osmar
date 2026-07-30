@@ -8,6 +8,8 @@ use App\Models\Mutasi;
 use App\Models\Kompetensi;
 use Illuminate\Support\Facades\DB;
 
+//DATA DUMMY
+
 class DashboardService
 {
     public function getMetrics()
@@ -22,7 +24,7 @@ class DashboardService
         $nonaktif = Pegawai::where('status', 'Nonaktif')->count();
 
         
-        // ini hardcode jangan sampai kebawa ke demo/produksi tanpa diganti data asli.
+        // ini hardcode jangan sampai kebawa ke demo/produksi tanpa diganti data asli!!!!!
         return [
             'total_pegawai' => [
                 'value' => $totalPegawai,

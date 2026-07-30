@@ -33,7 +33,7 @@
                 icon="fa-solid fa-hourglass-half"
                 label="Perlu perhatian"
                 :value="$eksekutif['jumlah_perhatian']"
-                comparison="pemakaian sudah &ge; 75%"
+                comparison="pemakaian ≥ 75%"
                 color="var(--color-warning)"
             />
             <x-stat-card

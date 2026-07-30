@@ -10,13 +10,10 @@ use Illuminate\Support\Str;
 /**
  * EvkinApiService
  *
- * Narik data capaian kinerja (predikat evaluasi kinerja per triwulan) pegawai
- * dari API eksternal SIKAWAN (endpoint 'sikawan.evkin_endpoint'). Response
- * mentahnya per unit - daftar pegawai, tiap pegawai punya predikat
+ * Narik data capaian kinerja pegawai dari API eksternal SIKAWAN (endpoint 'sikawan.evkin_endpoint'). 
+ * Response mentahnya per unit - daftar pegawai, tiap pegawai punya predikat
  * (bisa null kalau triwulan itu belum dinilai). Service ini nentuin predikat
- * "terkini" tiap pegawai (triwulan terakhir yang udah keisi, bukan cuma tw_4
- * mentah-mentah), kmdn ngerangkum jadi statistik per unit & eksekutif buat
- * dashboard direktur.
+ * "terkini" tiap pegawai, kmdn ngerangkum jadi statistik per unit & eksekutif buat dashboard.
  */
 class EvkinApiService
 {
@@ -59,8 +56,7 @@ class EvkinApiService
             ];
         })->values()->all();
 
-        // Unit dengan persentase capaian baik (Sangat Baik + Baik) paling
-        // rendah ditaruh di atas — paling butuh perhatian direktur duluan.
+        // Unit dengan persentase capaian baik (Sangat Baik + Baik) paling rendah ditaruh di atas 
         usort($ringkasan, fn ($a, $b) => $a['summary']['persen_baik'] <=> $b['summary']['persen_baik']);
 
         return $ringkasan;

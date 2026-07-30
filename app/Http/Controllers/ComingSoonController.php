@@ -11,7 +11,7 @@ class ComingSoonController extends Controller
         'sdm-ringkasan' => ['title' => 'SDM', 'subtitle' => 'Distribusi tenaga per kategori dan shift', 'icon' => 'fa-solid fa-users'],
         'cuti' => ['title' => 'Cuti', 'subtitle' => 'Rekap pegawai cuti per bulan', 'icon' => 'fa-solid fa-umbrella-beach'],
 
-        // dari sidebar (6 fitur roadmap, minus Monitoring STR & SIP yang udah ada)
+        // dari sidebar 
         'profil-sdm' => ['title' => 'Profil SDM Terintegrasi', 'subtitle' => 'Data lengkap & mutakhir tiap pegawai', 'icon' => 'fa-solid fa-id-card-clip'],
         'pemetaan-kompetensi' => ['title' => 'Pemetaan Kompetensi', 'subtitle' => 'Data kompetensi, sertifikat, pelatihan, riwayat karier', 'icon' => 'fa-solid fa-award'],
         'distribusi-sdm' => ['title' => 'Distribusi SDM', 'subtitle' => 'Pemetaan tenaga antar unit secara real-time', 'icon' => 'fa-solid fa-map-location-dot'],

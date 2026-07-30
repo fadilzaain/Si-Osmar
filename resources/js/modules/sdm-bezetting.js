@@ -1,10 +1,21 @@
-// Toolbar Bezetting SDM: search, filter status, sort default by severity,
-// dan bulk expand/collapse. Semua client-side — data udah lengkap di DOM
-// dari Blade, gak perlu fetch tambahan.
-export function initSdmBezetting() {
-    const page = document.querySelector('[data-sdm-bezetting]');
-    if (!page) return;
+// Halaman Bezetting SDM: toolbar (search, filter status, bulk expand/
+// collapse) + auto-refresh data tiap 1 menit biar user gak perlu manual
+// reload buat lihat data terbaru dari SIKAWAN 
+import { initAccordion } from './accordion';
+import { initDashboardCharts } from './dashboard-charts';
+import { initCountUp } from './count-up';
 
+const DATA_URL = '/sdm-bezetting/data';
+const REFRESH_INTERVAL_MS = 60_000; 
+
+let pollTimer = null;
+let isFetching = false;
+
+// Toolbar: search, filter status, sort default by severity, bulk expand/
+// collapse. Dipisah dari initSdmBezetting() supaya bisa dipanggil ulang
+// tiap abis auto-refresh (DOM-nya diganti, listener lama otomatis ilang
+// bareng elemen lama, jadi harus di-bind ulang ke elemen yang baru).
+function initToolbar(page) {
     const list = page.querySelector('[data-accordion]');
     if (!list) return;
 
@@ -84,4 +95,61 @@ export function initSdmBezetting() {
     page.querySelector('[data-unit-kritis-chart]')?.addEventListener('chart:point-click', (e) => {
         openAndScrollToUnit(e.detail.id);
     });
+}
+
+// Ambil HTML terbaru dari server, lalu ganti isi halaman dengan hasilnya.
+// Endpoint /sdm-bezetting/data sengaja mengembalikan HTML yang sudah siap
+// ditampilkan, jadi gk perlu merender ulang tabel, chart, atau
+// accordion di JavaScript. Tinggal replace isi DOM, lalu panggil kembali
+// fungsi inisialisasi yang sudah ada.
+async function refreshLiveData() {
+    if (isFetching || document.visibilityState === 'hidden') return;
+
+    const currentPage = document.querySelector('[data-sdm-bezetting]');
+    if (!currentPage) return;
+
+    isFetching = true;
+    try {
+        const response = await fetch(DATA_URL, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const html = await response.text();
+        const template = document.createElement('template');
+        template.innerHTML = html.trim();
+        const freshPage = template.content.firstElementChild;
+        if (!freshPage) return;
+
+        currentPage.replaceWith(freshPage);
+
+        // Re-bind semua behavior yang datanya baru diganti. Manggil ulang
+        // init yang udah ada (bukan nulis ulang) biar gak ada 2 sumber kebenaran
+        initToolbar(freshPage);
+        initAccordion();
+        initDashboardCharts();
+        initCountUp();
+    } catch (err) {
+        console.error('Auto-refresh Bezetting SDM gagal, coba lagi menit berikutnya:', err);
+    } finally {
+        isFetching = false;
+    }
+}
+
+function startLivePolling() {
+    if (pollTimer) return; // udah jalan (re-init ganda), jangan dobel timer
+    pollTimer = setInterval(refreshLiveData, REFRESH_INTERVAL_MS);
+
+    // otomatis langsung refresh sekali biar user gak perlu nunggu sampai interval berikutnya.
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') refreshLiveData();
+    });
+}
+
+export function initSdmBezetting() {
+    const page = document.querySelector('[data-sdm-bezetting]');
+    if (!page) return;
+
+    initToolbar(page);
+    startLivePolling();
 }

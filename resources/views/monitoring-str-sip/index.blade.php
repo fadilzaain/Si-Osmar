@@ -138,15 +138,25 @@
                      data-status="{{ implode(' ', $statusTags) }}"
                      data-search="{{ strtolower($unit['unit'] . ' ' . $searchNama) }}">
                     <button type="button" class="mds-unit-head" data-accordion-trigger>
-                        <div class="mds-unit-title">
-                            <span class="mds-unit-name">{{ $unit['unit'] }}</span>
+                        @php
+                            $b = $unit['summary']['breakdown'];
+                        @endphp
+                    <div class="mds-unit-title">
+                        <span class="mds-unit-name">{{ $unit['unit'] }}</span>
                             <span class="mds-unit-count">{{ $unit['summary']['total_pegawai'] }} pegawai</span>
-                            @if ($unit['summary']['bermasalah'] > 0)
-                                <x-badge variant="danger">{{ $unit['summary']['bermasalah'] }} bermasalah</x-badge>
-                            @else
-                                <x-badge variant="success">Lengkap</x-badge>
+                            @if ($b['danger'] > 0)
+                                <x-badge variant="danger">{{ $b['danger'] }} kadaluarsa</x-badge>
                             @endif
-                        </div>
+                            @if ($b['warning'] > 0)
+                                <x-badge variant="warning">{{ $b['warning'] }} segera kadaluarsa</x-badge>
+                            @endif
+                            @if ($b['neutral'] > 0)
+                                <x-badge variant="neutral">{{ $b['neutral'] }} belum upload</x-badge>
+                            @endif
+                            @if ($b['success'] > 0)
+                            <x-badge variant="success">{{ $b['success'] }} lengkap</x-badge>
+                            @endif
+                    </div>
                         <i class="fa-solid fa-chevron-down mds-chev" aria-hidden="true"></i>
                     </button>
 

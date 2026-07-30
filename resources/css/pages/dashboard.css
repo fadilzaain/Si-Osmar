@@ -35,6 +35,7 @@
 .dxg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-4); }
 .dxg-tile-wide { grid-column: 1 / -1; }
 
+
 .dxg-tile {
   display: flex;
   flex-direction: column;

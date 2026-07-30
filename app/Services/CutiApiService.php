@@ -17,8 +17,7 @@ use Illuminate\Support\Str;
  * sekaligus ngitung status kesehatan cuti tiap pegawai.
  *
  * Sama kayak BezettingApiService: di-cache biar gak nembak API tiap request,
- * dan ada fallback array kosong kalau API-nya lagi bermasalah — dashboard
- * tetap render, cuma nunjukin empty-state.
+ * dan ada fallback array kosong kalau API-nya lagi bermasalah, dashboard tetap render, cuma nunjukin empty-state.
  */
 class CutiApiService
 {
@@ -125,8 +124,7 @@ class CutiApiService
     }
 
     /**
-     * Daftar pegawai paling kritis lintas semua unit — dipakai buat ranking
-     * list & bar chart "pemakaian cuti tertinggi" di dashboard.
+     * Daftar pegawai paling kritis lintas semua unit 
      *
      * @param int|null $limit Batasi jumlah hasil. Null = semua.
      */
@@ -142,7 +140,7 @@ class CutiApiService
     }
 
     /**
-     * Data siap pakai buat donut chart distribusi status (Normal / Perhatian / Kritis).
+     * Data buat donut chart distribusi status (Normal / Perhatian / Kritis).
      */
     public function getChartDistribusiStatus(): array
     {
@@ -159,7 +157,7 @@ class CutiApiService
     }
 
     /**
-     * Data siap pakai buat horizontal bar chart "Top pemakaian cuti tahunan" 
+     * Data buat horizontal bar chart "Top pemakaian cuti tahunan" 
      */
     public function getChartTopPegawai(int $limit = 8): array
     {
@@ -247,7 +245,7 @@ class CutiApiService
     }
 
     /**
-     * Ringkasan angka + status keseluruhan satu unit, dari daftar pegawai
+     * Ringkasan angka dan status keseluruhan satu unit, dari daftar pegawai
      * yang sudah dikelompokkan.
      */
     protected function summarizeUnit(array $pegawai): array
@@ -264,7 +262,7 @@ class CutiApiService
             'rata_rata_persen_terpakai' => (int) round(
                 $collection->where('punya_jatah_utama', true)->avg('persen_terpakai') ?? 0
             ),
-            // Status keseluruhan unit buat badge header accordion — sama
+            // Status keseluruhan unit buat badge header accordion, sama
             // prioritas kayak status pegawai: KRITIS > PERHATIAN > NORMAL.
             'status' => match (true) {
                 $jumlahKritis > 0 => self::STATUS_KRITIS,

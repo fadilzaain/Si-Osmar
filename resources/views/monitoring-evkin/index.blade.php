@@ -147,8 +147,7 @@
             Tidak ada unit / pegawai yang cocok dengan pencarian / filter saat ini.
         </div>
 
-        {{-- ================= Daftar unit (accordion) — ini bagian detail
-             pencarian pegawai yang dimaksud direktur ================= --}}
+        {{-- ================= Daftar unit  ================= --}}
         <div class="mek-unit-list" data-accordion>
             @foreach ($ringkasan as $unit)
                 @php
@@ -158,15 +157,19 @@
                      style="animation-delay: {{ $loop->index * 40 }}ms"
                      data-search="{{ strtolower($unit['unit'] . ' ' . $searchNama) }}">
                     <button type="button" class="mek-unit-head" data-accordion-trigger>
+                       @php
+                            $jumlahBaik = $unit['summary']['per_predikat']['Sangat Baik'] + $unit['summary']['per_predikat']['Baik'];
+                        @endphp
                         <div class="mek-unit-title">
                             <span class="mek-unit-name">{{ $unit['unit'] }}</span>
                             <span class="mek-unit-count">{{ $unit['summary']['total_pegawai'] }} pegawai</span>
                             @if ($unit['summary']['total_dinilai'] > 0)
                                 <x-badge :variant="$unit['summary']['persen_baik'] >= 75 ? 'success' : ($unit['summary']['persen_baik'] >= 50 ? 'warning' : 'danger')">
-                                    {{ $unit['summary']['persen_baik'] }}% baik
+                                    {{ $jumlahBaik }}/{{ $unit['summary']['total_dinilai'] }} baik
                                 </x-badge>
-                            @else
-                                <x-badge variant="neutral">Belum dinilai</x-badge>
+                            @endif
+                            @if ($unit['summary']['belum_dinilai'] > 0)
+                                <x-badge variant="neutral">{{ $unit['summary']['belum_dinilai'] }} belum dinilai</x-badge>
                             @endif
                         </div>
                         <i class="fa-solid fa-chevron-down mek-chev" aria-hidden="true"></i>

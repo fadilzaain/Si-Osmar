@@ -34,8 +34,7 @@ class DashboardController extends Controller
 
     public function index(Request $request)
     {
-        // Monitoring Dokumen — ringkasan eksekutif + data donut chart, plus
-        // unit paling kritis buat catatan singkat di card.
+        // Monitoring Dokumen 
         $dokumenEksekutif = $this->monitoringDokumenService->getRingkasanEksekutif();
         $dokumenChart = $this->monitoringDokumenService->getChartDistribusiStatus();
         $unitDokumenKritis = collect($this->monitoringDokumenService->getTopUnitKritis(1))->first();
@@ -43,22 +42,21 @@ class DashboardController extends Controller
         // Cuti : ringkasan eksekutif + donut chart status kesehatan cuti.
         $cutiEksekutif = $this->cutiApiService->getRingkasanEksekutif();
 
-        // Capaian Kinerja : ringkasan eksekutif + donut chart, sumbernya
-        // sama persis dengan halaman detail (monitoring-evkin), biar
-        // angkanya selalu sinkron dan gak dobel logika di Blade.
+        // Capaian Kinerja 
         $ekinerjaEksekutif = $this->evkinApiService->getRingkasanEksekutif();
         $ekinerjaChartData = $this->evkinApiService->getChartCapaianKinerja();
 
         $pelatihan = $this->dashboardService->getPelatihanSummary();
 
-        $sdmRedistribusi = $this->bezettingApiService->getPeluangRedistribusi(4);
-        $sdmTotalPeluang = count($this->bezettingApiService->getPeluangRedistribusi());
+        // SDM layout
+        $sdmEksekutif = $this->bezettingApiService->getRingkasanEksekutif();
+        $sdmUnitKritisList = $this->bezettingApiService->getTopUnitKritis(3);
 
         return view('dashboard.index', compact(
             'dokumenEksekutif', 'dokumenChart', 'unitDokumenKritis',
             'cutiEksekutif',
             'ekinerjaEksekutif', 'ekinerjaChartData', 'pelatihan',
-            'sdmRedistribusi', 'sdmTotalPeluang'
+            'sdmEksekutif', 'sdmUnitKritisList'
         ));
     }
 }

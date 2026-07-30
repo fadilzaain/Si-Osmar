@@ -17,7 +17,7 @@
 
     <div class="dxg-grid">
 
-        {{-- ================= 1. Monitoring Dokumen (prioritas, live) ================= --}}
+        {{-- ================= 1. Monitoring Dokumen ================= --}}
     @php
         $dokumenBermasalah = $dokumenEksekutif['total_bermasalah'];
         $dokumenNote = $dokumenBermasalah <= 0
@@ -89,42 +89,40 @@
 
 
         {{-- ================= 3. SDM — card lebar ================= --}}
+        @php
+            $sdmKekurangan = $sdmEksekutif['total_unit_kurang'];
+        @endphp
         <x-dashboard.tile
             title="SDM"
-            subtitle="Peluang redistribusi pegawai antar unit"
+            subtitle="Unit dengan kekurangan SDM terbanyak"
             icon="fa-solid fa-users"
             href="{{ route('sdm-bezetting.index') }}"
-            badge-text="{{ $sdmTotalPeluang }} peluang"
-            badge-tone="neutral"
+            badge-text="{{ $sdmKekurangan > 0 ? $sdmKekurangan . ' unit kritis' : 'Terpenuhi' }}"
+            badge-tone="{{ $sdmKekurangan > 0 ? 'alert' : 'neutral' }}"
             :wide="true"
             :live="true"
         >
-            @if (empty($sdmRedistribusi))
+            @if (empty($sdmUnitKritisList))
                 <x-empty-state
-                    icon="fa-solid fa-right-left"
-                    title="Belum ada peluang redistribusi"
-                    description="Peluang pemindahan pegawai antar unit akan muncul di sini kalau ada jabatan yang kurang di satu unit tapi lebih di unit lain."
+                    icon="fa-solid fa-circle-check"
+                    title="Semua unit terpenuhi"
+                    description="Tidak ada unit yang kekurangan SDM saat ini."
                 />
             @else
                 <div class="bzs-redis-list">
-                    @foreach ($sdmRedistribusi as $p)
-                        @php
-                            $unitKurang = $p['unit_kurang'][0] ?? null;
-                            $unitLebih = $p['unit_lebih'][0] ?? null;
-                        @endphp
+                    @foreach ($sdmUnitKritisList as $u)
                         <div class="bzs-redis-row">
-                            <i class="fa-solid fa-right-left bzs-redis-icon tone-info" aria-hidden="true"></i>
+                            <i class="fa-solid fa-triangle-exclamation bzs-redis-icon tone-danger" aria-hidden="true"></i>
                             <div class="bzs-redis-text">
-                                <strong>{{ $p['jabatan'] }}</strong> — bisa pindah {{ $p['potensi_pindah'] }} orang
-                                @if ($unitLebih && $unitKurang)
-                                    dari <strong>{{ $unitLebih['unit'] }}</strong> ke <strong>{{ $unitKurang['unit'] }}</strong>
-                                @endif
+                                <strong>{{ $u['unit'] }}</strong> — kurang {{ $u['summary']['total_kekurangan'] }} orang
+                                ({{ $u['summary']['total_pegawai'] }}/{{ $u['summary']['total_kebutuhan'] }} terisi)
                             </div>
                         </div>
                     @endforeach
                 </div>
             @endif
         </x-dashboard.tile>
+
 
         {{-- ================= 4. Cuti ================= --}}
         @php

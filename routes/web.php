@@ -47,6 +47,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/sdm-bezetting', [SdmBezettingController::class, 'index'])
         ->name('sdm-bezetting.index');
 
+    
+    // Dipanggil JS lewat polling (resources/js/modules/sdm-bezetting.js)
+    // buat auto-refresh data tiap 1 menit tanpa reload halaman.
+    Route::get('/sdm-bezetting/data', [SdmBezettingController::class, 'data'])
+    ->name('sdm-bezetting.data');
+
+
     // Sementara: buat ngecek error API SI KAWAN tanpa perlu akses SSH server.
     // Hapus kalau udah gak dibutuhin.
     Route::get('/sdm-bezetting/diagnostic', [SdmBezettingController::class, 'diagnostic'])
