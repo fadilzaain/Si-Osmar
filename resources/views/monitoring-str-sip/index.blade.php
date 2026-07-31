@@ -14,34 +14,34 @@
     @else
 
         {{-- ================= Ringkasan eksekutif ================= --}}
-        <div class="mds-kpi-grid">
+       <div class="mds-kpi-grid">
             <x-stat-card
                 icon="fa-solid fa-users"
-                label="Pegawai dipantau"
+                label="Total Pegawai"
                 :value="$eksekutif['total_pegawai']"
                 comparison="di {{ $eksekutif['total_unit'] }} unit"
-                color="var(--color-primary)"
+                color="var(--color-text-muted)"
+            />
+            <x-stat-card
+                icon="fa-solid fa-circle-check"
+                label="Lengkap"
+                :value="$eksekutif['jumlah_lengkap']"
+                comparison="dokumen aman & berlaku"
+                color="var(--color-success)"
             />
             <x-stat-card
                 icon="fa-solid fa-triangle-exclamation"
-                label="Pegawai bermasalah"
-                :value="$eksekutif['total_bermasalah']"
-                comparison="di {{ $eksekutif['total_unit_bermasalah'] }} unit"
-                color="var(--color-danger)"
-            />
-            <x-stat-card
-                icon="fa-solid fa-file-circle-xmark"
-                label="Dokumen kadaluarsa"
-                :value="$eksekutif['total_dokumen_kadaluarsa']"
-                comparison="perlu perpanjangan segera"
+                label="Perlu Diperpanjang"
+                :value="$eksekutif['jumlah_perlu_diperpanjang']"
+                comparison="mendekati masa kadaluarsa"
                 color="var(--color-warning)"
             />
             <x-stat-card
-                icon="fa-solid fa-file-circle-question"
-                label="Belum diunggah"
-                :value="$eksekutif['total_dokumen_belum_ada']"
-                comparison="dokumen belum tersedia"
-                color="var(--color-info)"
+                icon="fa-solid fa-circle-xmark"
+                label="Bermasalah"
+                :value="$eksekutif['total_bermasalah']"
+                comparison="di {{ $eksekutif['total_unit_bermasalah'] }} unit"
+                color="var(--color-danger)"
             />
         </div>
 

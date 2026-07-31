@@ -28,7 +28,7 @@ class MonitoringDokumenService
     public const STATUS_NEUTRAL = 'neutral';
 
     /**
-     * Urutan "keparahan" status, dipakai buat nentuin status keseluruhan
+     * Urutan "keparahan status, dipakai buat nentuin status keseluruhan
      * satu pegawai dari 3 dokumennya (SIP/SPK/RKK) — makin besar makin
      * butuh perhatian direktur duluan.
      */
@@ -42,10 +42,9 @@ class MonitoringDokumenService
     protected string $cacheKey = 'sdm.monitoring-dokumen.raw';
 
     /**
-     * Daftar unit lengkap dengan pegawai yang sudah dinormalisasi + ringkasan
-     * per unit. Ini yang dipakai langsung buat render accordion di halaman
-     * detail. Diurutkan dari unit paling bermasalah duluan — paling
-     * actionable buat direktur yang buka halaman ini.
+     * Daftar unit lengkap dengan pegawai yang sudah dinormalisasi dan ringkasan
+     * per unit. dipakai buat render accordion di halaman detail.
+     * Diurutkan dari unit paling bermasalah duluan.
      */
     public function getUnitList(): array
     {
@@ -73,8 +72,7 @@ class MonitoringDokumenService
     }
 
     /**
-     * Ringkasan level rumah sakit (lintas semua unit) — dipakai buat 4 KPI
-     * card paling atas di halaman Monitoring Dokumen.
+     * dipakai buat 4 KPI card paling atas di halaman Monitoring Dokumen.
      */
     public function getRingkasanEksekutif(): array
     {
@@ -88,6 +86,8 @@ class MonitoringDokumenService
             'total_unit' => count($unitList),
             'total_unit_bermasalah' => collect($summaries)->where('bermasalah', '>', 0)->count(),
             'total_pegawai' => $totalPegawai,
+            'jumlah_lengkap' => array_sum(array_column($summaries, 'lengkap')),
+            'jumlah_perlu_diperpanjang' => array_sum(array_column($summaries, 'perlu_diperpanjang')),
             'total_bermasalah' => $totalBermasalah,
             'persen_lengkap' => $totalPegawai > 0
                 ? round(($totalPegawai - $totalBermasalah) / $totalPegawai * 100)
@@ -98,9 +98,7 @@ class MonitoringDokumenService
     }
 
     /**
-     * Unit-unit paling kritis (pegawai bermasalah terbanyak), buat ranked
-     * list di bagian atas halaman — getUnitList() udah di-sort desc, jadi
-     * di sini tinggal filter yang beneran bermasalah + potong.
+     * Unit paling kritis (pegawai bermasalah terbanyak), buat ranked list di bagian atas halaman
      */
     public function getTopUnitKritis(int $limit = 6): array
     {
@@ -112,39 +110,37 @@ class MonitoringDokumenService
     }
 
     /**
-     * Kesimpulan satu paragraf, dihasilkan otomatis dari angka yang sama
-     * kayak KPI card di atasnya — bukan input manual.
+     * Kesimpulan satu paragraf
      */
     public function getKesimpulan(): string
     {
         $r = $this->getRingkasanEksekutif();
 
-        if ($r['total_bermasalah'] <= 0) {
+        if ($r['total_bermasalah'] <= 0 && $r['jumlah_perlu_diperpanjang'] <= 0) {
             return 'Seluruh dokumen legal pegawai (SIP, SPK, RKK) di semua unit dalam kondisi lengkap dan berlaku. Tidak ada tindakan mendesak yang diperlukan.';
         }
 
-        $persen = 100 - $r['persen_lengkap'];
+        if ($r['total_bermasalah'] > 0) {
+            $topUnit = $this->getTopUnitKritis(1)[0] ?? null;
 
-        $teks = "Dari {$r['total_pegawai']} pegawai yang dipantau di {$r['total_unit']} unit, {$r['total_bermasalah']} pegawai ({$persen}%) memiliki dokumen bermasalah, tersebar di {$r['total_unit_bermasalah']} unit.";
+            $teks = "{$r['total_bermasalah']} pegawai di {$r['total_unit_bermasalah']} unit punya dokumen yang sudah kadaluarsa atau belum diunggah, perlu segera ditindaklanjuti.";
 
-        if ($r['total_dokumen_kadaluarsa'] > 0) {
-            $teks .= " Tercatat {$r['total_dokumen_kadaluarsa']} dokumen sudah kadaluarsa dan perlu segera diperpanjang.";
+            if ($topUnit) {
+                $teks .= " Mulai dari unit {$topUnit['unit']}  — menduduki peringkat atas, {$topUnit['summary']['bermasalah']} dari {$topUnit['summary']['total_pegawai']} pegawainya bermasalah.";
+            }
+
+            if ($r['jumlah_perlu_diperpanjang'] > 0) {
+                $teks .= " Setelah itu, {$r['jumlah_perlu_diperpanjang']} pegawai lain juga perlu diingatkan untuk memperpanjang dokumennya sebelum kadaluarsa.";
+            }
+
+            return $teks;
         }
 
-        if ($r['total_dokumen_belum_ada'] > 0) {
-            $teks .= " {$r['total_dokumen_belum_ada']} dokumen lainnya belum diunggah sama sekali.";
-        }
-
-        return $teks;
+        // total_bermasalah 0, tapi ada yang perlu_diperpanjang.
+        return "Belum ada dokumen yang benar-benar kadaluarsa. Tapi {$r['jumlah_perlu_diperpanjang']} pegawai perlu mulai diingatkan untuk memperpanjang dokumennya sebelum jatuh tempo.";
     }
 
-    /**
-     * Kontrak lama dipertahankan apa adanya — dipakai oleh DashboardController
-     * & komponen <x-ringkasan-dokumen> di dashboard. "Belum ada dokumen"
-     * digabung ke bucket 'kadaluarsa' di sini karena widget dashboard cuma
-     * punya 3 warna; rincian sebenarnya (kadaluarsa vs belum ada) baru
-     * dipisah di halaman detail penuh.
-     */
+
     public function getRingkasanPerRuangan(): array
     {
         return collect($this->getUnitList())->map(function (array $unit) {
@@ -165,15 +161,7 @@ class MonitoringDokumenService
     }
 
  /**
-     * Data siap pakai buat donut chart distribusi status dokumen (Lengkap /
-     * Akan Kadaluarsa / Kadaluarsa / Belum Ada) — dipakai di card
-     * "Monitoring Dokumen" pada dashboard utama. Format sesuai renderer
-     * 'donut-multi' di dashboard-charts.js.
-     *
-     * Sengaja dipecah 4 kategori, bukan digabung jadi satu "Bermasalah" —
-     * biar direktur langsung lihat proporsi yang beneran genting
-     * (kadaluarsa / belum ada) vs yang masih sebatas warning (akan
-     * kadaluarsa), gak ditumpuk jadi satu angka merah gede.
+     * Data siap pakai buat donut chart distribusi status dokumen (Lengkap / Akan Kadaluarsa / Kadaluarsa / Belum Ada)
      */
     public function getChartDistribusiStatus(): array
     {
@@ -198,7 +186,6 @@ class MonitoringDokumenService
                 $breakdownTotal[self::STATUS_DANGER],
                 $breakdownTotal[self::STATUS_NEUTRAL],
             ],
-            // Urutan label & warna HARUS sejajar sama urutan series di atas.
             'labels' => ['Lengkap', 'Akan Kadaluarsa', 'Kadaluarsa', 'Belum Ada'],
             'colors' => ['success', 'warning', 'danger', 'info'],
             'size' => 128,
@@ -208,8 +195,7 @@ class MonitoringDokumenService
     }
 
     /**
-     * Satu pegawai dari raw API -> bentuk seragam { nama, jabatan, inisial,
-     * dokumen: [SIP, SPK, RKK], overall_status }.
+     * Satu pegawai dari API { nama, jabatan, inisial, dokumen: [SIP, SPK, RKK], overall_status }.
      */
     protected function normalizePegawai(array $p): array
     {
@@ -236,9 +222,9 @@ class MonitoringDokumenService
     }
 
     /**
-     * Satu jenis dokumen (SIP/SPK/RKK) dari raw API -> bentuk seragam.
+     * Satu jenis dokumen (SIP/SPK/RKK) dari API -> bentuk seragam.
      * Nama field tanggal beda-beda di API mentah (sip: "berlaku",
-     * spk/rkk: "tanggal_berlaku"), di sini disamakan jadi "tanggal".
+     * spk/rkk: "tanggal_berlaku"), disamakan jadi "tanggal".
      */
     protected function normalizeDokumen(?array $raw, ?string $statusRaw, ?string $masaBerlakuRaw): array
     {
@@ -255,12 +241,7 @@ class MonitoringDokumenService
         ];
     }
 
-    /**
-     * Peta status mentah dari API -> variant badge kita. Value yang gak
-     * dikenali (termasuk "secondary" yang berarti dokumen belum ada, atau
-     * null) sengaja fallback ke 'neutral', bukan diabaikan — biar dokumen
-     * yang statusnya aneh tetap kelihatan butuh dicek, bukan hilang diam-diam.
-     */
+  
     protected function normalizeStatus(?string $raw): string
     {
         return match ($raw) {
@@ -272,9 +253,7 @@ class MonitoringDokumenService
     }
 
     /**
-     * Inisial buat avatar bulat — nama di API kadang ada gelar setelah koma
-     * ("HERY PURNOMOWATI , A.Md.AK"), jadi bagian setelah koma pertama
-     * dibuang dulu sebelum diambil huruf depannya.
+     * Inisial buat avatar bulat 
      */
     protected function buatInisial(string $nama): string
     {
@@ -291,8 +270,6 @@ class MonitoringDokumenService
 
     /**
      * URL publik berkas PDF. ASUMSI: berkas diakses lewat {base_url}/storage/{path}.
-     * Kalau di server SIKAWAN pola URL-nya beda, set SIKAWAN_STORAGE_URL di
-     * .env atau sesuaikan baris ini.
      */
     public function getFileUrl(?string $path): ?string
     {
@@ -309,9 +286,7 @@ class MonitoringDokumenService
     }
 
     /**
-     * Ringkasan per unit dari daftar pegawai yang sudah dinormalisasi:
-     * breakdown jumlah pegawai per status keseluruhan, plus hitungan
-     * dokumen individual yang kadaluarsa / belum ada (lintas SIP+SPK+RKK).
+     * Ringkasan per unit dari daftar pegawai yang sudah dinormalisasi
      */
     protected function summarize(array $pegawaiList): array
     {
@@ -341,7 +316,9 @@ class MonitoringDokumenService
 
         return [
             'total_pegawai' => $total,
-            'bermasalah' => $total - $breakdown[self::STATUS_SUCCESS],
+            'lengkap' => $breakdown[self::STATUS_SUCCESS],
+            'perlu_diperpanjang' => $breakdown[self::STATUS_WARNING],
+            'bermasalah' => $breakdown[self::STATUS_DANGER] + $breakdown[self::STATUS_NEUTRAL],
             'breakdown' => $breakdown,
             'dokumen_kadaluarsa' => $dokumenKadaluarsa,
             'dokumen_belum_ada' => $dokumenBelumAda,
@@ -350,7 +327,7 @@ class MonitoringDokumenService
 
     /**
      * Ambil data mentah dari API, di-cache. Kalau API gagal, balikin array
-     * kosong + catat ke log — halaman tetap render dengan empty-state,
+     * kosong dan catat ke log, halaman tetap render dengan empty-state,
      * bukan error 500.
      */
     protected function fetchRaw(): array
