@@ -186,15 +186,6 @@ class DashboardService
         return $alerts;
     }
 
-    public function getPelatihanSummary(): array
-    {
-        // dummy — persentase harus total 100
-        return [
-            'lebih_20jp' => 62,
-            'kurang_20jp' => 25,
-            'belum' => 13,
-        ];
-    }
 
     public function getSdmSummaryChart(): array
     {

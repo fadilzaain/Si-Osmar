@@ -168,26 +168,32 @@
 
         {{-- ================= 5. Pelatihan ================= --}}
         @php
-            $pelatihanProgress = $pelatihanProgress ?? [
-                ['label' => 'Ns. Ratna Dewi', 'value' => '34 JP', 'percent' => 100, 'tone' => 'success'],
-                ['label' => 'dr. Bagas Prasetyo', 'value' => '22 JP', 'percent' => 100, 'tone' => 'success'],
-                ['label' => 'Yulia Anggraini', 'value' => 'Belum', 'percent' => 0, 'tone' => 'danger'],
-            ];
-            $pelatihanSisa = $pelatihanSisa ?? 41;
-            $pelatihanLebih20jp = $pelatihanLebih20jp ?? 62;
+            // Data asli dari PelatihanApiService, bukan dummy lagi.
+            // Gak ada tone/status di sini — progress bar cuma nunjukin
+            // proporsi jam relatif ke pegawai teratas, murni visual.
+            $pelatihanJamTertinggi = $pelatihanTopPegawai[0]['total_jam_pelatihan'] ?? 0;
+            $pelatihanProgress = collect($pelatihanTopPegawai)->map(fn ($p) => [
+                'label' => $p['nama'],
+                'value' => number_format($p['total_jam_pelatihan'], 0, ',', '.') . ' jam',
+                'percent' => $pelatihanJamTertinggi > 0
+                    ? min(100, round($p['total_jam_pelatihan'] / $pelatihanJamTertinggi * 100))
+                    : 0,
+                'tone' => 'neutral',
+            ])->all();
+            $pelatihanSisa = max(0, $pelatihanEksekutif['total_pegawai'] - count($pelatihanTopPegawai));
         @endphp
         <x-dashboard.tile
             title="Pelatihan"
-            subtitle="Jam pelatihan & kelengkapan syarat"
+            subtitle="Jam pelatihan pegawai"
             icon="fa-solid fa-graduation-cap"
-            href="{{ route('coming-soon', 'pelatihan') }}"
-            badge-text="Segera hadir"
-            badge-tone="soon"
-            :footer-value="$pelatihanLebih20jp . '%'"
-            footer-label="sudah ≥20 JP"
+            href="{{ route('pelatihan.index') }}"
+            :footer-value="$pelatihanEksekutif['rata_rata_jam_per_pegawai']"
+            footer-label="rata-rata jam/pegawai"
         >
             <x-dashboard.progress-bar :items="$pelatihanProgress" />
-            <div class="dxg-mini-list-more">+{{ $pelatihanSisa }} pegawai lainnya</div>
+            @if ($pelatihanSisa > 0)
+                <div class="dxg-mini-list-more">+{{ $pelatihanSisa }} pegawai lainnya</div>
+            @endif
         </x-dashboard.tile>
 
     </div>

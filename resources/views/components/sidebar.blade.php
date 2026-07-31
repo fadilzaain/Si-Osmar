@@ -51,10 +51,9 @@
                 <i class="fa-solid fa-umbrella-beach"></i>
                 <span>Cuti</span>
             </a>
-            <a href="{{ route('coming-soon', 'pelatihan') }}" class="sidebar-link {{ request()->routeIs('coming-soon') && request()->route('module') === 'pelatihan' ? 'active' : '' }}" data-label="Pelatihan">
+            <a href="{{ route('pelatihan.index') }}" class="sidebar-link {{ request()->routeIs('pelatihan.*') ? 'active' : '' }}" data-label="Pelatihan">
                 <i class="fa-solid fa-graduation-cap"></i>
                 <span>Pelatihan</span>
-                <span class="dxg-badge-pill tone-neutral sidebar-link-badge">Segera</span>
             </a>
         </div>
 

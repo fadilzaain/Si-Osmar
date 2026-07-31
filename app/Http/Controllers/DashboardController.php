@@ -8,6 +8,7 @@ use App\Services\MonitoringDokumenService;
 use App\Services\CutiApiService;
 use App\Services\BezettingApiService;
 use App\Services\EvkinApiService;
+use App\Services\PelatihanApiService;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -17,6 +18,8 @@ class DashboardController extends Controller
     protected $cutiApiService;
     protected $bezettingApiService;
     protected $evkinApiService;
+    protected $pelatihanApiService;
+
 
     public function __construct(
         DashboardService $dashboardService,
@@ -24,12 +27,14 @@ class DashboardController extends Controller
         CutiApiService $cutiApiService,
         BezettingApiService $bezettingApiService,
         EvkinApiService $evkinApiService,
+        PelatihanApiService $pelatihanApiService,
     ) {
         $this->dashboardService = $dashboardService;
         $this->monitoringDokumenService = $monitoringDokumenService;
         $this->cutiApiService = $cutiApiService;
         $this->bezettingApiService = $bezettingApiService;
         $this->evkinApiService = $evkinApiService;
+        $this->pelatihanApiService = $pelatihanApiService;
     }
 
     public function index(Request $request)
@@ -46,8 +51,9 @@ class DashboardController extends Controller
         $ekinerjaEksekutif = $this->evkinApiService->getRingkasanEksekutif();
         $ekinerjaChartData = $this->evkinApiService->getChartCapaianKinerja();
 
-        $pelatihan = $this->dashboardService->getPelatihanSummary();
-
+        // Pelatihan buat isi tile Pelatihan di Dashboard Executive.
+        $pelatihanEksekutif = $this->pelatihanApiService->getRingkasanEksekutif();
+        $pelatihanTopPegawai = $this->pelatihanApiService->getTopPegawai(3);
         // SDM layout
         $sdmEksekutif = $this->bezettingApiService->getRingkasanEksekutif();
         $sdmUnitKritisList = $this->bezettingApiService->getTopUnitKritis(3);
@@ -55,7 +61,7 @@ class DashboardController extends Controller
         return view('dashboard.index', compact(
             'dokumenEksekutif', 'dokumenChart', 'unitDokumenKritis',
             'cutiEksekutif',
-            'ekinerjaEksekutif', 'ekinerjaChartData', 'pelatihan',
+            'ekinerjaEksekutif', 'ekinerjaChartData', 'pelatihanEksekutif', 'pelatihanTopPegawai',
             'sdmEksekutif', 'sdmUnitKritisList'
         ));
     }

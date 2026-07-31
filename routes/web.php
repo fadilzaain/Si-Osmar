@@ -8,6 +8,7 @@ use App\Http\Controllers\SdmBezettingController;
 use App\Http\Controllers\ComingSoonController;
 use App\Http\Controllers\MonitoringCutiController;
 use App\Http\Controllers\MonitoringEvkinController;
+use App\Http\Controllers\PelatihanController;
 
 
 // Halaman login hanya boleh diakses kalau BELUM login.
@@ -62,6 +63,10 @@ Route::middleware('auth')->group(function () {
     //Monitoring cuti
     Route::get('/monitoring-cuti', [MonitoringCutiController::class, 'index'])
         ->name('monitoring-cuti.index');
+
+    //Monitoring Pelatihan
+    Route::get('/pelatihan', [PelatihanController::class, 'index'])
+        ->name('pelatihan.index');
 
     //Monitoring Capaian Kinerja 
     Route::get('/monitoring-evkin', [MonitoringEvkinController::class, 'index'])

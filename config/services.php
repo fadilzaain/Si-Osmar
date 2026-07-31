@@ -43,12 +43,10 @@ return [
         'dokumen_endpoint' => env('SIKAWAN_DOKUMEN_ENDPOINT', '/api-monitoring-berlaku-dokumen'),
         'cuti_endpoint' => env('SIKAWAN_CUTI_ENDPOINT', '/api-monitoring-sisa-cuti'),
         'evkin_endpoint' => env('SIKAWAN_EVKIN_ENDPOINT', '/api-monitoring-evkin'),
+        'pelatihan_endpoint' => env('SIKAWAN_PELATIHAN_ENDPOINT', '/api-monitoring-pelatihan'),
         'storage_url' => env('SIKAWAN_STORAGE_URL'), // null = fallback ke base_url, lihat MonitoringDokumenService::getFileUrl()
         'timeout' => env('SIKAWAN_TIMEOUT', 10),
         'cache_ttl' => env('SIKAWAN_CACHE_TTL', 900),
-        // TTL khusus Bezetting SDM — lebih pendek karena halamannya auto-refresh
-        // tiap 1 menit (live), jadi harus punya cache-nya sendiri biar modul lain
-        // (Cuti/Evkin/Dokumen) yang gak butuh live tetap hemat di 900s.
         'bezetting_cache_ttl' => env('SIKAWAN_BEZETTING_CACHE_TTL', 60),
         // Verifikasi SSL certificate API SI KAWAN. Default true (aman).
         // Set SIKAWAN_VERIFY_SSL=false di .env HANYA kalau ketauan dari
