@@ -10,8 +10,8 @@ use Illuminate\Support\Str;
 /**
  * PelatihanApiService
  *
- * Narik data pelatihan pegawai (jumlah pelatihan yang diikuti & total jam
- * pelatihan, per unit & per pegawai) dari API eksternal SIKAWAN. 
+ * Narik data pelatihan pegawai (jumlah pelatihan yang diikuti dan total jam
+ * pelatihan, per unit dan per pegawai) dari API eksternal SIKAWAN. 
  *
  */
 class PelatihanApiService
@@ -38,18 +38,18 @@ class PelatihanApiService
                     'rata_rata_jam' => (float) $p['rata_rata_jam'],
                 ])
                 ->sortBy('nama')
-                ->values()
-                ->all();
+                ->values();
 
             return [
                 'unit' => $unitBlock['unit'],
                 'slug' => Str::slug($unitBlock['unit']),
-                'pegawai' => $pegawai,
+                'pegawai' => $pegawai->all(),
                 'summary' => [
                     'total_pegawai' => (int) $unitBlock['total_pegawai'],
                     'total_pelatihan' => (int) $unitBlock['total_pelatihan'],
                     'total_jam_pelatihan' => (float) $unitBlock['total_jam_pelatihan'],
                     'rata_rata_jam_per_pegawai' => (float) $unitBlock['rata_rata_jam_per_pegawai'],
+                    ...$this->hitungAmbangJam($pegawai),
                 ],
             ];
         })
@@ -59,44 +59,99 @@ class PelatihanApiService
     }
 
     /**
-     * Angka ringkasan level rumah sakit — dipakai buat KPI card paling atas.
+     * Hitung berapa pegawai yang total jam pelatihannya udah nyampe ambang
+     * (AMBANG_JAM_CUKUP) dan berapa yang belum, dari satu collection pegawai.
+     */
+    protected function hitungAmbangJam(\Illuminate\Support\Collection $pegawai): array
+    {
+        $total = $pegawai->count();
+        $jumlah20jpPlus = $pegawai->where('total_jam_pelatihan', '>=', self::AMBANG_JAM_CUKUP)->count();
+
+        return [
+            'jumlah_20jp_plus' => $jumlah20jpPlus,
+            'jumlah_kurang_20jp' => $total - $jumlah20jpPlus,
+        ];
+    }
+
+    /**
+     * Angka ringkasan level rumah sakit — dipakai buat KPI card paling atas dan teks kesimpulan naratif. 
      */
     public function getRingkasanEksekutif(): array
     {
         $ringkasan = $this->getRingkasanPerUnit();
         $summaries = array_column($ringkasan, 'summary');
+        $statistik = $this->fetchStatistik();
 
-        $totalPegawai = array_sum(array_column($summaries, 'total_pegawai'));
-        $totalJam = array_sum(array_column($summaries, 'total_jam_pelatihan'));
+        $totalPegawai = ! empty($statistik)
+            ? (int) $statistik['total_pegawai']
+            : array_sum(array_column($summaries, 'total_pegawai'));
+
+        $totalJam = ! empty($statistik)
+            ? (float) $statistik['total_jam_pelatihan']
+            : array_sum(array_column($summaries, 'total_jam_pelatihan'));
 
         return [
             'total_unit' => count($ringkasan),
             'total_pegawai' => $totalPegawai,
             'total_pelatihan' => array_sum(array_column($summaries, 'total_pelatihan')),
             'total_jam_pelatihan' => (int) round($totalJam),
-            'rata_rata_jam_per_pegawai' => $totalPegawai > 0
-                ? round($totalJam / $totalPegawai, 2)
-                : 0,
+            'rata_rata_jam_per_pegawai' => ! empty($statistik)
+                ? (float) $statistik['rata_rata_jam_per_pegawai']
+                : ($totalPegawai > 0 ? round($totalJam / $totalPegawai, 2) : 0),
         ];
     }
 
     /**
      * Angka kepesertaan total pegawai, yang jam pelatihannya udah >= ambang, yang sudah pernah
      * ikut pelatihan minimal 1x, dan yang belum sama sekali.
+     *
+     * Diambil dari "statistik" resmi SIKAWAN (dihitung dari sisi mereka,
+     * mencakup pegawai yang 0x pelatihan juga), bukan diagregasi ulang dari
+     * daftar per unit kita, karena daftar per unit itu cuma nyertain pegawai
+     * yang minimal 1x pelatihan, jadi gak bisa dipakai buat ngitung
+     * "belum pelatihan".
      */
     public function getRingkasanKepesertaan(): array
     {
-        $semuaPegawai = collect($this->getRingkasanPerUnit())->flatMap(fn ($u) => $u['pegawai']);
+        $statistik = $this->fetchStatistik();
 
-        $totalPegawai = $semuaPegawai->count();
-        $jumlah20jpPlus = $semuaPegawai->where('total_jam_pelatihan', '>=', self::AMBANG_JAM_CUKUP)->count();
-        $jumlahSudah = $semuaPegawai->where('jumlah_pelatihan', '>', 0)->count();
-        $jumlahBelum = $totalPegawai - $jumlahSudah;
+        if (empty($statistik)) {
+            return $this->hitungKepesertaanDariDaftarUnit();
+        }
+
+        $totalPegawai = (int) $statistik['total_pegawai'];
+        $jumlahSudah = (int) $statistik['total_pegawai_sudah_pelatihan'];
+        $jumlah20jpPlus = (int) $statistik['total_pegawai_sudah_pelatihan_20jp'];
+        $jumlahBelum = (int) $statistik['total_pegawai_belum_pelatihan'];
 
         return [
             'total_pegawai' => $totalPegawai,
             'jumlah_20jp_plus' => $jumlah20jpPlus,
             'persen_20jp_plus' => $this->persen($jumlah20jpPlus, $totalPegawai),
+            'jumlah_sudah_pelatihan' => $jumlahSudah,
+            'persen_sudah_pelatihan' => $this->persen($jumlahSudah, $totalPegawai),
+            'jumlah_belum_pelatihan' => $jumlahBelum,
+            'persen_belum_pelatihan' => $this->persen($jumlahBelum, $totalPegawai),
+        ];
+    }
+
+    /**
+     * Fallback: agregasi manual dari daftar per unit. Cuma dipakai
+     * kalau "statistik" dari SIKAWAN lagi kosong/gagal.
+     */
+    protected function hitungKepesertaanDariDaftarUnit(): array
+    {
+        $semuaPegawai = collect($this->getRingkasanPerUnit())->flatMap(fn ($u) => $u['pegawai']);
+
+        $totalPegawai = $semuaPegawai->count();
+        $ambangJam = $this->hitungAmbangJam($semuaPegawai);
+        $jumlahSudah = $semuaPegawai->where('jumlah_pelatihan', '>', 0)->count();
+        $jumlahBelum = $totalPegawai - $jumlahSudah;
+
+        return [
+            'total_pegawai' => $totalPegawai,
+            'jumlah_20jp_plus' => $ambangJam['jumlah_20jp_plus'],
+            'persen_20jp_plus' => $this->persen($ambangJam['jumlah_20jp_plus'], $totalPegawai),
             'jumlah_sudah_pelatihan' => $jumlahSudah,
             'persen_sudah_pelatihan' => $this->persen($jumlahSudah, $totalPegawai),
             'jumlah_belum_pelatihan' => $jumlahBelum,
@@ -214,11 +269,11 @@ class PelatihanApiService
     }
 
     /**
-     * Ambil data mentah dari API, di-cache. Kalau API gagal, 
-     * balikin array kosong dan catat ke log, biar halaman tetap render
+     * Ambil data mentah dari API, di-cache. Kalau API gagal,
+     * balikin struktur kosong dan catat ke log, biar halaman tetap render
      * dalam bentuk empty-state, bukan error 500.
      */
-    protected function fetchRaw(): array
+    protected function fetchBody(): array
     {
         return Cache::remember($this->cacheKey, config('services.sikawan.cache_ttl', 900), function () {
             $baseUrl = rtrim(config('services.sikawan.base_url'), '/');
@@ -237,19 +292,32 @@ class PelatihanApiService
                         'status' => $response->status(),
                     ]);
 
-                    return [];
+                    return ['data' => [], 'statistik' => []];
                 }
 
                 $body = $response->json();
 
-                return $body['data'] ?? [];
+                return [
+                    'data' => $body['data'] ?? [],
+                    'statistik' => $body['statistik'] ?? [],
+                ];
             } catch (\Throwable $e) {
                 Log::error('PelatihanApiService: gagal fetch API monitoring pelatihan', [
                     'message' => $e->getMessage(),
                 ]);
 
-                return [];
+                return ['data' => [], 'statistik' => []];
             }
         });
+    }
+
+    protected function fetchRaw(): array
+    {
+        return $this->fetchBody()['data'];
+    }
+
+    protected function fetchStatistik(): array
+    {
+        return $this->fetchBody()['statistik'];
     }
 }

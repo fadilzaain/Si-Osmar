@@ -120,6 +120,12 @@
                         <div class="plh-unit-title">
                             <span class="plh-unit-name">{{ $unit['unit'] }}</span>
                             <span class="plh-unit-count">{{ $unit['summary']['total_pegawai'] }} pegawai</span>
+                            <x-badge variant="success">
+                                {{ $unit['summary']['jumlah_20jp_plus'] }} ≥20JP
+                            </x-badge>
+                            <x-badge variant="danger">
+                                {{ $unit['summary']['jumlah_kurang_20jp'] }} &lt;20JP
+                            </x-badge>
                             <x-badge variant="neutral">
                                 Rata-rata {{ $unit['summary']['rata_rata_jam_per_pegawai'] }} jam
                             </x-badge>

@@ -26,6 +26,7 @@ Route::post('/logout', [LoginController::class, 'destroy'])
     ->name('logout')
     ->middleware('auth');
 
+
 // Semua halaman di bawah ini WAJIB login dulu. Kalau belum, otomatis
 // di-redirect ke /login, dan setelah berhasil login akan balik lagi
 // ke halaman yang tadinya mau diakses (redirect()->intended() di controller).
