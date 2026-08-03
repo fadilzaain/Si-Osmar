@@ -59,8 +59,8 @@
         {{-- Panel kanan: form login --}}
         <div class="auth-form-panel">
             <div class="auth-form-card">
-                <h2 class="auth-form-title">Selamat datang kembali</h2>
-                <p class="auth-form-subtitle">Masuk untuk mengakses dashboard SDM</p>
+                <h2 class="auth-form-title">Selamat datang</h2>
+                <p class="auth-form-subtitle">Masuk untuk mengakses Dashboard Si-Osmar</p>
 
                 @if ($errors->any())
                     <div class="auth-error-box">

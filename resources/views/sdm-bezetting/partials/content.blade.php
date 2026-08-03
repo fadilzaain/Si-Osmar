@@ -1,7 +1,7 @@
 <div class="bzs-wrap" data-sdm-bezetting>
     <div class="bzs-eyebrow">SI-OSMAR / SDM</div>
         <h1 class="bzs-title">Bezetting SDM</h1>
-    <div class="bzs-sub">Ringkasan Kondisi SDM RSUD Jombang</div>
+    <div class="bzs-sub">Ringkasan Kondisi SDM — RSUD Jombang</div>
 
     @if (empty($ringkasan))
         <x-empty-state
