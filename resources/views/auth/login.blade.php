@@ -1,12 +1,42 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="light">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — SI-OSMAR</title>
+
+    {{-- Critical CSS --}}
+    <style>
+        html, body {
+            margin: 0;
+            background: #121316;
+            color: #f4f4f5;
+            font-family: 'General Sans', system-ui, sans-serif;
+        }
+        .auth-shell {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+        }
+        @media (max-width: 968px) {
+            .auth-shell { grid-template-columns: 1fr; }
+        }
+    </style>
+
+    {{-- Cegah flash-of-wrong-theme - apply data-theme sebelum CSS di-render --}}
+    <script>
+        (function () {
+            const stored = localStorage.getItem('siosmar-theme') || 'auto';
+            const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const resolved = stored === 'auto' ? (dark ? 'dark' : 'light') : stored;
+            document.documentElement.setAttribute('data-theme', resolved);
+            document.documentElement.setAttribute('data-theme-mode', stored);
+        })();
+    </script>
+
     <link rel="preload" href="/fonts/clash-display/ClashDisplay-Semibold.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/fonts/general-sans/GeneralSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
-    @vite(['resources/css/auth.css', 'resources/js/app.js'])
+    @vite(['resources/js/auth.js'])
 </head>
 <body class="auth-body">
     <div class="auth-shell">
