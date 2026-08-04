@@ -53,7 +53,7 @@ class DashboardController extends Controller
 
         // Pelatihan buat isi tile Pelatihan di Dashboard Executive.
         $pelatihanEksekutif = $this->pelatihanApiService->getRingkasanEksekutif();
-        $pelatihanTopPegawai = $this->pelatihanApiService->getTopPegawai(3);
+        $pelatihanChartTopPegawai = $this->pelatihanApiService->getChartTopPegawai(5, compact: true);
         // SDM layout
         $sdmEksekutif = $this->bezettingApiService->getRingkasanEksekutif();
         $sdmUnitKritisList = $this->bezettingApiService->getTopUnitKritis(3);
@@ -61,7 +61,7 @@ class DashboardController extends Controller
         return view('dashboard.index', compact(
             'dokumenEksekutif', 'dokumenChart', 'unitDokumenKritis',
             'cutiEksekutif',
-            'ekinerjaEksekutif', 'ekinerjaChartData', 'pelatihanEksekutif', 'pelatihanTopPegawai',
+            'ekinerjaEksekutif', 'ekinerjaChartData', 'pelatihanEksekutif', 'pelatihanChartTopPegawai',
             'sdmEksekutif', 'sdmUnitKritisList'
         ));
     }

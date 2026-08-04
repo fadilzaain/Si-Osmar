@@ -167,21 +167,6 @@
         </x-dashboard.tile>
 
         {{-- ================= 5. Pelatihan ================= --}}
-        @php
-            // Data asli dari PelatihanApiService, bukan dummy lagi.
-            // Gak ada tone/status di sini — progress bar cuma nunjukin
-            // proporsi jam relatif ke pegawai teratas, murni visual.
-            $pelatihanJamTertinggi = $pelatihanTopPegawai[0]['total_jam_pelatihan'] ?? 0;
-            $pelatihanProgress = collect($pelatihanTopPegawai)->map(fn ($p) => [
-                'label' => $p['nama'],
-                'value' => number_format($p['total_jam_pelatihan'], 0, ',', '.') . ' jam',
-                'percent' => $pelatihanJamTertinggi > 0
-                    ? min(100, round($p['total_jam_pelatihan'] / $pelatihanJamTertinggi * 100))
-                    : 0,
-                'tone' => 'neutral',
-            ])->all();
-            $pelatihanSisa = max(0, $pelatihanEksekutif['total_pegawai'] - count($pelatihanTopPegawai));
-        @endphp
         <x-dashboard.tile
             title="Pelatihan"
             subtitle="Jam pelatihan pegawai"
@@ -190,10 +175,7 @@
             :footer-value="$pelatihanEksekutif['rata_rata_jam_per_pegawai']"
             footer-label="rata-rata jam/pegawai"
         >
-            <x-dashboard.progress-bar :items="$pelatihanProgress" />
-            @if ($pelatihanSisa > 0)
-                <div class="dxg-mini-list-more">+{{ $pelatihanSisa }} pegawai lainnya</div>
-            @endif
+            <div data-chart-type="bar-horizontal" data-chart='@json($pelatihanChartTopPegawai)'></div>
         </x-dashboard.tile>
 
     </div>

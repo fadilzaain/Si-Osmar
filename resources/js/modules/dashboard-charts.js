@@ -89,37 +89,24 @@ function renderDonutMulti(el, data, p) {
     return new ApexCharts(el, options).render();
 }
 
-// Bar horizontal — dipakai buat ranking (mis. top pegawai pemakaian cuti
-// tertinggi). Satu series, warna tunggal, dataLabel nunjukin nilainya
-// langsung di ujung bar biar gak perlu legend terpisah.
+// Bar horizontal 
 function renderBarHorizontal(el, data, p) {
-    // Multi-warna per bar (mis. tiap predikat punya warna beda) dipicu kalau
-    // controller kirim `colors` (array, satu tone per bar) alih-alih `color`
-    // tunggal. Dipakai buat chart "Distribusi Predikat" yang tadinya donut.
+    
     const isDistributed = Array.isArray(data.colors) && data.colors.length > 0;
     const colors = isDistributed
         ? data.colors.map((c) => toneColors(p)[c] || p.primary)
         : [toneColors(p)[data.color] || p.danger];
     const height = data.height || 260;
 
-    // Default persen (dipakai duluan buat "% Terpakai" cuti). Kalau data
-    // bukan persen (mis. jumlah orang), controller kirim `suffix` & `max`
-    // sendiri lewat payload chart-nya.
+    
     const suffix = data.suffix ?? '%';
     const maxVal = data.max ?? (suffix === '%' ? 100 : undefined);
     const format = (val) => val + suffix;
 
-    // hideAxis: tiap bar di sini udah punya dataLabel sendiri di ujungnya,
-    // jadi skala angka + gridline di bawah itu berlebihan — dan gampang
-    // numpuk kalau suffix-nya panjang (mis. " orang") di card yang sempit.
-    // Kalau di-set, chart-nya juga dikasih gradient + sudut lebih rounded
-    // biar tampil lebih premium/modern. Dipakai di chart "Unit paling kritis".
+    // hideAxis
     const hideAxis = data.hideAxis === true;
 
-    // Opsional: kalau ada `ids` (satu per bar, urutan sama kayak `labels`),
-    // klik bar dispatch custom event ke elemen chart-nya sendiri. Modul
-    // halaman yang butuh (mis. sdm-bezetting.js) tinggal listen event ini —
-    // dashboard-charts.js gak perlu tau apa yang terjadi setelah diklik.
+    
     const clickable = Array.isArray(data.ids);
     if (clickable) el.classList.add('is-clickable');
 
@@ -173,7 +160,7 @@ function renderBarHorizontal(el, data, p) {
             },
         },
         xaxis,
-        yaxis: { labels: { style: { colors: p.text, fontSize: '12px', fontWeight: 500 } } },
+        yaxis: { labels: { style: { colors: p.text, fontSize: '10px', fontWeight: 500 } } },
         grid: {
             show: !hideAxis,
             borderColor: p.border,
@@ -184,7 +171,7 @@ function renderBarHorizontal(el, data, p) {
         dataLabels: {
             enabled: true,
             formatter: format,
-            style: { fontSize: '11px', fontWeight: 700, colors: [p.text] },
+            style: { fontSize: '10px', fontWeight: 700, colors: [p.text] },
             offsetX: 24,
             dropShadow: { enabled: false },
         },

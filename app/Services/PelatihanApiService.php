@@ -244,7 +244,7 @@ class PelatihanApiService
     /**
      * Data buat horizontal bar chart pegawai dengan jam pelatihan tertinggi.
      */
-    public function getChartTopPegawai(int $limit = 8): array
+    public function getChartTopPegawai(int $limit = 8, bool $compact = false): array
     {
         $top = collect($this->getTopPegawai($limit))->values();
 
@@ -254,7 +254,8 @@ class PelatihanApiService
             'seriesName' => 'Jam pelatihan',
             'suffix' => ' jam',
             'color' => 'info',
-            'height' => max(220, $top->count() * 34),
+            'hideAxis' => $compact,
+            'height' => $compact ? max(120, $top->count() * 40) : max(220, $top->count() * 34),
         ];
     }
 
