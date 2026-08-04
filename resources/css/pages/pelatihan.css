@@ -171,10 +171,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: var(--font-size-caption);
   font-weight: var(--font-weight-semibold);
   flex-shrink: 0;
 }
+
 .plh-pegawai-info { flex: 1; min-width: 0; }
 .plh-pegawai-name {
   font-weight: var(--font-weight-semibold);
@@ -186,14 +187,13 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.plh-pegawai-meta { font-size: 11px; color: var(--color-text-muted); }
+.plh-pegawai-meta { font-size: var(--font-size-caption); color: var(--color-text-muted); }
 
 /* Tiga angka (jumlah pelatihan, jam total, rata-rata)  */
 .plh-pegawai-stats { display: flex; gap: var(--space-3); border-top: 1px solid var(--color-border-inset); padding-top: var(--space-3); }
 .plh-pegawai-stat { flex: 1; display: flex; flex-direction: column; gap: 2px; text-align: center; }
 .plh-pegawai-stat-value { font-weight: var(--font-weight-semibold); color: var(--color-text); font-size: var(--font-size-body); font-variant-numeric: tabular-nums; }
-.plh-pegawai-stat-label { font-size: 10.5px; color: var(--color-text-muted); }
-
+.plh-pegawai-stat-label { font-size: var(--font-size-caption); color: var(--color-text-muted); }
 @media (max-width: 1024px) {
   .plh-kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .plh-chart-grid { grid-template-columns: 1fr; }

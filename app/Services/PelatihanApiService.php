@@ -224,20 +224,23 @@ class PelatihanApiService
      * renderer chart anggep datanya persen (0-100) dan warnanya merah,
      * padahal ini satuan jam.
      */
-    public function getChartRataRataPerUnit(int $limit = 8): array
+    public function getChartRataRataPerUnit(int $limit = 8, bool $compact = false): array
     {
         $top = collect($this->getRingkasanPerUnit())
             ->sortByDesc('summary.rata_rata_jam_per_pegawai')
             ->take($limit)
             ->values();
 
+        $labelLength = $compact ? 16 : 22;
+
         return [
-            'labels' => $top->map(fn ($u) => Str::limit($u['unit'], 22))->all(),
+            'labels' => $top->map(fn ($u) => Str::limit($u['unit'], $labelLength))->all(),
             'series' => $top->map(fn ($u) => $u['summary']['rata_rata_jam_per_pegawai'])->all(),
             'seriesName' => 'Rata-rata jam',
             'suffix' => ' jam',
             'color' => 'primary',
-            'height' => max(220, $top->count() * 34),
+            'hideAxis' => $compact,
+            'height' => $this->chartHeight($top->count(), $compact),
         ];
     }
 
@@ -255,8 +258,19 @@ class PelatihanApiService
             'suffix' => ' jam',
             'color' => 'info',
             'hideAxis' => $compact,
-            'height' => $compact ? max(120, $top->count() * 40) : max(220, $top->count() * 34),
+            'height' => $this->chartHeight($top->count(), $compact),
         ];
+    }
+
+    /**
+     * Tinggi chart horizontal-bar berdasarkan jumlah baris. Dipakai bareng
+     * oleh semua chart per-unit & per-pegawai biar konsisten & gak duplikat.
+     */
+    protected function chartHeight(int $count, bool $compact): int
+    {
+        return $compact
+            ? max(120, $count * 40)
+            : max(220, $count * 34);
     }
 
     protected function buatInisial(string $nama): string

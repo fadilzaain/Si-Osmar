@@ -160,7 +160,7 @@ function renderBarHorizontal(el, data, p) {
             },
         },
         xaxis,
-        yaxis: { labels: { style: { colors: p.text, fontSize: '10px', fontWeight: 500 } } },
+        yaxis: { labels: { style: { colors: p.text, fontSize: '10px', fontWeight: 500 }, maxWidth: hideAxis ? 140 : 200 } },
         grid: {
             show: !hideAxis,
             borderColor: p.border,

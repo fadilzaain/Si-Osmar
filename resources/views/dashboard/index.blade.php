@@ -166,16 +166,16 @@
             </div>
         </x-dashboard.tile>
 
-        {{-- ================= 5. Pelatihan ================= --}}
+       {{-- ================= 5. Pelatihan ================= --}}
         <x-dashboard.tile
             title="Pelatihan"
-            subtitle="Jam pelatihan pegawai"
+            subtitle="Rata-rata jam pelatihan per unit"
             icon="fa-solid fa-graduation-cap"
             href="{{ route('pelatihan.index') }}"
             :footer-value="$pelatihanEksekutif['rata_rata_jam_per_pegawai']"
             footer-label="rata-rata jam/pegawai"
         >
-            <div data-chart-type="bar-horizontal" data-chart='@json($pelatihanChartTopPegawai)'></div>
+            <div data-chart-type="bar-horizontal" data-chart='@json($pelatihanChartPerUnit)'></div>
         </x-dashboard.tile>
 
     </div>
