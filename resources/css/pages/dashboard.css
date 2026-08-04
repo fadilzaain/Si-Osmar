@@ -1,4 +1,4 @@
-/* ===== Dashboard Executive — pakai token global tokens.css/dark.css, otomatis ikut toggle ===== */
+/* ===== Dashboard  pakai token global tokens.css/dark.css, otomatis ikut toggle ===== */
 .dxg-page {
   background:
     radial-gradient(ellipse 700px 420px at 8% -8%, rgba(201,162,39,0.35), transparent 60%),
@@ -31,7 +31,7 @@
 .dxg-badge-soon { background: var(--color-mint-soft); color: var(--color-primary); border: 1px solid var(--color-border); }
 .dxg-badge-neutral { background: var(--color-surface-inset); color: var(--color-text-muted); border: 1px solid var(--color-border-inset); }
 
-/* ===== Grid — 2 kolom eksplisit. Tile ".dxg-tile-wide" ngisi 1 baris penuh sendirian (SDM). ===== */
+/* ===== Grid - 2 kolom eksplisit. Tile ".dxg-tile-wide" ngisi 1 baris penuh sendirian (SDM). ===== */
 .dxg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-4); }
 .dxg-tile-wide { grid-column: 1 / -1; }
 
@@ -72,7 +72,7 @@
 .dxg-tile-stat { font-size: 20px; font-weight: var(--font-weight-semibold); color: var(--color-text); }
 .dxg-tile-stat span { font-size: var(--font-size-caption); color: var(--color-text-muted); font-weight: var(--font-weight-regular); margin-left: 4px; }
 
-/* ===== Aksen prioritas (Monitoring Dokumen) ===== */
+/* ===== (Monitoring Dokumen) ===== */
 .dxg-tile-priority {
   border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-primary) 12%, transparent), var(--shadow-sm);
@@ -87,7 +87,7 @@
 }
 .dxg-tile-priority:hover { box-shadow: 0 20px 36px -22px rgba(31,77,58,0.35); }
 
-/* ===== Indikator "live" — inline di sebelah teks Lihat detail, gak nabrak apapun lagi ===== */
+/* ===== Indikator "live" - inline di sebelah teks Lihat detail ===== */
 .dxg-live-pulse {
   width: 7px; height: 7px;
   border-radius: 50%;
@@ -188,7 +188,7 @@
 /* ===== Animasi ===== */
 @keyframes dxgCardIn { to { opacity: 1; transform: translateY(0); } }
 
-/* ===== PREMIUM GLASS — upgrade tile jadi lebih dalam & hidup ===== */
+/* ===== Premium Glass ===== */
 .dxg-tile {
   background: color-mix(in srgb, var(--color-surface) 55%, var(--color-mint-soft) 45%);
   backdrop-filter: blur(22px) saturate(180%);
@@ -201,7 +201,7 @@
   box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.03);
 }
 
-/* Sapuan cahaya diagonal saat hover — efek premium */
+/* Sapuan cahaya diagonal saat hover */
 .dxg-tile::after {
   content: '';
   position: absolute;

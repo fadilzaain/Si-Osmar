@@ -5,6 +5,6 @@
         <h1 class="cs-title">{{ $title }}</h1>
         <p class="cs-sub">{{ $subtitle }}</p>
         <div class="cs-badge">Modul ini masih dalam pengembangan</div>
-        <a href="{{ route('dashboard') }}" class="cs-back">← Kembali ke Dashboard</a>
+        <a href="{{ route('dashboard') }}" class="cs-back"> Kembali ke Dashboard</a>
     </div>
 </x-app-layout>

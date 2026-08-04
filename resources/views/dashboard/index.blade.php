@@ -1,4 +1,4 @@
-<x-app-layout title="Dashboard">
+<x-app-layout title="Si-Osmar">
 
 <div class="dxg-page" data-aos="fade-up">
 
@@ -13,7 +13,7 @@
         };
     @endphp
     <h1 class="dxg-title">{{ $sapaan }}</h1>
-    <div class="dxg-sub">Ringkasan Dashboard Si-Osmar — {{ now()->translatedFormat('d F Y') }}</div>
+    <div class="dxg-sub">Ringkasan Dashboard Si-Osmar {{ now()->translatedFormat('d F Y') }}</div>
 
     <div class="dxg-grid">
 

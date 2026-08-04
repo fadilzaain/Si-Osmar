@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? 'SI-OSMAR' }} — RSUD Jombang</title>
+    <title>{{ $title ?? 'SI-OSMAR' }} RSUD Jombang</title>
 
     {{-- Cegah flash-of-wrong-theme: apply data-theme sebelum CSS di-render --}}
     <script>
@@ -34,7 +34,7 @@
             </main>
 
             <footer class="app-footer">
-                &copy; {{ date('Y') }} RSUD Jombang — IT WORKS
+                &copy; {{ date('Y') }} RSUD Jombang - IT WORKS
             </footer>
         </div>
     </div>

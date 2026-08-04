@@ -16,8 +16,7 @@ use App\Http\Controllers\PelatihanController;
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
 
-    // throttle:5,1 = maksimal 5 percobaan login per menit per kombinasi email+IP.
-    // Ini proteksi bawaan Laravel buat brute-force attack, tanpa perlu setup tambahan.
+    // maksimal 5 percobaan login per menit per kombinasi email+IP.
     Route::post('/login', [LoginController::class, 'store'])
         ->middleware('throttle:5,1');
 });
@@ -28,8 +27,6 @@ Route::post('/logout', [LoginController::class, 'destroy'])
 
 
 // Semua halaman di bawah ini WAJIB login dulu. Kalau belum, otomatis
-// di-redirect ke /login, dan setelah berhasil login akan balik lagi
-// ke halaman yang tadinya mau diakses (redirect()->intended() di controller).
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
         return redirect()->route('dashboard');
@@ -57,7 +54,7 @@ Route::middleware('auth')->group(function () {
 
 
     // Sementara: buat ngecek error API SI KAWAN tanpa perlu akses SSH server.
-    // Hapus kalau udah gak dibutuhin.
+    // jgn lupa hapus kalo udah ga butuh
     Route::get('/sdm-bezetting/diagnostic', [SdmBezettingController::class, 'diagnostic'])
         ->name('sdm-bezetting.diagnostic');
 
