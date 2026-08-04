@@ -50,7 +50,7 @@
             <div class="auth-brand-content">
                 <img src="{{ asset('images/logo-rsud-jombang.png') }}" alt="Logo RSUD Jombang" class="auth-brand-logo">
                 <h1 class="auth-brand-title">SI-OSMAR</h1>
-                <p class="auth-brand-desc">Sistem Informasi Optimalisasi SDM Rumah Sakit</p>
+                <p class="auth-brand-desc">Sistem Informasi Optimalisasi SDM</p>
                 <div class="auth-brand-divider"></div>
                 <span class="auth-brand-sub">RSUD Jombang</span>
             </div>
@@ -78,7 +78,7 @@
                         <label for="email" class="auth-label">Email</label>
                         <input type="email" id="email" name="email" value="{{ old('email') }}"
                                class="auth-input" required autofocus
-                               placeholder="nama@jombangkab.go.id">
+                               placeholder="nama@gmail.com">
                     </div>
 
                     <div class="auth-field">
