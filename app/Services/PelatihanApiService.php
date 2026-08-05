@@ -220,9 +220,6 @@ class PelatihanApiService
 
     /**
      * Data buat horizontal bar chart rata-rata jam pelatihan per unit.
-     * suffix & color di-set eksplisit jika dibiarkan default,
-     * renderer chart anggep datanya persen (0-100) dan warnanya merah,
-     * padahal ini satuan jam.
      */
     public function getChartRataRataPerUnit(int $limit = 8, bool $compact = false): array
     {
@@ -264,7 +261,7 @@ class PelatihanApiService
 
     /**
      * Tinggi chart horizontal-bar berdasarkan jumlah baris. Dipakai bareng
-     * oleh semua chart per-unit & per-pegawai biar konsisten & gak duplikat.
+     * oleh semua chart per-unit & per-pegawai.
      */
     protected function chartHeight(int $count, bool $compact): int
     {
