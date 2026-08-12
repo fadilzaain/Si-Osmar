@@ -31,7 +31,7 @@
             subtitle="SIP, RKK & SPK seluruh pegawai"
             icon="fa-solid fa-file-shield"
             href="{{ route('monitoring-str-sip.index') }}"
-            badge-text="{{ $dokumenBermasalah > 0 ? $dokumenBermasalah . ' bermasalah' : 'Semua lengkap' }}"
+            badge-text="{{ $dokumenBermasalah > 0 ? $dokumenBermasalah . ' belum upload / kadaluarsa' : 'Semua lengkap' }}"
             badge-tone="{{ $dokumenBermasalah > 0 ? 'alert' : 'neutral' }}"
             :footer-value="$dokumenEksekutif['total_dokumen_kadaluarsa']"
             footer-label="dokumen kadaluarsa"
