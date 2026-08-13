@@ -180,6 +180,7 @@ function renderBarHorizontal(el, data, p) {
     return new ApexCharts(el, options).render();
 }
 
+
 const renderers = {
     'donut-single': renderRadial,
     'donut-multi': renderDonutMulti,

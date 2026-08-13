@@ -94,7 +94,7 @@
         @endphp
         <x-dashboard.tile
             title="SDM"
-            subtitle="Unit dengan kekurangan SDM terbanyak"
+            subtitle="Distribusi tenaga per kelompok profesi"
             icon="fa-solid fa-users"
             href="{{ route('sdm-bezetting.index') }}"
             badge-text="{{ $sdmKekurangan > 0 ? $sdmKekurangan . ' unit kritis' : 'Terpenuhi' }}"
@@ -102,25 +102,19 @@
             :wide="true"
             :live="true"
         >
-            @if (empty($sdmUnitKritisList))
-                <x-empty-state
-                    icon="fa-solid fa-circle-check"
-                    title="Semua unit terpenuhi"
-                    description="Tidak ada unit yang kekurangan SDM saat ini."
-                />
-            @else
-                <div class="bzs-redis-list">
-                    @foreach ($sdmUnitKritisList as $u)
-                        <div class="bzs-redis-row">
-                            <i class="fa-solid fa-triangle-exclamation bzs-redis-icon tone-danger" aria-hidden="true"></i>
-                            <div class="bzs-redis-text">
-                                <strong>{{ $u['unit'] }}</strong> — kurang {{ $u['summary']['total_kekurangan'] }} orang
-                                ({{ $u['summary']['total_pegawai'] }}/{{ $u['summary']['total_kebutuhan'] }} terisi)
-                            </div>
+            <div class="dxg-donut-body">
+                <div class="dxg-mini-chart" data-chart-type="donut-multi"
+                    data-chart='@json($sdmDistribusiKategori)'></div>
+                <div class="dxg-donut-legend">
+                    @foreach ($sdmDistribusiKategori['labels'] as $i => $label)
+                        <div class="dxg-legend-row">
+                            <span class="dxg-legend-dot tone-{{ $sdmDistribusiKategori['colors'][$i] }}"></span>
+                            <span class="dxg-legend-label">{{ $label }}</span>
+                            <span class="dxg-legend-value">{{ $sdmDistribusiKategori['series'][$i] }}</span>
                         </div>
                     @endforeach
                 </div>
-            @endif
+            </div>
         </x-dashboard.tile>
 
 

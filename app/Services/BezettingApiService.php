@@ -10,10 +10,8 @@ use Illuminate\Support\Facades\Log;
  * BezettingApiService
  *
  * Narik data bezetting (jumlah pegawai ril vs kebutuhan, per jabatan, per unit)
- * dari API eksternal SIKAWAN (endpoint dikonfigurasi di config/services.php,
- * key 'sikawan.bezetting_endpoint'). Di-cache biar gak nembak API tiap request,
- * dan ada fallback structure kosong kalau API-nya lagi bermasalah — jadi
- * dashboard tetap render, cuma nunjukin empty-state, bukan error 500.
+ * dari API eksternal SIKAWAN . Di-cache biar gak nembak API tiap request,
+ * dan ada fallback structure kosong kalau API-nya lagi bermasalah
  */
 class BezettingApiService
 {
@@ -24,8 +22,8 @@ class BezettingApiService
     protected string $cacheKey = 'sdm.bezetting.raw';
 
     /**
-     * Ringkasan per unit — dipakai buat render list accordion di halaman index.
-     * Tiap unit udah dibungkus sama total & status keseluruhan biar Blade
+     * Ringkasan per unit - dipakai buat render list accordion di halaman index.
+     * Tiap unit udah dibungkus sama total dan status keseluruhan biar Blade
      * gak perlu ngitung apa-apa lagi, tinggal render.
      */
     public function getRingkasanPerUnit(): array
@@ -61,14 +59,9 @@ class BezettingApiService
     }
 
     /**
-     * Peluang redistribusi pegawai antar unit — jabatan yang sama KURANG
+     * Peluang redistribusi pegawai antar unit - jabatan yang sama KURANG
      * di satu unit tapi LEBIH di unit lain, jadi kandidat buat dipindah.
-     * Ini analisis on-the-fly dari data bezetting yang sudah di-fetch
-     * (getRingkasanPerUnit), bukan data baru dari API biar gak nambah
-     * beban request ke SIKAWAN.
-     *
-     * @param int|null $limit Batasi jumlah hasil (dipakai buat card ringkas
-     *                        di dashboard). Null = kembalikan semua.
+     * @param int|null $limit batasi jumlah hasil - Null = kembalikan semua.
      */
     public function getPeluangRedistribusi(?int $limit = null): array
     {
@@ -136,9 +129,6 @@ class BezettingApiService
 
     /**
      * getPeluangRedistribusi() yang di-scope ke satu unit dipakai di halaman detail Bezetting SDM.
-     * Untuk tiap jabatan yang menyentuh unit ini (baik sebagai unit yang
-     * kurang maupun yang lebih), balikin baris dengan arah + unit pasangan
-     * paling relevan buat ditawarkan sebagai sumber atau tujuan pemindahan.
      */
     public function getPeluangRedistribusiUntukUnit(string $unit): array
     {
@@ -179,8 +169,7 @@ class BezettingApiService
     }
 
     /**
-     * Angka ringkasan level rumah sakit (semua unit) — ini yang dipakai
-     * buat KPI card paling atas di halaman Bezetting SDM. 
+     * Angka ringkasan level rumah sakit (semua unit) 
      */
     public function getRingkasanEksekutif(): array
     {
@@ -267,6 +256,54 @@ class BezettingApiService
         usort($hasil, fn ($a, $b) => $b['total_kekurangan'] <=> $a['total_kekurangan']);
 
         return $limit ? array_slice($hasil, 0, $limit) : $hasil;
+    }
+
+    /**
+     * Distribusi jumlah pegawai (bukan kekurangan) per kelompok profesi:
+     * Dokter, Perawat, dan Nakes Lainnya - dijumlah lintas semua unit.
+     */
+    public function getDistribusiKategori(): array
+    {
+        $ringkasan = $this->getRingkasanPerUnit();
+
+        $total = [
+            'Dokter' => 0,
+            'Perawat' => 0,
+            'Nakes Lainnya' => 0,
+        ];
+
+        foreach ($ringkasan as $unit) {
+            foreach ($unit['rows'] as $row) {
+                $kategori = $this->kategoriProfesi($row['jabatan'] ?? '');
+                $total[$kategori] += max(0, $row['jumlah'] ?? 0);
+            }
+        }
+
+        return [
+            'labels' => array_keys($total),
+            'series' => array_values($total),
+            'colors' => ['primary', 'info', 'warning'],
+            'totalLabel' => 'Total SDM',
+            'totalValue' => array_sum($total),
+        ];
+    }
+
+    /**
+     * Satu-satunya tempat aturan pengelompokan nama jabatan - kategori profesi.
+     */
+    protected function kategoriProfesi(string $jabatan): string
+    {
+        $jabatan = strtolower($jabatan);
+
+        if (str_contains($jabatan, 'dokter')) {
+            return 'Dokter';
+        }
+
+        if (str_contains($jabatan, 'perawat') || str_contains($jabatan, 'ners')) {
+            return 'Perawat';
+        }
+
+        return 'Nakes Lainnya';
     }
 
     /**

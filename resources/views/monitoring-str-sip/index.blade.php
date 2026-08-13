@@ -38,7 +38,7 @@
             />
             <x-stat-card
                 icon="fa-solid fa-circle-xmark"
-                label="Bermasalah"
+                label="Belum Upload / Kadaluarsa"
                 :value="$eksekutif['total_bermasalah']"
                 comparison="di {{ $eksekutif['total_unit_bermasalah'] }} unit"
                 color="var(--color-danger)"
