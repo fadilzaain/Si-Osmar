@@ -23,7 +23,7 @@
         $dokumenNote = $dokumenBermasalah <= 0
             ? 'Seluruh dokumen legal pegawai lengkap dan berlaku di semua unit.'
             : ($unitDokumenKritis
-                ? "{$unitDokumenKritis['unit']} paling kritis — {$unitDokumenKritis['summary']['bermasalah']} pegawai bermasalah."
+                ? "{$unitDokumenKritis['unit']} paling kritis — {$unitDokumenKritis['summary']['bermasalah']} pegawai belum upload/kadaluarsa."
                 : "{$dokumenBermasalah} pegawai punya dokumen bermasalah.");
     @endphp
         <x-dashboard.tile

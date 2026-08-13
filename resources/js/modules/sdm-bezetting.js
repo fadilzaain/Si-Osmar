@@ -1,12 +1,11 @@
 // Halaman Bezetting SDM: toolbar (search, filter status, bulk expand/
-// collapse) + auto-refresh data tiap 1 menit biar user gak perlu manual
-// reload buat lihat data terbaru dari SIKAWAN 
+// collapse) 
 import { initAccordion } from './accordion';
 import { initDashboardCharts } from './dashboard-charts';
 import { initCountUp } from './count-up';
 
 const DATA_URL = '/sdm-bezetting/data';
-const REFRESH_INTERVAL_MS = 60_000; 
+const REFRESH_INTERVAL_MS = 5 * 60_000; 
 
 let pollTimer = null;
 let isFetching = false;
@@ -97,6 +96,13 @@ function initToolbar(page) {
     });
 }
 
+// True kalau ada minimal satu unit accordion yang lagi dibuka (user lagi
+// baca detail unit itu). Auto-refresh gak boleh ganti DOM selama ini true,
+// soalnya replaceWith() bakal nutup/reset accordion yang lagi dia lihat.
+function isUserViewingDetail(page) {
+    return page.querySelector('.bzs-unit.open') !== null;
+}
+
 // Ambil HTML terbaru dari server, lalu ganti isi halaman dengan hasilnya.
 // Endpoint /sdm-bezetting/data sengaja mengembalikan HTML yang sudah siap
 // ditampilkan, jadi gk perlu merender ulang tabel, chart, atau
@@ -107,6 +113,13 @@ async function refreshLiveData() {
 
     const currentPage = document.querySelector('[data-sdm-bezetting]');
     if (!currentPage) return;
+
+    // User lagi liat detail salah satu unit → tunda refresh ke siklus
+    // berikutnya (5 menit lagi / pas tab balik visible), jangan ganggu dia.
+    if (isUserViewingDetail(currentPage)) {
+        console.info('Auto-refresh SDM ditunda, user lagi lihat detail unit.');
+        return;
+    }
 
     isFetching = true;
     try {

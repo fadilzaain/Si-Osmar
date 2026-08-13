@@ -59,7 +59,7 @@
             <div class="card-header">
                 <div>
                     <div class="card-title">Unit paling kritis</div>
-                    <div class="card-subtitle">Diurutkan dari jumlah pegawai bermasalah terbanyak</div>
+                    <div class="card-subtitle">Diurutkan dari jumlah pegawai yang belum upload/kadaluarsa terbanyak</div>
                 </div>
             </div>
             <div class="mds-rank-body">
@@ -68,7 +68,7 @@
                     <button type="button" class="mds-rank-row" data-scroll-to="{{ $u['slug'] }}">
                         <div class="mds-rank-info">
                             <span class="mds-rank-name">{{ $u['unit'] }}</span>
-                            <span class="mds-rank-value">{{ $u['summary']['bermasalah'] }} / {{ $u['summary']['total_pegawai'] }} bermasalah</span>
+                            <span class="mds-rank-value">{{ $u['summary']['bermasalah'] }} / {{ $u['summary']['total_pegawai'] }} Belum Upload/Kadaluarsa</span>
                         </div>
                         <div class="mds-rank-bar-track">
                             <div class="mds-rank-bar-fill tone-danger" style="width: {{ round($u['summary']['bermasalah'] / $maxUnit * 100) }}%"></div>
