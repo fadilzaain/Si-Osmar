@@ -176,19 +176,21 @@ class MonitoringDokumenService
      */
     public function getChartDistribusiStatus(): array
     {
-        $eksekutif = $this->getRingkasanEksekutif();
-        $breakdownTotal = [
-            self::STATUS_SUCCESS => 0,
-            self::STATUS_WARNING => 0,
-            self::STATUS_DANGER => 0,
-            self::STATUS_NEUTRAL => 0,
-        ];
+        $breakdownTotal = $this->emptyBreakdown();
 
+        // Basisnya dokumen (bukan pegawai) — chart ini nunjukin distribusi
+        // status DOKUMEN, jadi harus konsisten sama dokumen_breakdown yang
+        // dipakai di badge header unit, bukan breakdown per-pegawai.
         foreach ($this->getUnitList() as $unit) {
-            foreach ($unit['summary']['breakdown'] as $status => $jumlah) {
+            foreach ($unit['summary']['dokumen_breakdown'] as $status => $jumlah) {
                 $breakdownTotal[$status] += $jumlah;
             }
         }
+
+        $totalDokumen = array_sum($breakdownTotal);
+        $persenLengkap = $totalDokumen > 0
+            ? round($breakdownTotal[self::STATUS_SUCCESS] / $totalDokumen * 100)
+            : 100;
 
         return [
             'series' => [
@@ -200,7 +202,7 @@ class MonitoringDokumenService
             'labels' => ['Lengkap', 'Akan Kadaluarsa', 'Kadaluarsa', 'Belum Ada'],
             'colors' => ['success', 'warning', 'danger', 'info'],
             'size' => 128,
-            'totalValue' => $eksekutif['persen_lengkap'] . '%',
+            'totalValue' => $persenLengkap . '%',
             'totalLabel' => 'Lengkap',
         ];
     }
@@ -337,42 +339,64 @@ class MonitoringDokumenService
     }
 
     /**
-     * Ringkasan per unit dari daftar pegawai yang sudah dinormalisasi
+     * Ringkasan per unit dari daftar pegawai yang sudah dinormalisasi.
+     *
+     * Ada 2 breakdown yang sengaja dipisah karena basis hitungnya beda dan
+     * gak boleh ketuker:
+     *
+     * - `breakdown` (per PEGAWAI): 1 pegawai = 1 hitungan, diklasifikasikan
+     *   dari overall_status-nya (status paling parah di antara SIP &
+     *   SPK/RKK dia). Dipakai buat KPI "bermasalah" / "lengkap" /
+     *   "perlu_diperpanjang" — nge-jawab "berapa ORANG yang perlu
+     *   ditindaklanjuti".
+     * - `dokumen_breakdown` (per DOKUMEN): tiap dokumen (SIP & SPK/RKK)
+     *   dihitung sendiri-sendiri. Dipakai buat badge jumlah di header
+     *   accordion unit & chart distribusi status, biar angkanya PAS SAMA
+     *   kayak kalau ditotal manual dari badge-badge di tabel detail.
+     *   Sebelum ini header unit salah pakai `breakdown` (per pegawai),
+     *   jadi angkanya kurang: pegawai yang salah satu dokumennya belum
+     *   upload tapi dokumen lainnya udah kadaluarsa gak kehitung di bucket
+     *   "belum upload" (overall_status-nya kebawa jadi danger), dan
+     *   pegawai yang 2 dokumennya sama-sama belum upload cuma kehitung 1x
+     *   padahal itu 2 badge di tabel.
      */
     protected function summarize(array $pegawaiList): array
     {
-        $breakdown = [
+        $pegawaiBreakdown = $this->emptyBreakdown();
+        $dokumenBreakdown = $this->emptyBreakdown();
+
+        foreach ($pegawaiList as $p) {
+            $pegawaiBreakdown[$p['overall_status']]++;
+
+            foreach ($p['dokumen'] as $dokumen) {
+                $dokumenBreakdown[$dokumen['status']]++;
+            }
+        }
+
+        return [
+            'total_pegawai' => count($pegawaiList),
+            'lengkap' => $pegawaiBreakdown[self::STATUS_SUCCESS],
+            'perlu_diperpanjang' => $pegawaiBreakdown[self::STATUS_WARNING],
+            'bermasalah' => $pegawaiBreakdown[self::STATUS_DANGER] + $pegawaiBreakdown[self::STATUS_NEUTRAL],
+            'breakdown' => $pegawaiBreakdown,
+            'dokumen_breakdown' => $dokumenBreakdown,
+            'dokumen_kadaluarsa' => $dokumenBreakdown[self::STATUS_DANGER],
+            'dokumen_belum_ada' => $dokumenBreakdown[self::STATUS_NEUTRAL],
+        ];
+    }
+
+    /**
+     * Kerangka breakdown kosong (4 status, mulai dari 0). Dipakai bareng
+     * di summarize() (2x, per-pegawai & per-dokumen) dan getChartDistribusiStatus(),
+     * biar daftar status gak keketik ulang di banyak tempat.
+     */
+    private function emptyBreakdown(): array
+    {
+        return [
             self::STATUS_SUCCESS => 0,
             self::STATUS_WARNING => 0,
             self::STATUS_DANGER => 0,
             self::STATUS_NEUTRAL => 0,
-        ];
-        $dokumenKadaluarsa = 0;
-        $dokumenBelumAda = 0;
-
-        foreach ($pegawaiList as $p) {
-            $breakdown[$p['overall_status']] = ($breakdown[$p['overall_status']] ?? 0) + 1;
-
-            foreach ($p['dokumen'] as $d) {
-                if ($d['status'] === self::STATUS_DANGER) {
-                    $dokumenKadaluarsa++;
-                }
-                if ($d['status'] === self::STATUS_NEUTRAL) {
-                    $dokumenBelumAda++;
-                }
-            }
-        }
-
-        $total = count($pegawaiList);
-
-        return [
-            'total_pegawai' => $total,
-            'lengkap' => $breakdown[self::STATUS_SUCCESS],
-            'perlu_diperpanjang' => $breakdown[self::STATUS_WARNING],
-            'bermasalah' => $breakdown[self::STATUS_DANGER] + $breakdown[self::STATUS_NEUTRAL],
-            'breakdown' => $breakdown,
-            'dokumen_kadaluarsa' => $dokumenKadaluarsa,
-            'dokumen_belum_ada' => $dokumenBelumAda,
         ];
     }
 

@@ -162,14 +162,18 @@
                         @endphp
                         <div class="mek-unit-title">
                             <span class="mek-unit-name">{{ $unit['unit'] }}</span>
-                            <span class="mek-unit-count">{{ $unit['summary']['total_pegawai'] }} pegawai</span>
+                            <span class="mek-unit-count" data-mek-total>{{ $unit['summary']['total_pegawai'] }} pegawai</span>
                             @if ($unit['summary']['total_dinilai'] > 0)
-                                <x-badge :variant="$unit['summary']['persen_baik'] >= 75 ? 'success' : ($unit['summary']['persen_baik'] >= 50 ? 'warning' : 'danger')">
-                                    {{ $jumlahBaik }}/{{ $unit['summary']['total_dinilai'] }} baik
+                                <x-badge
+                                    data-mek-baik-badge
+                                    :variant="$unit['summary']['persen_baik'] >= 75 ? 'success' : ($unit['summary']['persen_baik'] >= 50 ? 'warning' : 'danger')"
+                                    title="{{ $jumlahBaik }} dari {{ $unit['summary']['total_dinilai'] }} pegawai yang SUDAH DINILAI triwulan ini berpredikat Baik/Sangat Baik"
+                                >
+                                    {{ $jumlahBaik }} baik / {{ $unit['summary']['total_dinilai'] }} dinilai
                                 </x-badge>
                             @endif
                             @if ($unit['summary']['belum_dinilai'] > 0)
-                                <x-badge variant="neutral">{{ $unit['summary']['belum_dinilai'] }} belum dinilai</x-badge>
+                                <x-badge data-mek-belum-badge variant="neutral">{{ $unit['summary']['belum_dinilai'] }} belum dinilai</x-badge>
                             @endif
                         </div>
                         <i class="fa-solid fa-chevron-down mek-chev" aria-hidden="true"></i>

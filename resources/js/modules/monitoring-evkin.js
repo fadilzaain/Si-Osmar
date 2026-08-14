@@ -1,9 +1,4 @@
-// Halaman Capaian Kinerja: toolbar (search + filter predikat + bulk
-// expand/collapse) bekerja di level BARIS PEGAWAI (bukan cuma level unit,
-// pola sama kayak monitoring-cuti.js) — karena yang mau dipantau direktur
-// itu individu pegawainya, unit cuma pengelompokan. Ditambah animasi
-// stagger baris tiap unit dibuka (pola sama kayak monitoring-dokumen.js).
-// Semua data udah lengkap di DOM dari Blade, murni client-side.
+// Halaman Capaian Kinerja
 const ROW_STAGGER_MS = 30;
 const ROW_STAGGER_MAX_MS = 300;
 
@@ -23,6 +18,22 @@ function revealRows(unit) {
     bodyInner.classList.add('mek-reveal');
 }
 
+
+function syncUnitHeader(unit, totalPegawai, visibleCount, isFiltered) {
+    const totalEl = unit.querySelector('[data-mek-total]');
+    if (totalEl) {
+        totalEl.textContent = isFiltered
+            ? `${visibleCount} dari ${totalPegawai} pegawai`
+            : `${totalPegawai} pegawai`;
+    }
+
+    const baikBadge = unit.querySelector('[data-mek-baik-badge]');
+    if (baikBadge) baikBadge.hidden = isFiltered;
+
+    const belumBadge = unit.querySelector('[data-mek-belum-badge]');
+    if (belumBadge) belumBadge.hidden = isFiltered;
+}
+
 function initToolbar(page) {
     const unitList = page.querySelector('[data-accordion]');
     if (!unitList) return;
@@ -37,6 +48,7 @@ function initToolbar(page) {
 
     function applyFilters() {
         let visiblePegawaiTotal = 0;
+        const isFiltered = activeFilter !== 'semua' || !!query;
 
         units.forEach((unit) => {
             const rows = Array.from(unit.querySelectorAll('[data-mek-pegawai]'));
@@ -51,12 +63,13 @@ function initToolbar(page) {
                 if (show) visibleInUnit += 1;
             });
 
+            syncUnitHeader(unit, rows.length, visibleInUnit, isFiltered);
+
             const showUnit = visibleInUnit > 0;
             unit.hidden = !showUnit;
             if (showUnit) visiblePegawaiTotal += visibleInUnit;
 
-            // Auto-buka unit yang lagi dicari biar hasil langsung kelihatan,
-            // tapi jangan paksa nutup unit yang manual dibuka user pas gak lagi nyari.
+            // Auto-buka unit yang lagi dicari biar hasil langsung kelihatan
             if (query && showUnit && !unit.classList.contains('open')) {
                 unit.classList.add('open');
                 revealRows(unit);

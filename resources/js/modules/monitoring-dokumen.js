@@ -6,10 +6,7 @@
 const ROW_STAGGER_MS = 30;
 const ROW_STAGGER_MAX_MS = 300;
 
-// Kasih animation-delay bertahap ke tiap baris tabel di dalam unit yang
-// baru dibuka, lalu retrigger animasi CSS-nya lewat reflow trick
-// (remove class -> force reflow -> add class lagi), biar animasinya
-// tetap muter ulang setiap kali unit dibuka, bukan cuma sekali doang.
+// animation-delay bertahap 
 function revealRows(unit) {
     const bodyInner = unit.querySelector('.mds-body-inner');
     if (!bodyInner) return;
@@ -20,7 +17,7 @@ function revealRows(unit) {
     });
 
     bodyInner.classList.remove('mds-reveal');
-    void bodyInner.offsetWidth; // force reflow biar animasi bisa direplay
+    void bodyInner.offsetWidth; 
     bodyInner.classList.add('mds-reveal');
 }
 
@@ -37,8 +34,7 @@ export function initMonitoringDokumen() {
     const emptyState = page.querySelector('[data-empty-filter]');
 
     // Setiap unit bisa punya lebih dari satu tag status (mis. ada pegawai
-    // danger DAN warning sekaligus), jadi data-status isinya beberapa
-    // kata dipisah spasi — hitung & filter berdasarkan "includes".
+    // danger DAN warning sekaligus).
     const hasStatus = (unit, status) => unit.dataset.status.split(' ').includes(status);
 
     pills.forEach((pill) => {
@@ -77,8 +73,7 @@ export function initMonitoringDokumen() {
         });
     });
 
-    // Animasi stagger tiap kali unit dibuka lewat klik header (bukan pas
-    // ditutup — cuma relevan pas "masuk" ke detail).
+    // Animasi stagger tiap kali unit dibuka lewat klik header 
     list.addEventListener('accordion:toggle', (e) => {
         if (e.detail?.open) {
             revealRows(e.target);
@@ -109,8 +104,7 @@ export function initMonitoringDokumen() {
         });
     });
 
-    // Deep-link dari card dashboard: ?ruangan=<nama unit> -> buka & scroll
-    // ke unit itu otomatis.
+    // Deep-link dari card dashboard
     if (window.__mdsRuanganAktifSlug) {
         const target = document.getElementById('unit-' + window.__mdsRuanganAktifSlug);
         if (target) {

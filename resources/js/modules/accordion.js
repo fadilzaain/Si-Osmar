@@ -1,10 +1,9 @@
 // Accordion generic buat halaman yang datanya udah di-render server-side
 // (gak perlu fetch, cukup toggle class .open). Dipakai di Bezetting SDM
-// dan Monitoring Dokumen, bisa dipakai ulang di halaman lain yang butuh
-// accordion sejenis — cukup tandai wrapper-nya dengan [data-accordion].
+// dan Monitoring Dokumen, bisa dipakai ulang di halaman lain yang butuh accordion sejenis
 //
 // Setiap toggle nembak custom event 'accordion:toggle' (bubbling) di
-// elemen item-nya, isinya { open: true/false } — dipakai halaman lain
+// elemen item-nya, isinya { open: true/false } - dipakai halaman lain
 // buat trigger animasi lanjutan pas detail dibuka (lihat monitoring-dokumen.js).
 export function initAccordion() {
     document.querySelectorAll('[data-accordion]').forEach((list) => {

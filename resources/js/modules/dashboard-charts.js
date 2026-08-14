@@ -190,15 +190,7 @@ const renderers = {
 let activeCharts = [];
 let observerAttached = false;
 
-// Sebelumnya destroy chart lama dan render chart baru dilakukan "berbarengan"
-// (destroy() dipanggil tapi gak ditunggu selesai sebelum instance baru dibuat
-// di elemen yang sama). Kalau renderAll() kepanggil dua kali beruntun dalam
-// jarak dekat (mis. tema toggle cepat, atau halaman lama masih hidup gara-gara
-// HMR cuma reload CSS bukan reload penuh), ApexCharts bisa nabrak state
-// internalnya sendiri di elemen yang sama → muncul error
-// "Cannot read properties of undefined (reading 'beforeMount')" dan chart-nya
-// gagal mount (kosong, gak ada fallback). Fix-nya: tunggu semua instance lama
-// beneran selesai di-destroy dulu, baru render yang baru.
+
 function renderAll() {
     const toDestroy = activeCharts;
     activeCharts = [];

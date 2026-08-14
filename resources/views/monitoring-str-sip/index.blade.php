@@ -139,7 +139,9 @@
                      data-search="{{ strtolower($unit['unit'] . ' ' . $searchNama) }}">
                     <button type="button" class="mds-unit-head" data-accordion-trigger>
                         @php
-                            $b = $unit['summary']['breakdown'];
+                            // Basisnya dokumen (bukan pegawai), biar angka badge di sini
+                            // PAS SAMA kalau ditotal manual dari badge-badge di tabel bawah.
+                            $b = $unit['summary']['dokumen_breakdown'];
                         @endphp
                     <div class="mds-unit-title">
                         <span class="mds-unit-name">{{ $unit['unit'] }}</span>

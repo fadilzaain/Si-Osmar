@@ -1,8 +1,4 @@
 // Animasi hitung naik buat semua .stat-card-value di halaman manapun
-// (Dashboard, Bezetting SDM, Monitoring Dokumen — dipakai bareng karena
-// stat-card adalah komponen bersama). Cuma jalan kalau isinya beneran
-// angka; kalau bukan (teks biasa), dibiarkan apa adanya.
-const DURATION = 900;
 
 function animateValue(el) {
     el.dataset.counted = '1';
@@ -23,7 +19,7 @@ function animateValue(el) {
 
     function tick(now) {
         const progress = Math.min((now - start) / DURATION, 1);
-        const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic — cepat di awal, halus di akhir
+        const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic - cepat di awal, halus di akhir
         const current = (target * eased).toFixed(decimals);
         el.textContent = prefix + current + suffix;
 
@@ -57,10 +53,7 @@ export function initCountUp() {
     targets.forEach((el) => observer.observe(el));
 }
 
-// Animasi "tumbuh" buat .dist-bar (lihat distribution-bar.blade.php):
-// segmen di-render dulu di flex-grow 0, baru sesudah 2 frame di-set ke
-// nilai aslinya — browser butuh "before" state ke-render dulu sebelum
-// transition flex-grow beneran kepicu.
+// Animasi "tumbuh" buat .dist-bar 
 export function initDistributionBars() {
     const bars = document.querySelectorAll('[data-dist-bar]');
     if (!bars.length) return;
