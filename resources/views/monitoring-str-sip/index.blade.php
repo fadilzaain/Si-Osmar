@@ -168,8 +168,7 @@
                                         <tr>
                                             <th>Pegawai</th>
                                             <th>SIP</th>
-                                            <th>SPK</th>
-                                            <th>RKK</th>
+                                            <th>SPK/RKK</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -185,8 +184,7 @@
                                                     </div>
                                                 </td>
                                                 <td><x-monitoring-dokumen.dokumen-cell :dokumen="$p['dokumen']['SIP']" /></td>
-                                                <td><x-monitoring-dokumen.dokumen-cell :dokumen="$p['dokumen']['SPK']" /></td>
-                                                <td><x-monitoring-dokumen.dokumen-cell :dokumen="$p['dokumen']['RKK']" /></td>
+                                                <td><x-monitoring-dokumen.dokumen-cell :dokumen="$p['dokumen']['SPK_RKK']" /></td>
                                             </tr>
                                         @endforeach
                                     </tbody>

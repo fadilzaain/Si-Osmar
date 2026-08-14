@@ -38,31 +38,13 @@
 .mct-chart-card { padding: var(--space-5); }
 .mct-chart-card .card-header { margin-bottom: var(--space-3); }
 
-/* Bungkus chart-headline + dist-bar + legend (kartu "Distribusi Status Cuti") */
-.mct-status-chart { display: flex; flex-direction: column; gap: var(--space-3); flex: 1; margin: var(--space-2) 0; }
-
-.mct-hero { text-align: center; padding: var(--space-2) 0 var(--space-4); }
-.mct-hero-value { font-size: 40px; font-weight: var(--font-weight-bold); line-height: 1; transition: color var(--transition-base); }
-.mct-hero-value.tone-danger, .mct-hero.tone-danger .mct-hero-value { color: var(--color-danger); }
-.mct-hero-value.tone-success, .mct-hero.tone-success .mct-hero-value { color: var(--color-success); }
-.mct-hero-label { font-size: var(--font-size-caption); color: var(--color-text-muted); margin-top: var(--space-2); }
-
-.mct-stacked-bar-track {
-  display: flex;
-  height: 14px;
-  border-radius: var(--radius-full);
-  overflow: hidden;
-  gap: 2px;
-  background: var(--color-surface-inset);
-  margin-bottom: var(--space-4);
-}
-.mct-stacked-bar-seg { height: 100%; transition: width var(--transition-slow); min-width: 2px; }
-.mct-stacked-bar-seg.tone-success { background: var(--color-success); }
-.mct-stacked-bar-seg.tone-warning { background: var(--color-warning); }
-.mct-stacked-bar-seg.tone-danger { background: var(--color-danger); }
+/* Wadah donut chart premium (kartu "Distribusi Status Cuti") — chart di
+   kiri, legend di kanan, dipakai bareng renderer donut-multi yang sama
+   kayak di dashboard, biar gak ada style/JS chart duplikat. */
+.mct-donut-body { display: flex; align-items: center; gap: var(--space-4); flex: 1; margin: var(--space-2) 0; }
+.mct-donut-body .mct-donut-chart { width: 168px; height: 168px; flex-shrink: 0; }
 
 .mct-donut-legend { display: flex; flex-direction: column; gap: var(--space-3); flex: 1; min-width: 0; }
-.mct-donut-legend--inline { flex-direction: row; flex-wrap: wrap; gap: var(--space-2) var(--space-5); }
 .mct-legend-row { display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-body); }
 .mct-legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
 .mct-legend-dot.tone-success { background: var(--color-success); }
@@ -298,4 +280,5 @@
   .mct-bulk-actions { margin-left: 0; }
   .mct-kpi-grid { grid-template-columns: 1fr; }
   .mct-pegawai-grid { grid-template-columns: 1fr; }
+  .mct-donut-body { flex-direction: column; }
 }

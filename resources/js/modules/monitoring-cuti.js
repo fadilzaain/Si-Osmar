@@ -1,15 +1,7 @@
-// Halaman Monitoring Cuti: toolbar (search + filter status + bulk
-// expand/collapse) yang bekerja di level PEGAWAI (bukan cuma level unit,
-// beda sama Bezetting SDM) — karena yang mau dipantau direktur itu individu
-// pegawainya, unit cuma pengelompokan. Semua data udah lengkap di DOM dari
-// Blade, jadi murni client-side, gak ada fetch tambahan.
-//
-// Ditambah: modal rincian cuti per pegawai, diisi dari data-detail yang
-// sudah di-embed di setiap kartu pegawai (JSON dari service), biar klik
-// kartu langsung nampilin rincian tanpa request baru ke server.
+// Halaman Monitoring Cuti: toolbar 
 
 const STATUS_LABEL = {
-    KRITIS: 'Kritis — jatah cuti tahunan habis',
+    KRITIS: 'Habis — jatah cuti tahunan sudah terpakai semua',
     PERHATIAN: 'Perlu perhatian — pemakaian sudah tinggi',
     NORMAL: 'Normal',
 };
@@ -104,7 +96,6 @@ function initToolbar(page) {
             if (showUnit) visiblePegawaiTotal += visibleInUnit;
 
             // Auto-buka unit yang lagi dicari biar hasil langsung kelihatan,
-            // tapi jangan paksa nutup unit yang manual dibuka user pas gak lagi nyari.
             if (query && showUnit) unit.classList.add('open');
         });
 

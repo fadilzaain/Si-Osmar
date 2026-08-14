@@ -9,15 +9,6 @@ use Illuminate\Support\Str;
 
 /**
  * CutiApiService
- *
- * Narik data sisa cuti pegawai (per unit, per jenis cuti) dari API eksternal
- * SIKAWAN. Response mentahnya flat per baris (satu baris =
- * satu pegawai + satu jenis cuti), service ini tanggung jawab
- * ngelompokkin ulang jadi per-unit -> per-pegawai -> rincian jenis cuti,
- * sekaligus ngitung status kesehatan cuti tiap pegawai.
- *
- * Sama kayak BezettingApiService: di-cache biar gak nembak API tiap request,
- * dan ada fallback array kosong kalau API-nya lagi bermasalah, dashboard tetap render, cuma nunjukin empty-state.
  */
 class CutiApiService
 {
@@ -27,7 +18,6 @@ class CutiApiService
 
     /**
      * Jenis cuti yang dipakai sebagai acuan status kesehatan pegawai.
-     * Cuma jenis ini yang punya jatah/kuota tahunan yang jelas — jenis lain
      */
     protected const JENIS_CUTI_UTAMA = 'Cuti Tahunan';
 
@@ -39,7 +29,7 @@ class CutiApiService
     /**
      * Ringkasan per unit
      * Tiap unit sudah dibungkus daftar pegawai (rincian per jenis
-     * cuti) + summary status, biar Blade tinggal render tanpa ngitung
+     * cuti) dan summary status, biar Blade tinggal render tanpa ngitung
      */
     public function getRingkasanPerUnit(): array
     {
@@ -140,7 +130,7 @@ class CutiApiService
     }
 
     /**
-     * Data buat donut chart distribusi status (Normal / Perhatian / Kritis).
+     * Data buat donut chart distribusi status (Normal / Perhatian / Habis).
      */
     public function getChartDistribusiStatus(): array
     {
@@ -148,7 +138,7 @@ class CutiApiService
 
         return [
             'series' => [$eksekutif['jumlah_normal'], $eksekutif['jumlah_perhatian'], $eksekutif['jumlah_kritis']],
-            'labels' => ['Normal', 'Perlu Perhatian', 'Kritis'],
+            'labels' => ['Normal', 'Perlu Perhatian', 'Habis'],
             'colors' => ['success', 'warning', 'danger'],
             'size' => 168,
             'totalValue' => $eksekutif['total_pegawai'],
@@ -157,11 +147,11 @@ class CutiApiService
     }
 
     /**
-     * Data buat horizontal bar chart "Top pemakaian cuti tahunan" 
+     * Data buat horizontal bar chart top pemakaian cuti
      */
     public function getChartTopPegawai(int $limit = 8): array
     {
-        $top = collect($this->getTopPegawaiKritis($limit))->reverse()->values();
+        $top = collect($this->getTopPegawaiKritis($limit));
 
         return [
             'labels' => $top->map(fn ($p) => Str::limit($p['nama'], 22))->all(),
@@ -173,8 +163,6 @@ class CutiApiService
 
     /**
      * Kelompokkan baris flat (satu baris = satu pegawai + satu jenis cuti)
-     * jadi satu entri per pegawai, dengan rincian semua jenis cuti yang dia
-     * punya + status kesehatan cuti tahunannya.
      */
     protected function kelompokkanPegawai($rows): array
     {
@@ -200,7 +188,7 @@ class CutiApiService
                     'tahun' => $first['tahun'],
                     'inisial' => $this->buatInisial($first['nama']),
                     'rincian' => $rincian,
-                    // Ringkasan cuti tahunan — dipakai buat progress bar & badge utama.
+                    // Ringkasan cuti tahunan - dipakai buat progress bar & badge utama.
                     'jatah_utama' => $utama['jatah_cuti'] ?? 0,
                     'diambil_utama' => $utama['cuti_diambil'] ?? 0,
                     'sisa_utama' => $utama['sisa_cuti'] ?? 0,
@@ -283,9 +271,8 @@ class CutiApiService
     }
 
     /**
-     * Ambil data mentah dari API, di-cache. Kalau API gagal (timeout, 500,
-     * dll), balikin array kosong + catat ke log, biar dashboard tetap render
-     * dalam bentuk empty-state, bukan error 500.
+     * Ambil data mentah dari API, di-cache. Kalau API gagal, balikin array kosong dan catat ke log, 
+     * biar dashboard tetap render dalam bentuk empty-state, bukan error 500.
      */
     protected function fetchRaw(): array
     {
@@ -311,9 +298,7 @@ class CutiApiService
 
                 $body = $response->json();
 
-                // API-nya ngirim data per unit sebagai object { unit, pegawai: [...] },
-                // bukan flat per baris,kita ratakan dulu di sini jadi satu baris
-                // per (pegawai, jenis_cuti) supaya gampang dikelompokkan ulang di atas.
+                // API-nya ngirim data per unit sebagai object { unit, pegawai: [...] } bukan flat perbaris
                 $flat = [];
                 foreach (($body['data'] ?? []) as $unitBlock) {
                     foreach (($unitBlock['pegawai'] ?? []) as $row) {

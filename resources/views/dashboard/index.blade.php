@@ -28,7 +28,7 @@
     @endphp
         <x-dashboard.tile
             title="Monitoring Dokumen"
-            subtitle="SIP, RKK & SPK seluruh pegawai"
+            subtitle="SIP & SPK/RKK seluruh pegawai"
             icon="fa-solid fa-file-shield"
             href="{{ route('monitoring-str-sip.index') }}"
             badge-text="{{ $dokumenBermasalah > 0 ? $dokumenBermasalah . ' belum upload / kadaluarsa' : 'Semua lengkap' }}"
@@ -153,7 +153,7 @@
                     </div>
                     <div class="dxg-legend-row">
                         <span class="dxg-legend-dot tone-danger"></span>
-                        <span class="dxg-legend-label">Kritis</span>
+                        <span class="dxg-legend-label">Habis</span>
                         <span class="dxg-legend-value">{{ $cutiEksekutif['jumlah_kritis'] }}</span>
                     </div>
                 </div>

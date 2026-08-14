@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -10,12 +11,16 @@ use Illuminate\Support\Str;
 /**
  * MonitoringDokumenService
  *
- * Narik data kelengkapan dokumen legal pegawai (SIP, SPK, RKK) dari API
+ * Narik data kelengkapan dokumen legal pegawai (SIP & SPK/RKK) dari API
  * eksternal SIKAWAN (endpoint di config/services.php, key
  * 'sikawan.dokumen_endpoint'), lalu dinormalisasi jadi bentuk yang seragam
  * per pegawai — API mentahnya inkonsisten (field tanggal SIP namanya
  * "berlaku", tapi SPK/RKK "tanggal_berlaku"), jadi normalisasi ini yang
  * bikin Blade & JS gak perlu tau soal itu sama sekali.
+ *
+ * Catatan: SPK dan RKK isinya sama, jadi cuma data RKK yang dipakai dan
+ * ditampilkan sebagai satu kolom gabungan "SPK/RKK" (key: SPK_RKK). Data
+ * mentah "spk" dari API sengaja gak dipanggil lagi.
  *
  * Sama kayak BezettingApiService: di-cache, dan fallback ke array kosong
  * kalau API bermasalah (bukan error 500).
@@ -28,8 +33,14 @@ class MonitoringDokumenService
     public const STATUS_NEUTRAL = 'neutral';
 
     /**
+     * Ambang batas "segera kadaluarsa": kalau masa berlaku dokumen tinggal
+     * sekian bulan lagi (atau kurang) dari sekarang, statusnya warning.
+     */
+    private const BULAN_SEGERA_KADALUARSA = 6;
+
+    /**
      * Urutan "keparahan status, dipakai buat nentuin status keseluruhan
-     * satu pegawai dari 3 dokumennya (SIP/SPK/RKK) — makin besar makin
+     * satu pegawai dari dokumennya (SIP & SPK/RKK) — makin besar makin
      * butuh perhatian direktur duluan.
      */
     private const SEVERITY = [
@@ -117,7 +128,7 @@ class MonitoringDokumenService
         $r = $this->getRingkasanEksekutif();
 
         if ($r['total_bermasalah'] <= 0 && $r['jumlah_perlu_diperpanjang'] <= 0) {
-            return 'Seluruh dokumen legal pegawai (SIP, SPK, RKK) di semua unit dalam kondisi lengkap dan berlaku. Tidak ada tindakan mendesak yang diperlukan.';
+            return 'Seluruh dokumen legal pegawai (SIP & SPK/RKK) di semua unit dalam kondisi lengkap dan berlaku. Tidak ada tindakan mendesak yang diperlukan.';
         }
 
         if ($r['total_bermasalah'] > 0) {
@@ -195,17 +206,18 @@ class MonitoringDokumenService
     }
 
     /**
-     * Satu pegawai dari API { nama, jabatan, inisial, dokumen: [SIP, SPK, RKK], overall_status }.
+     * Satu pegawai dari API { nama, jabatan, inisial, dokumen: [SIP, SPK/RKK], overall_status }.
+     * SPK & RKK isinya sama, jadi cuma data RKK yang dipakai buat kolom
+     * gabungan "SPK/RKK" — data "spk" dari API sengaja gak disentuh lagi.
      */
     protected function normalizePegawai(array $p): array
     {
         $dokumen = [
             'SIP' => $this->normalizeDokumen($p['sip'] ?? null, $p['sip_status'] ?? null, $p['sip_masa_berlaku'] ?? null),
-            'SPK' => $this->normalizeDokumen($p['spk'] ?? null, $p['spk_status'] ?? null, $p['spk_masa_berlaku'] ?? null),
-            'RKK' => $this->normalizeDokumen($p['rkk'] ?? null, $p['rkk_status'] ?? null, $p['rkk_masa_berlaku'] ?? null),
+            'SPK_RKK' => $this->normalizeDokumen($p['rkk'] ?? null, $p['rkk_status'] ?? null, $p['rkk_masa_berlaku'] ?? null),
         ];
 
-        // Status keseluruhan pegawai = status paling parah dari 3 dokumennya.
+        // Status keseluruhan pegawai = status paling parah dari dokumennya.
         $overall = collect($dokumen)
             ->sortByDesc(fn (array $d) => self::SEVERITY[$d['status']] ?? 0)
             ->first()['status'] ?? self::STATUS_SUCCESS;
@@ -224,24 +236,63 @@ class MonitoringDokumenService
     /**
      * Satu jenis dokumen (SIP/SPK/RKK) dari API -> bentuk seragam.
      * Nama field tanggal beda-beda di API mentah (sip: "berlaku",
-     * spk/rkk: "tanggal_berlaku"), disamakan jadi "tanggal".
+     * spk/rkk: "tanggal_berlaku"), disamakan jadi "tanggal". Status
+     * dihitung sendiri dari tanggal ini lewat determineStatus(), bukan
+     * dipercaya mentah-mentah dari API.
      */
     protected function normalizeDokumen(?array $raw, ?string $statusRaw, ?string $masaBerlakuRaw): array
     {
         $raw ??= [];
         $file = $raw['file'] ?? null;
+        $tanggal = $raw['berlaku'] ?? $raw['tanggal_berlaku'] ?? null;
 
         return [
-            'tanggal' => $raw['berlaku'] ?? $raw['tanggal_berlaku'] ?? null,
+            'tanggal' => $tanggal,
             'file' => $file,
             'file_url' => $this->getFileUrl($file),
             'file_verified' => $raw['file_verified'] ?? null,
             'masa_berlaku' => $masaBerlakuRaw ?: '-',
-            'status' => $this->normalizeStatus($statusRaw),
+            'status' => $this->determineStatus($tanggal, $statusRaw),
         ];
     }
 
-  
+    /**
+     * Tentukan status dokumen berdasarkan tanggal masa berlaku:
+     * - Belum ada tanggal sama sekali (dokumen belum diunggah)   -> neutral
+     * - Tanggal sudah lewat dari hari ini                        -> danger
+     * - Tanggal tinggal <= 6 bulan lagi dari hari ini             -> warning
+     * - Selain itu (masih lama)                                  -> success
+     *
+     * Kalau tanggalnya ada tapi gagal di-parse (format aneh dari API),
+     * fallback ke status mentah dari API biar halaman tetap jalan.
+     */
+    protected function determineStatus(?string $tanggal, ?string $statusRaw): string
+    {
+        if (! $tanggal) {
+            return self::STATUS_NEUTRAL;
+        }
+
+        try {
+            $masaBerlaku = Carbon::parse($tanggal);
+        } catch (\Throwable $e) {
+            return $this->normalizeStatus($statusRaw);
+        }
+
+        if ($masaBerlaku->isPast()) {
+            return self::STATUS_DANGER;
+        }
+
+        if ($masaBerlaku->lessThanOrEqualTo(now()->addMonths(self::BULAN_SEGERA_KADALUARSA))) {
+            return self::STATUS_WARNING;
+        }
+
+        return self::STATUS_SUCCESS;
+    }
+
+    /**
+     * Fallback: samakan string status mentah dari API ke salah satu
+     * konstanta STATUS_*. Cuma dipakai kalau tanggal dokumen gagal di-parse.
+     */
     protected function normalizeStatus(?string $raw): string
     {
         return match ($raw) {

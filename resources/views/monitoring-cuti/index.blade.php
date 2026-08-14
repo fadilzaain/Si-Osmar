@@ -24,7 +24,7 @@
             />
             <x-stat-card
                 icon="fa-solid fa-triangle-exclamation"
-                label="Berstatus kritis"
+                label="Berstatus habis"
                 :value="$eksekutif['jumlah_kritis']"
                 comparison="jatah cuti tahunan habis"
                 color="var(--color-danger)"
@@ -63,44 +63,18 @@
                         <div class="card-subtitle">Sebaran seluruh pegawai berdasarkan status</div>
                     </div>
                 </div>
-                @php
-                    $adaKritis = $eksekutif['jumlah_kritis'] > 0;
-                    $total = max(1, $eksekutif['total_pegawai']); // hindari div/0 kalau kebetulan 0
-                @endphp
 
-                <div class="mct-hero {{ $adaKritis ? 'tone-danger' : 'tone-success' }}">
-                    <div class="mct-hero-value">{{ $eksekutif['jumlah_kritis'] }}</div>
-                        <div class="mct-hero-label">
-                        @if ($adaKritis)
-                            pegawai kritis — jatah cuti tahunan habis
-                        @else
-                            pegawai kritis — semua terkendali
-                        @endif
-                    </div>
-                </div>
-
-            <div class="mct-stacked-bar">
-                    <div class="mct-stacked-bar-track">
-                        <div class="mct-stacked-bar-seg tone-success" style="width: {{ $eksekutif['jumlah_normal'] / $total * 100 }}%"></div>
-                        <div class="mct-stacked-bar-seg tone-warning" style="width: {{ $eksekutif['jumlah_perhatian'] / $total * 100 }}%"></div>
-                        <div class="mct-stacked-bar-seg tone-danger" style="width: {{ $eksekutif['jumlah_kritis'] / $total * 100 }}%"></div>
-                    </div>
-                    <div class="mct-donut-legend mct-donut-legend--inline">
-                        <div class="mct-legend-row">
-                            <span class="mct-legend-dot tone-success"></span>
-                            <span class="mct-legend-label">Normal</span>
-                            <span class="mct-legend-value">{{ $eksekutif['jumlah_normal'] }}</span>
-                        </div>
-                        <div class="mct-legend-row">
-                            <span class="mct-legend-dot tone-warning"></span>
-                            <span class="mct-legend-label">Perhatian</span>
-                            <span class="mct-legend-value">{{ $eksekutif['jumlah_perhatian'] }}</span>
-                        </div>
-                        <div class="mct-legend-row">
-                            <span class="mct-legend-dot tone-danger"></span>
-                            <span class="mct-legend-label">Kritis</span>
-                            <span class="mct-legend-value">{{ $eksekutif['jumlah_kritis'] }}</span>
-                        </div>
+                <div class="mct-donut-body">
+                    <div class="mct-donut-chart" data-chart-type="donut-multi"
+                        data-chart='@json($chartDistribusiStatus)'></div>
+                    <div class="mct-donut-legend">
+                        @foreach ($chartDistribusiStatus['labels'] as $i => $label)
+                            <div class="mct-legend-row">
+                                <span class="mct-legend-dot tone-{{ $chartDistribusiStatus['colors'][$i] }}"></span>
+                                <span class="mct-legend-label">{{ $label }}</span>
+                                <span class="mct-legend-value">{{ $chartDistribusiStatus['series'][$i] }}</span>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -125,7 +99,7 @@
         </div>
 
         <div class="mct-legend">
-            <span class="mct-legend-item"><x-badge variant="danger">KRITIS</x-badge> jatah cuti tahunan habis</span>
+            <span class="mct-legend-item"><x-badge variant="danger">HABIS</x-badge> jatah cuti tahunan habis</span>
             <span class="mct-legend-item"><x-badge variant="warning">PERHATIAN</x-badge> pemakaian &ge; 75%</span>
             <span class="mct-legend-item"><x-badge variant="success">NORMAL</x-badge> pemakaian masih wajar</span>
         </div>
@@ -141,7 +115,7 @@
                     Semua <span>{{ $eksekutif['total_pegawai'] }}</span>
                 </button>
                 <button type="button" class="mct-pill mct-pill--danger" data-filter="KRITIS">
-                    Kritis <span>{{ $eksekutif['jumlah_kritis'] }}</span>
+                    Habis <span>{{ $eksekutif['jumlah_kritis'] }}</span>
                 </button>
                 <button type="button" class="mct-pill mct-pill--warning" data-filter="PERHATIAN">
                     Perhatian <span>{{ $eksekutif['jumlah_perhatian'] }}</span>
@@ -185,7 +159,7 @@
                             <span class="mct-unit-count">{{ $unit['summary']['total_pegawai'] }} pegawai</span>
                             <x-badge :variant="$badgeVariant">
                                 @if ($unit['summary']['status'] === 'KRITIS')
-                                    Kritis {{ $unit['summary']['jumlah_kritis'] }}
+                                    Habis {{ $unit['summary']['jumlah_kritis'] }}
                                 @elseif ($unit['summary']['status'] === 'PERHATIAN')
                                     Perhatian {{ $unit['summary']['jumlah_perhatian'] }}
                                 @else
@@ -206,6 +180,11 @@
                                             'PERHATIAN' => 'warning',
                                             default => 'success',
                                         };
+                                        $pLabel = match ($p['status']) {
+                                            'KRITIS' => 'Habis',
+                                            'PERHATIAN' => 'Perhatian',
+                                            default => 'Normal',
+                                        };
                                         $barTone = match ($p['status']) {
                                             'KRITIS' => 'tone-danger',
                                             'PERHATIAN' => 'tone-warning',
@@ -225,7 +204,7 @@
                                             </div>
                                         </div>
                                         <div class="mct-pegawai-status-row">
-                                            <x-badge :variant="$pBadge">{{ $p['status'] }}</x-badge>
+                                            <x-badge :variant="$pBadge">{{ $pLabel }}</x-badge>
                                         </div>
 
                                         @if ($p['punya_jatah_utama'])
