@@ -13,6 +13,9 @@
 @import './layout/layout.css';
 @import './layout/sidebar.css';
 @import './layout/navbar.css';
+@import './pages/monitoring-evkin.css';
+@import './pages/auth.css';
+@import './pages/qr-login.css';
 @import './pages/monitoring-str-sip.css';
 @import './pages/dashboard.css';
 @import './pages/sdm-bezetting.css';

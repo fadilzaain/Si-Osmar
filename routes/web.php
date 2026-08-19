@@ -9,6 +9,8 @@ use App\Http\Controllers\ComingSoonController;
 use App\Http\Controllers\MonitoringCutiController;
 use App\Http\Controllers\MonitoringEvkinController;
 use App\Http\Controllers\PelatihanController;
+use App\Http\Controllers\Auth\LoginQrController;
+
 
 
 // Halaman login hanya boleh diakses kalau BELUM login.
@@ -25,11 +27,21 @@ Route::post('/logout', [LoginController::class, 'destroy'])
     ->name('logout')
     ->middleware('auth');
 
+Route::get('/login/qr/{token}', [LoginQrController::class, 'redeem'])
+    ->name('login.qr.redeem')
+    ->middleware('throttle:10,1');
+
 
 // Semua halaman di bawah ini WAJIB login dulu. Kalau belum, otomatis
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
         return redirect()->route('dashboard');
+    });
+
+        Route::prefix('profil/qr-login')->name('profile.qr.')->group(function () {
+        Route::get('/', [LoginQrController::class, 'show'])->name('show');
+        Route::post('/generate', [LoginQrController::class, 'generate'])->name('generate');
+        Route::post('/revoke', [LoginQrController::class, 'revoke'])->name('revoke');
     });
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

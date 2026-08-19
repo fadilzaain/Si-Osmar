@@ -13,6 +13,7 @@ import { initCountUp, initDistributionBars } from './modules/count-up';
 import { initMonitoringCuti } from './modules/monitoring-cuti';
 import { initPelatihan } from './modules/pelatihan';
 import { initMonitoringEvkin } from './modules/monitoring-evkin';
+import { initQrLoginPage } from './modules/qr-login.js';
 
 
 window.bootstrap = bootstrap;
@@ -33,3 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initPelatihan();
   initMonitoringEvkin();
 });
+
+if (document.querySelector('#qr-login-canvas')) {
+    initQrLoginPage();
+}
