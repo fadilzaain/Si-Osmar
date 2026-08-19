@@ -86,6 +86,11 @@
         </button>
 
         <div class="sidebar-profile-menu" data-profile-menu>
+            <a href="{{ route('profile.qr.show') }}" class="sidebar-profile-menu-item">
+                <i class="fa-solid fa-qrcode"></i>
+                <span>QR Login Saya</span>
+            </a>
+
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="sidebar-profile-menu-item sidebar-profile-menu-danger">

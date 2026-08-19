@@ -35,6 +35,11 @@
                     <div class="navbar-profile-menu-email">{{ auth()->user()->email ?? '' }}</div>
                 </div>
 
+                <a href="{{ route('profile.qr.show') }}" class="navbar-profile-menu-item">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <span>QR Login Saya</span>
+                </a>
+
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="navbar-profile-menu-item navbar-profile-menu-danger">
