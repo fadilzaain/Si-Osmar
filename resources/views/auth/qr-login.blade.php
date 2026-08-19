@@ -5,7 +5,7 @@
 
         <div class="qr-login-warning">
             <i class="fa-solid fa-triangle-exclamation"></i>
-            <span>QR ini setara password kamu — siapa pun yang scan bisa langsung masuk sebagai kamu. Jangan disebar, di-screenshot sembarangan, atau dikirim lewat chat.</span>
+            <span>QR ini setara password siapa pun yang scan bisa langsung masuk Website. Jangan disebar, di-screenshot sembarangan, atau dikirim lewat chat.</span>
         </div>
 
         <div class="card-base qr-login-card">
@@ -15,7 +15,7 @@
                 </div>
                 <p class="qr-login-note">
                     Simpan/screenshot QR ini sekarang juga. Setelah halaman di-refresh,
-                    QR ini nggak bisa ditampilin ulang — kalau butuh lagi, generate baru.
+                    QR ini nggak bisa ditampilin ulang -  generate baru.
                 </p>
             @else
                 <span class="qr-login-status {{ $hasActiveToken ? 'qr-login-status--active' : 'qr-login-status--empty' }}">
@@ -40,5 +40,5 @@
             </div>
         </div>
     </div>
-    
+
 </x-app-layout>
